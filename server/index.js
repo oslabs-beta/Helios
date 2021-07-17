@@ -35,6 +35,11 @@ app.post('/login', userController.verifyUser, (req, res) => {
   res.status(200).json(res.locals.confirmation);
 });
 
+app.post('/register', userController.addArn, (req, res) => {
+  console.log(req.body);
+  res.sendStatus(200);
+});
+
 app.use((err, req, res, next) => {
   const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
