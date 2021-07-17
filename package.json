@@ -2,19 +2,58 @@
   "name": "testing-aws-role",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "public/main.js",
+  "homepage": "./",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "build": "NODE_ENV=production webpack",
+    "start": "nodemon server/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon server/index.js & webpack serve --open",
+    "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn run dev\" \"yarn electron:start\"",
+    "electron:build": "",
+    "electron:start": "wait-on tcp:8080 && electron ."
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "build",
+      "src"
+    ]
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.21.0",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-react": "^7.14.5",
+    "@electron/remote": "^1.2.0",
+    "@material-ui/core": "^4.12.1",
+    "@material-ui/icons": "^4.11.2",
     "aws-sdk": "^2.943.0",
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^6.2.0",
+    "cross-env": "^7.0.3",
     "crypto-js": "^4.0.0",
+    "css-loader": "^6.0.0",
+    "electron": "^13.1.7",
     "express": "^4.17.1",
+    "mongodb": "^4.0.0",
+    "mongoose": "^5.13.3",
     "node-fetch": "^2.6.1",
-    "nodemon": "^2.0.11"
+    "nodemon": "^2.0.11",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3",
+    "redux": "^4.1.0",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.3.0",
+    "sass-loader": "^12.1.0",
+    "style-loader": "^3.1.0",
+    "wait-on": "^6.0.0",
+    "webpack": "^5.44.0",
+    "webpack-cli": "^4.7.2"
   }
 }
