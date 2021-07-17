@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -18,10 +19,10 @@ function Copyright() {
   return (
     <Typography variant='body2' color='textSecondary' align='center'>
       {'Copyright © '}
-      <Link color='inherit' to='https://material-ui.com/'>
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
+      <a href='https://github.com/oslabs-beta/Helios' target='_blank'>
+        Helios
+      </a>
+      {' ' + new Date().getFullYear()}
       {'.'}
     </Typography>
   );
@@ -50,6 +51,27 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const history = useHistory();
+  const [unconfirmed, setConfirmed] = useState(false);
+  let email = '';
+  let password = '';
+
+  function handleSubmit() {
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    };
+    fetch('/login', reqParams)
+      .then((res) => res.json())
+      .then((confirmation) => {
+        if (confirmation.confirmed) {
+          history.push('/register');
+        } else {
+          setConfirmed(true);
+        }
+      });
+  }
+
   return (
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
@@ -60,55 +82,66 @@ export default function SignIn() {
         <Typography component='h1' variant='h5'>
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant='outlined'
-            margin='normal'
-            required
-            fullWidth
-            id='email'
-            label='Email Address'
-            name='email'
-            autoComplete='email'
-            autoFocus
-          />
-          <TextField
-            variant='outlined'
-            margin='normal'
-            required
-            fullWidth
-            name='password'
-            label='Password'
-            type='password'
-            id='password'
-            autoComplete='current-password'
-          />
-          <FormControlLabel
-            control={<Checkbox value='remember' color='primary' />}
-            label='Remember me'
-          />
-          <Button
-            type='submit'
-            fullWidth
-            variant='contained'
-            color='primary'
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link to='#' variant='body2'>
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link to='/signup' variant='body2'>
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
+        {unconfirmed && (
+          <Typography style={{ color: 'red' }}>
+            Please double-check your email and/or password or create a new
+            account.
+          </Typography>
+        )}
+        <TextField
+          variant='outlined'
+          margin='normal'
+          required
+          fullWidth
+          id='email'
+          label='Email Address'
+          name='email'
+          autoComplete='email'
+          autoFocus
+          onChange={(e) => {
+            email = e.target.value;
+          }}
+        />
+        <TextField
+          variant='outlined'
+          margin='normal'
+          required
+          fullWidth
+          name='password'
+          label='Password'
+          type='password'
+          id='password'
+          autoComplete='current-password'
+          onChange={(e) => {
+            password = e.target.value;
+          }}
+        />
+        <FormControlLabel
+          control={<Checkbox value='remember' color='primary' />}
+          label='Remember me'
+        />
+        <Button
+          type='submit'
+          fullWidth
+          variant='contained'
+          color='primary'
+          className={classes.submit}
+          onClick={handleSubmit}
+        >
+          Sign In
+        </Button>
+        <Grid container>
+          <Grid item xs>
+            <Link to='#' variant='body2'>
+              Forgot password?
+            </Link>
           </Grid>
-        </form>
+          <Grid item>
+            <Link to='/signup' variant='body2'>
+              {"Don't have an account? Sign Up"}
+            </Link>
+          </Grid>
+        </Grid>
       </div>
       <Box mt={8}>
         <Copyright />

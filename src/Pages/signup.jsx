@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -18,10 +19,10 @@ function Copyright() {
   return (
     <Typography variant='body2' color='textSecondary' align='center'>
       {'Copyright © '}
-      <Link color='inherit' to='https://material-ui.com/'>
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
+      <a href='https://github.com/oslabs-beta/Helios' target='_blank'>
+        Helios
+      </a>
+      {' ' + new Date().getFullYear()}
       {'.'}
     </Typography>
   );
@@ -48,7 +49,33 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUp() {
+  const history = useHistory();
+  const [invalidEmail, setValidEmail] = useState(false);
   const classes = useStyles();
+  let firstName = '';
+  let lastName = '';
+  let email = '';
+  let password = '';
+  // let invalidEmail = false;
+
+  function handleSubmit() {
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firstName, lastName, password, email }),
+    };
+    fetch('/signup', reqParams)
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+        if (response.confirmation && response.email) {
+          history.push('/register');
+        } else if (!response.email) {
+          setValidEmail(true);
+          console.log(invalidEmail);
+        }
+      });
+  }
 
   return (
     <Container component='main' maxWidth='xs'>
@@ -60,78 +87,90 @@ export default function SignUp() {
         <Typography component='h1' variant='h5'>
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete='fname'
-                name='firstName'
-                variant='outlined'
-                required
-                fullWidth
-                id='firstName'
-                label='First Name'
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant='outlined'
-                required
-                fullWidth
-                id='lastName'
-                label='Last Name'
-                name='lastName'
-                autoComplete='lname'
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant='outlined'
-                required
-                fullWidth
-                id='email'
-                label='Email Address'
-                name='email'
-                autoComplete='email'
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant='outlined'
-                required
-                fullWidth
-                name='password'
-                label='Password'
-                type='password'
-                id='password'
-                autoComplete='current-password'
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value='allowExtraEmails' color='primary' />}
-                label='I want to receive inspiration, marketing promotions and updates via email.'
-              />
-            </Grid>
+        <br />
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              autoComplete='fname'
+              name='firstName'
+              variant='outlined'
+              required
+              fullWidth
+              id='firstName'
+              label='First Name'
+              autoFocus
+              onChange={(e) => {
+                firstName = e.target.value;
+              }}
+            />
           </Grid>
-          <Button
-            type='submit'
-            fullWidth
-            variant='contained'
-            color='primary'
-            className={classes.submit}
-          >
-            Sign Up
-          </Button>
-          <Grid container justifyContent='flex-end'>
-            <Grid item>
-              <Link to='/' variant='body2'>
-                Already have an account? Sign in
-              </Link>
-            </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              variant='outlined'
+              required
+              fullWidth
+              id='lastName'
+              label='Last Name'
+              name='lastName'
+              autoComplete='lname'
+              onChange={(e) => {
+                lastName = e.target.value;
+              }}
+            />
           </Grid>
-        </form>
+          {invalidEmail && (
+            <Typography style={{ color: 'red' }}>
+              This email has been taken already.
+            </Typography>
+          )}
+          <Grid item xs={12}>
+            <TextField
+              variant='outlined'
+              required
+              fullWidth
+              id='email'
+              label='Email Address'
+              name='email'
+              autoComplete='email'
+              onChange={(e) => {
+                email = e.target.value;
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              variant='outlined'
+              required
+              fullWidth
+              name='password'
+              label='Password'
+              type='password'
+              id='password'
+              autoComplete='current-password'
+              onChange={(e) => {
+                password = e.target.value;
+              }}
+            />
+          </Grid>
+        </Grid>
+        <Button
+          type='submit'
+          fullWidth
+          variant='contained'
+          color='primary'
+          className={classes.submit}
+          onClick={handleSubmit}
+        >
+          Sign Up
+        </Button>
+
+        <Grid container justifyContent='flex-end'>
+          <Grid item>
+            <Link to='/' variant='body2'>
+              Already have an account? Sign in
+            </Link>
+          </Grid>
+        </Grid>
       </div>
       <Box mt={5}>
         <Copyright />
