@@ -62,7 +62,8 @@ assumedRole.on('complete', function (response) {
       let interval = 3600 //1 hr in secs: this will be a input from the Front End (graph unit)
     
     //define the End and Start times in UNIX time Stamp format for getMetricsData method
-      let EndTime = Math.round(new Date().getTime() / 1000); //current time in Unix TimeStamp
+      //Rounded off to nearest 15 min
+      let EndTime = Math.round(new Date().getTime() / 1000/60/60)*60*60; //current time in Unix TimeStamp
       let StartTime = EndTime - period;
     
     //initialize the parameters
@@ -76,6 +77,7 @@ assumedRole.on('complete', function (response) {
         
         ],
       };
+      //initiate a counter
       let counter = 0;
     
     //programatically update the data queries array of the parameters
@@ -110,6 +112,8 @@ assumedRole.on('complete', function (response) {
     
     
       }
+
+      console.log('getMetricsParams: ', getMetricsParams)
     
     
       cw.getMetricData(getMetricsParams, function (err, data) {
@@ -162,3 +166,4 @@ outsideLambda.listFunctions(outsideLamParams, function (err, data) {
       '\n******------******\n'
     );
 });
+

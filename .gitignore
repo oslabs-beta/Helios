@@ -1,4 +1,6 @@
 npm-debug.log*
 node_modules/
 dist/bundle.js
-package-lock*
+_*.js
+temp.js
+
