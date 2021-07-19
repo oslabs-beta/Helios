@@ -112,6 +112,8 @@ assumedRole.on('complete', function (response) {
     
     
       }
+
+      console.log('getMetricsParams: ', getMetricsParams)
     
     
       cw.getMetricData(getMetricsParams, function (err, data) {
