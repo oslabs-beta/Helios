@@ -8,7 +8,7 @@ module.exports = {
       '/': 'http://localhost:3000',
     },
   },
-  mode: 'development',
+  mode: process.env.NODE_ENV,
   module: {
     rules: [
       {
@@ -25,11 +25,26 @@ module.exports = {
         test: /\.[sac]ss$/i,
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+            },
+          },
+        ],
+      },
     ],
   },
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/build/',
     filename: 'bundle.js',
+  },
+  resolve: {
+    // Enable importing JS / JSX files without specifying their extension
+    extensions: ['.js', '.jsx'],
   },
 };
