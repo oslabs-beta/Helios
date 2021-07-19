@@ -1,6 +1,8 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 // react plugin for creating charts
 import ChartistGraph from 'react-chartist';
+import { connect } from 'react-redux';
 // @material-ui/core
 import { makeStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
@@ -28,6 +30,7 @@ import CardHeader from '../../components/Card/CardHeader.js';
 import CardIcon from '../../components/Card/CardIcon.js';
 import CardBody from '../../components/Card/CardBody.js';
 import CardFooter from '../../components/Card/CardFooter.js';
+import * as actions from '../../../Actions/actions';
 
 import { bugs, website, server } from '../../variables/general.js';
 
@@ -37,12 +40,43 @@ import {
   completedTasksChart,
 } from '../../variables/charts.js';
 
+import barChartFunc from '../../variables/testBarChart.js';
+
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard() {
+const mapStateToProps = (state) => ({
+  arn: state.main.arn,
+  credentials: state.main.credentials,
+  aws: state.aws,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
+  addLambda: (functions) => dispatch(actions.addLambda(functions)),
+});
+
+function Dashboard(props) {
   const classes = useStyles();
+  console.log('logging from dashboard component (parent): ', props.credentials);
+
+  useEffect(() => {
+    if (!props.credentials) {
+      const reqParams = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ arn: props.arn }),
+      };
+      fetch('/getCreds', reqParams)
+        .then((res) => res.json())
+        .then((credentialsData) => {
+          console.log('logging from useEffect fetch: ', credentialsData);
+          props.addCredentials(credentialsData);
+        });
+    }
+  }, []);
+
   return (
     <div>
       <GridContainer>
@@ -154,7 +188,7 @@ export default function Dashboard() {
             <CardHeader color='warning'>
               <ChartistGraph
                 className='ct-chart'
-                data={emailsSubscriptionChart.data}
+                data={barChartFunc(props).data}
                 type='Bar'
                 options={emailsSubscriptionChart.options}
                 responsiveOptions={emailsSubscriptionChart.responsiveOptions}
@@ -263,3 +297,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

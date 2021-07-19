@@ -4,12 +4,15 @@ const initialState = {
   email: '',
   firstName: '',
   arn: '',
+  credentials: null,
 };
 
 const mainReducer = (state = initialState, action) => {
   let email;
   let firstName;
   let arn;
+  let credentials;
+
   switch (action.type) {
     case types.ADD_USER_INFO: {
       email = action.payload.email;
@@ -37,6 +40,14 @@ const mainReducer = (state = initialState, action) => {
         email,
         firstName,
         arn,
+      };
+    }
+
+    case types.ADD_CREDENTIALS: {
+      credentials = action.payload;
+      return {
+        ...state,
+        credentials,
       };
     }
 

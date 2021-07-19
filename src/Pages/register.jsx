@@ -52,6 +52,10 @@ const mapStateToProps = (state) => ({
   userEmail: state.main.email,
 });
 
+const mapDispatchToProps = (dispatch) => ({
+  addArn: (userInfo) => dispatch(actions.addArn(userInfo)),
+});
+
 function Register(props) {
   const classes = useStyles();
   const history = useHistory();
@@ -67,6 +71,7 @@ function Register(props) {
       body: JSON.stringify({ email, arn }),
     };
     fetch('/register', reqParams);
+    props.addArn(arn);
   };
 
   return (
@@ -124,4 +129,4 @@ function Register(props) {
     </Container>
   );
 }
-export default connect(mapStateToProps, null)(Register);
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
