@@ -46,8 +46,8 @@ AWSUtilFunc.prepCwMetricQueryLambdaAllFunc = (
 
   //initialize the parameters
   const metricParamsBaseAllFunc = {
-    StartTime: new Date(StartTime*1000),
-    EndTime: new Date(EndTime*1000),
+    StartTime: new Date(StartTime * 1000),
+    EndTime: new Date(EndTime * 1000),
     LabelOptions: {
       Timezone: '-0400',
     },
@@ -96,8 +96,8 @@ AWSUtilFunc.prepCwMetricQueryLambdaByFunc = (
 
   //initialize the parameters
   const metricParamsBaseByFunc = {
-    StartTime: new Date(StartTime*1000),
-    EndTime: new Date(EndTime*1000),
+    StartTime: new Date(StartTime * 1000),
+    EndTime: new Date(EndTime * 1000),
     LabelOptions: {
       Timezone: '-0400',
     },
@@ -136,6 +136,6 @@ AWSUtilFunc.prepCwMetricQueryLambdaByFunc = (
   return metricParamsByFunc;
 };
 
-export default AWSUtilFunc;
+// export default AWSUtilFunc;
 
-//module.exports = AWSUtilFunc;
+module.exports = AWSUtilFunc;

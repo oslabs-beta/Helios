@@ -73,7 +73,7 @@ function SignIn(props) {
       .then((confirmation) => {
         if (confirmation.confirmed) {
           props.addLoginInfo(confirmation.userInfo);
-          history.push('/register');
+          history.push('/admin');
         } else {
           setConfirmed(true);
         }
