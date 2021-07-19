@@ -19,8 +19,10 @@ const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+console.log(__dirname);
 
 app.use('/build', express.static(path.resolve(__dirname, '../build')));
+app.use(express.static(path.resolve(__dirname, '../src/Dashboard')));
 
 app.get('/', (req, res) => {
   return res
@@ -33,6 +35,11 @@ app.post('/signup', userController.createUser, (req, res) => {
 
 app.post('/login', userController.verifyUser, (req, res) => {
   res.status(200).json(res.locals.confirmation);
+});
+
+app.post('/register', userController.addArn, (req, res) => {
+  console.log(req.body);
+  res.sendStatus(200);
 });
 
 app.use((err, req, res, next) => {

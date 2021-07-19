@@ -21,7 +21,14 @@ userController.createUser = (req, res, next) => {
         return next(err);
       }
       console.log(result);
-      res.locals.confirmation = { confirmation: true, email: true };
+      res.locals.confirmation = {
+        confirmation: true,
+        emailStatus: true,
+        userInfo: {
+          email: result.email,
+          firstName: result.firstName,
+        },
+      };
       return next();
     }
   );
@@ -32,12 +39,38 @@ userController.verifyUser = async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
     if (user.comparePassword(req.body.password)) {
       console.log('Compared Password worked');
-      res.locals.confirmation = { confirmed: true };
+      res.locals.confirmation = {
+        confirmed: true,
+        userInfo: {
+          email: user.email,
+          firstName: user.firstName,
+          arn: user.arn,
+        },
+      };
       return next();
     } else {
-      res.locals.confirmation = { confirmed: false };
+      res.locals.confirmation = {
+        confirmed: false,
+      };
       return next();
     }
+  } catch (err) {
+    if (err) {
+      console.log(err);
+      return next(err);
+    }
+  }
+};
+
+userController.addArn = async (req, res, next) => {
+  try {
+    const user = await User.findOneAndUpdate(
+      { email: req.body.email },
+      { arn: req.body.arn },
+      { new: true }
+    );
+    console.log(user);
+    return next();
   } catch (err) {
     if (err) {
       console.log(err);

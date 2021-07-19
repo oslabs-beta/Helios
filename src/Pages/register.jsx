@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -47,9 +48,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+const mapStateToProps = (state) => ({
+  userEmail: state.main.email,
+});
+
+function Register(props) {
   const classes = useStyles();
   const history = useHistory();
+  console.log(props.userEmail);
+
+  let arn = '';
+  let email = props.userEmail;
+
+  const handleRegisterBtn = () => {
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, arn }),
+    };
+    fetch('/register', reqParams);
+  };
+
   return (
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
@@ -75,29 +94,29 @@ export default function SignIn() {
         <Typography component='h1' variant='body1'>
           After you link your account, give us the returned ARN:
         </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant='outlined'
-            margin='normal'
-            required
-            fullWidth
-            id='arn'
-            label='ARN'
-            name='arn'
-            autoComplete='email'
-            autoFocus
-          />
-          <Button
-            type='submit'
-            fullWidth
-            variant='contained'
-            color='primary'
-            className={classes.submit}
-            // onClick={testClick}
-          >
-            Register Your Account
-          </Button>
-        </form>
+        <TextField
+          variant='outlined'
+          margin='normal'
+          required
+          fullWidth
+          id='arn'
+          label='ARN'
+          name='arn'
+          autoFocus
+          onChange={(e) => {
+            arn = e.target.value;
+          }}
+        />
+        <Button
+          type='submit'
+          fullWidth
+          variant='contained'
+          color='primary'
+          className={classes.submit}
+          onClick={handleRegisterBtn}
+        >
+          Register Your Account
+        </Button>
       </div>
       <Box mt={8}>
         <Copyright />
@@ -105,3 +124,4 @@ export default function SignIn() {
     </Container>
   );
 }
+export default connect(mapStateToProps, null)(Register);
