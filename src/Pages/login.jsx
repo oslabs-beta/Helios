@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,6 +15,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+// import { addLoginInfo } from '../Actions/actions';
+import * as actions from '../Actions/actions';
 
 function Copyright() {
   return (
@@ -48,7 +51,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+const mapDispatchToProps = (dispatch) => ({
+  addLoginInfo: (userInfo) => dispatch(actions.addLoginInfo(userInfo)),
+});
+
+function SignIn(props) {
   const classes = useStyles();
   const history = useHistory();
   const [unconfirmed, setConfirmed] = useState(false);
@@ -65,6 +72,7 @@ export default function SignIn() {
       .then((res) => res.json())
       .then((confirmation) => {
         if (confirmation.confirmed) {
+          props.addLoginInfo(confirmation.userInfo);
           history.push('/register');
         } else {
           setConfirmed(true);
@@ -149,3 +157,5 @@ export default function SignIn() {
     </Container>
   );
 }
+
+export default connect(null, mapDispatchToProps)(SignIn);

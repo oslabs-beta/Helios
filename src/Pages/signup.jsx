@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import { connect } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -14,6 +15,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import * as actions from '../Actions/actions';
 
 function Copyright() {
   return (
@@ -48,7 +50,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+const mapDispatchToProps = (dispatch) => ({
+  addUserInfo: (userInfo) => dispatch(actions.addUserInfo(userInfo)),
+});
+
+function SignUp(props) {
   const history = useHistory();
   const [invalidEmail, setValidEmail] = useState(false);
   const classes = useStyles();
@@ -56,7 +62,6 @@ export default function SignUp() {
   let lastName = '';
   let email = '';
   let password = '';
-  // let invalidEmail = false;
 
   function handleSubmit() {
     const reqParams = {
@@ -67,12 +72,11 @@ export default function SignUp() {
     fetch('/signup', reqParams)
       .then((res) => res.json())
       .then((response) => {
-        console.log(response);
-        if (response.confirmation && response.email) {
+        if (response.confirmation && response.emailStatus) {
+          props.addUserInfo(response.userInfo);
           history.push('/register');
-        } else if (!response.email) {
+        } else if (!response.emailStatus) {
           setValidEmail(true);
-          console.log(invalidEmail);
         }
       });
   }
@@ -178,3 +182,4 @@ export default function SignUp() {
     </Container>
   );
 }
+export default connect(null, mapDispatchToProps)(SignUp);
