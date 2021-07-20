@@ -1,6 +1,8 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 // react plugin for creating charts
 import ChartistGraph from 'react-chartist';
+import { connect } from 'react-redux';
 // @material-ui/core
 import { makeStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
@@ -28,6 +30,7 @@ import CardHeader from '../../components/Card/CardHeader.js';
 import CardIcon from '../../components/Card/CardIcon.js';
 import CardBody from '../../components/Card/CardBody.js';
 import CardFooter from '../../components/Card/CardFooter.js';
+import * as actions from '../../../Actions/actions';
 
 import { bugs, website, server } from '../../variables/general.js';
 
@@ -35,21 +38,55 @@ import {
   dailySalesChart,
   emailsSubscriptionChart,
   completedTasksChart,
+  invocationsChart,
 } from '../../variables/charts.js';
+
+import barChartFunc from '../../variables/testBarChart.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard() {
+const mapStateToProps = (state) => ({
+  arn: state.main.arn,
+  credentials: state.main.credentials,
+  aws: state.aws,
+  invocationsAllData: state.aws.invocationsAllData
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
+  addLambda: (functions) => dispatch(actions.addLambda(functions)),
+  addInvocationsAlldata: (invocationsAllData) => dispatch(actions.addInvocationsAlldata(invocationsAllData)),
+});
+
+function Dashboard(props) {
   const classes = useStyles();
+  console.log('logging from dashboard component (parent): ', props.credentials);
+
+  useEffect(() => {
+    if (!props.credentials) {
+      const reqParams = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ arn: props.arn }),
+      };
+      fetch('/getCreds', reqParams)
+        .then((res) => res.json())
+        .then((credentialsData) => {
+          console.log('logging from useEffect fetch: ', credentialsData);
+          props.addCredentials(credentialsData);
+        });
+    }
+  }, []);
+
   return (
     <div>
       <GridContainer>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='warning' stats icon>
-              <CardIcon color='warning'>
+            <CardHeader color="warning" stats icon>
+              <CardIcon color="warning">
                 <Icon>content_copy</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Used Space</p>
@@ -62,7 +99,7 @@ export default function Dashboard() {
                 <Danger>
                   <Warning />
                 </Danger>
-                <a href='#pablo' onClick={(e) => e.preventDefault()}>
+                <a href="#pablo" onClick={(e) => e.preventDefault()}>
                   Get more space
                 </a>
               </div>
@@ -71,8 +108,8 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='success' stats icon>
-              <CardIcon color='success'>
+            <CardHeader color="success" stats icon>
+              <CardIcon color="success">
                 <Store />
               </CardIcon>
               <p className={classes.cardCategory}>Revenue</p>
@@ -88,8 +125,8 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='danger' stats icon>
-              <CardIcon color='danger'>
+            <CardHeader color="danger" stats icon>
+              <CardIcon color="danger">
                 <Icon>info_outline</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Fixed Issues</p>
@@ -105,8 +142,8 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='info' stats icon>
-              <CardIcon color='info'>
+            <CardHeader color="info" stats icon>
+              <CardIcon color="info">
                 <Accessibility />
               </CardIcon>
               <p className={classes.cardCategory}>Followers</p>
@@ -124,11 +161,11 @@ export default function Dashboard() {
       <GridContainer>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <CardHeader color='success'>
+            <CardHeader color="success">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={dailySalesChart.data}
-                type='Line'
+                type="Line"
                 options={dailySalesChart.options}
                 listener={dailySalesChart.animation}
               />
@@ -151,12 +188,12 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <CardHeader color='warning'>
+            <CardHeader color="warning">
               <ChartistGraph
-                className='ct-chart'
-                data={emailsSubscriptionChart.data}
-                type='Bar'
-                options={emailsSubscriptionChart.options}
+                className="ct-chart"
+                data={barChartFunc(props).data}
+                type="Bar"
+                options={props.invocationsAllData.options}
                 responsiveOptions={emailsSubscriptionChart.responsiveOptions}
                 listener={emailsSubscriptionChart.animation}
               />
@@ -174,11 +211,11 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <CardHeader color='danger'>
+            <CardHeader color="danger">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={completedTasksChart.data}
-                type='Line'
+                type="Line"
                 options={completedTasksChart.options}
                 listener={completedTasksChart.animation}
               />
@@ -198,8 +235,8 @@ export default function Dashboard() {
       <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <CustomTabs
-            title='Tasks:'
-            headerColor='primary'
+            title="Tasks:"
+            headerColor="primary"
             tabs={[
               {
                 tabName: 'Bugs',
@@ -239,7 +276,7 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={12} md={6}>
           <Card>
-            <CardHeader color='warning'>
+            <CardHeader color="warning">
               <h4 className={classes.cardTitleWhite}>Employees Stats</h4>
               <p className={classes.cardCategoryWhite}>
                 New employees on 15th September, 2016
@@ -247,7 +284,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardBody>
               <Table
-                tableHeaderColor='warning'
+                tableHeaderColor="warning"
                 tableHead={['ID', 'Name', 'Salary', 'Country']}
                 tableData={[
                   ['1', 'Dakota Rice', '$36,738', 'Niger'],
@@ -263,3 +300,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

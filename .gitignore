@@ -3,4 +3,5 @@ node_modules/
 dist/bundle.js
 _*.js
 temp.js
+package-lock.json
 
