@@ -70,8 +70,13 @@ function Register(props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, arn }),
     };
-    fetch('/register', reqParams);
-    props.addArn(arn);
+    fetch('/register', reqParams)
+      .then((res) => res.json())
+      .then((data) => {
+        props.addArn(arn);
+        history.push('/admin');
+      })
+      .catch((err) => console.log(err));
   };
 
   return (

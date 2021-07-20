@@ -3,9 +3,9 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const userController = require('./controllers/userController');
-const getCredentials = require('./aws/metrics/cw_lambda_metrics');
-const getFunctions = require('./aws/metrics/lambda');
-
+const getCredentials = require('./aws/metrics/getCreds');
+const getFunctions = require('./aws/metrics/getLambdaFuncs');
+const getInvocationsAllFunc = require('./aws/metrics/getInvocationsAllFunc');
 const mongoURI =
   'mongodb+srv://helios:ProjectHelios21@projecthelios.fjemz.mongodb.net/Helios?retryWrites=true&w=majority';
 
@@ -53,6 +53,10 @@ app.post('/getCreds', getCredentials, (req, res) => {
 
 app.post('/getLambdaFunctions', getFunctions, (req, res) => {
   res.status(200).json(res.locals.functions);
+});
+
+app.post('/getLambdaInvocationsAllfunc', getInvocationsAllFunc, (req, res) => {
+  res.status(200).json(res.locals.invocationsAllFunc);
 });
 
 app.use((err, req, res, next) => {
