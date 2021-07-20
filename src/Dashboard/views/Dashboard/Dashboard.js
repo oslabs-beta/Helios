@@ -38,6 +38,7 @@ import {
   dailySalesChart,
   emailsSubscriptionChart,
   completedTasksChart,
+  invocationsChart,
 } from '../../variables/charts.js';
 
 import barChartFunc from '../../variables/testBarChart.js';
@@ -50,11 +51,13 @@ const mapStateToProps = (state) => ({
   arn: state.main.arn,
   credentials: state.main.credentials,
   aws: state.aws,
+  invocationsAllData: state.aws.invocationsAllData
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
+  addInvocationsAlldata: (invocationsAllData) => dispatch(actions.addInvocationsAlldata(invocationsAllData)),
 });
 
 function Dashboard(props) {
@@ -82,8 +85,8 @@ function Dashboard(props) {
       <GridContainer>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='warning' stats icon>
-              <CardIcon color='warning'>
+            <CardHeader color="warning" stats icon>
+              <CardIcon color="warning">
                 <Icon>content_copy</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Used Space</p>
@@ -96,7 +99,7 @@ function Dashboard(props) {
                 <Danger>
                   <Warning />
                 </Danger>
-                <a href='#pablo' onClick={(e) => e.preventDefault()}>
+                <a href="#pablo" onClick={(e) => e.preventDefault()}>
                   Get more space
                 </a>
               </div>
@@ -105,8 +108,8 @@ function Dashboard(props) {
         </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='success' stats icon>
-              <CardIcon color='success'>
+            <CardHeader color="success" stats icon>
+              <CardIcon color="success">
                 <Store />
               </CardIcon>
               <p className={classes.cardCategory}>Revenue</p>
@@ -122,8 +125,8 @@ function Dashboard(props) {
         </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='danger' stats icon>
-              <CardIcon color='danger'>
+            <CardHeader color="danger" stats icon>
+              <CardIcon color="danger">
                 <Icon>info_outline</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Fixed Issues</p>
@@ -139,8 +142,8 @@ function Dashboard(props) {
         </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='info' stats icon>
-              <CardIcon color='info'>
+            <CardHeader color="info" stats icon>
+              <CardIcon color="info">
                 <Accessibility />
               </CardIcon>
               <p className={classes.cardCategory}>Followers</p>
@@ -158,11 +161,11 @@ function Dashboard(props) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <CardHeader color='success'>
+            <CardHeader color="success">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={dailySalesChart.data}
-                type='Line'
+                type="Line"
                 options={dailySalesChart.options}
                 listener={dailySalesChart.animation}
               />
@@ -185,12 +188,12 @@ function Dashboard(props) {
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <CardHeader color='warning'>
+            <CardHeader color="warning">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={barChartFunc(props).data}
-                type='Bar'
-                options={emailsSubscriptionChart.options}
+                type="Bar"
+                options={props.invocationsAllData.options}
                 responsiveOptions={emailsSubscriptionChart.responsiveOptions}
                 listener={emailsSubscriptionChart.animation}
               />
@@ -208,11 +211,11 @@ function Dashboard(props) {
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
-            <CardHeader color='danger'>
+            <CardHeader color="danger">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={completedTasksChart.data}
-                type='Line'
+                type="Line"
                 options={completedTasksChart.options}
                 listener={completedTasksChart.animation}
               />
@@ -232,8 +235,8 @@ function Dashboard(props) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <CustomTabs
-            title='Tasks:'
-            headerColor='primary'
+            title="Tasks:"
+            headerColor="primary"
             tabs={[
               {
                 tabName: 'Bugs',
@@ -273,7 +276,7 @@ function Dashboard(props) {
         </GridItem>
         <GridItem xs={12} sm={12} md={6}>
           <Card>
-            <CardHeader color='warning'>
+            <CardHeader color="warning">
               <h4 className={classes.cardTitleWhite}>Employees Stats</h4>
               <p className={classes.cardCategoryWhite}>
                 New employees on 15th September, 2016
@@ -281,7 +284,7 @@ function Dashboard(props) {
             </CardHeader>
             <CardBody>
               <Table
-                tableHeaderColor='warning'
+                tableHeaderColor="warning"
                 tableHead={['ID', 'Name', 'Salary', 'Country']}
                 tableData={[
                   ['1', 'Dakota Rice', '$36,738', 'Niger'],

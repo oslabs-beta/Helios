@@ -23,13 +23,14 @@ var delays2 = 80,
 
 const barChartFunc = (props) => {
   console.log('Credentials inside barChartFunc: ', props.credentials);
-  console.log(props.aws.render);
+  console.log("AWS Render: ", props.aws.render);
+  console.log("Credentials: ", props.credentials)
   // let data = { labels: [], series: [[]] };
-  let [userData, setData] = useState({
-    labels: [],
-    series: [[]],
-  });
-  console.log('data before if: ', userData);
+  // let [userData, setData] = useState({
+  //   labels: [],
+  //   series: [[]],
+  // });
+  console.log('data before if: ', props.invocationsAllData);
   if (props.aws.render && props.credentials) {
     const reqParams = {
       method: 'POST',
@@ -46,10 +47,22 @@ const barChartFunc = (props) => {
     fetch('/getLambdaInvocationsAllfunc', reqParams)
       .then((res) => res.json())
       .then((invocationData) => {
-        setData({
-          labels: invocationData.labels,
-          series: invocationData.series,
-        });
+
+        props.addInvocationsAlldata(invocationData);
+        console.log("Printing from Inside TestBarChart: ", props.invocationsAllData)
+
+
+        // invocationData.series[0] = invocationData.series[0].slice(0,3)
+        // console.log("Invocations: ", invocationData)
+        // invocationData.labels = invocationData.labels.slice(0,3)
+        // let labels_new = invocationData.labels.map(date => new Date(date))
+        // console.log(labels_new)
+
+        // setData({
+        //  // labels: invocationData.labels.slice(0,3),
+        //  labels: labels_new,
+        //   series: invocationData.series,
+        // });
       })
       .catch((err) => console.log(err));
 
@@ -67,7 +80,7 @@ const barChartFunc = (props) => {
     //   .catch((err) => console.log(err));
   }
   return {
-    data: userData,
+    data: props.invocationsAllData.data,
     options: {
       axisX: {
         showGrid: false,
@@ -91,7 +104,7 @@ const barChartFunc = (props) => {
             type: Chartist.FixedScaleAxis,
             labelInterpolationFnc: function (value) {
               // return value[0];
-              return moment(value[0]).format('MMM Do YY');
+              return moment(value[0]).format('LT');
             },
           },
         },

@@ -2,6 +2,7 @@
 // // // javascript library for creating charts
 // #############################
 var Chartist = require("chartist");
+const moment = require("moment");
 
 // ##############################
 // // // variables used to create animation on charts
@@ -131,6 +132,68 @@ const emailsSubscriptionChart = {
 };
 
 // ##############################
+// // // Invocations 
+// #############################
+
+const invocationsChart = {
+  data: {
+    labels: [
+
+    ],
+    series: [[]],
+  },
+  options: {
+    axisX: {
+      showGrid: false,
+     type: Chartist.AutocaleAxis,
+      //divisor: 3,
+      labelInterpolationFnc: function (value) {
+        return moment(value).format('MMM Do YY');
+      },
+
+      
+
+    },
+    low: 0,
+    high: 1000,
+    chartPadding: {
+      top: 0,
+      right: 5,
+      bottom: 0,
+      left: 0,
+    },
+  },
+  responsiveOptions: [
+    [
+      "screen and (max-width: 640px)",
+      {
+        seriesBarDistance: 5,
+        axisX: {
+          labelInterpolationFnc: function (value) {
+            return moment(value[0]).format('MMM Do YY');
+          },
+        },
+      },
+    ],
+  ],
+  animation: {
+    draw: function (data) {
+      if (data.type === "bar") {
+        data.element.animate({
+          opacity: {
+            begin: (data.index + 1) * delays2,
+            dur: durations2,
+            from: 0,
+            to: 1,
+            easing: "ease",
+          },
+        });
+      }
+    },
+  },
+};
+
+// ##############################
 // // // Completed Tasks
 // #############################
 
@@ -183,8 +246,15 @@ const completedTasksChart = {
   },
 };
 
+// ##############################
+// // // Email Subscriptions
+// #############################
+
+
+
 module.exports = {
   dailySalesChart,
   emailsSubscriptionChart,
   completedTasksChart,
+  invocationsChart
 };
