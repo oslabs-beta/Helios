@@ -3,3 +3,5 @@ export const ADD_ARN = 'ADD_ARN';
 export const ADD_LOGIN_INFO = 'ADD_LOGIN_INFO';
 export const ADD_CREDENTIALS = 'ADD_CREDENTIALS';
 export const ADD_LAMBDA = 'ADD_LAMBDA';
+export const ADD_FUNCTION_LOGS = 'ADD_FUNCTION_LOGS'
+export const REMOVE_FUNCTION_LOGS = 'REMOVE_FUNCTION_LOGS'
