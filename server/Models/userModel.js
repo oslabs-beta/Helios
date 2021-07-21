@@ -1,6 +1,19 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const mongoURI =
+  'mongodb+srv://helios:ProjectHelios21@projecthelios.fjemz.mongodb.net/Helios?retryWrites=true&w=majority';
+
+  mongoose
+  .connect(mongoURI, {
+    dbName: 'Helios',
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.log(err));  
+
+
 const SALT_WORK_FACTOR = 10;
 const bcrypt = require('bcryptjs');
 

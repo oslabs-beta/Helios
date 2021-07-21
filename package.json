@@ -7,8 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "NODE_ENV=production webpack",
-    "start": "nodemon server/index.js",
-    "dev": "cross-env NODE_ENV=development concurrently \"NODE_ENV=development webpack serve --open\" \"NODE_ENV=development nodemon server/index.js\"",
+    "start": "nodemon server/server.js",
+    "dev": "cross-env NODE_ENV=development concurrently \"NODE_ENV=development webpack serve --open\" \"NODE_ENV=development nodemon server/server.js\"",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn run dev\" \"yarn electron:start\"",
     "electron:build": "",
     "electron:start": "wait-on tcp:8080 && electron ."
