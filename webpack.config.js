@@ -1,9 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: ['babel-polyfill', './src/index.js'],
+  entry: ['babel-polyfill', './client/src/index.js'],
   devServer: {
-    contentBase: __dirname + '/src/',
+    contentBase: __dirname + '/client/src/',
     proxy: {
       '/': 'http://localhost:3000',
     },
