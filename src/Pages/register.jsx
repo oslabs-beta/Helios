@@ -70,7 +70,7 @@ function Register(props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, arn }),
     };
-    fetch('/register', reqParams)
+    fetch('/user/register', reqParams)
       .then((res) => res.json())
       .then((data) => {
         props.addArn(arn);

@@ -69,12 +69,12 @@ function SignUp(props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firstName, lastName, password, email }),
     };
-    fetch('/signup', reqParams)
+    fetch('/user/signup', reqParams)
       .then((res) => res.json())
       .then((response) => {
         if (response.confirmation && response.emailStatus) {
           props.addUserInfo(response.userInfo);
-          history.push('/register');
+          history.push('/user/register');
         } else if (!response.emailStatus) {
           setValidEmail(true);
         }

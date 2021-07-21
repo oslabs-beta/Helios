@@ -37,7 +37,7 @@ export default function LambdaList(props) {
           timePeriod: props.timePeriod
         }),
       };
-      fetch('/getLogs', reqParams)
+      fetch('/aws/getLogs', reqParams)
         .then((res) => res.json())
         .then((logs) => {
           console.log(logs);

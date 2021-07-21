@@ -37,14 +37,14 @@ const barChartFunc = (props) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ credentials: props.credentials }),
     };
-    fetch('/getLambdaFunctions', reqParams)
+    fetch('/aws/getLambdaFunctions', reqParams)
       .then((res) => res.json())
       .then((functions) => {
         props.addLambda(functions);
       })
       .catch((err) => console.log(err));
 
-    fetch('/getLambdaInvocationsAllfunc', reqParams)
+    fetch('/aws/getLambdaInvocationsAllfunc', reqParams)
       .then((res) => res.json())
       .then((invocationData) => {
 

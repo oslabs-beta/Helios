@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { REGION } = require('../libs/stsClient.js');
+const { REGION } = require('../Credentials/libs/stsClient.js');
 const {
   CloudWatchLogsClient,
   FilterLogEventsCommand,

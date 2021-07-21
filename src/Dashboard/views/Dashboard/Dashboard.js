@@ -71,7 +71,7 @@ function Dashboard(props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ arn: props.arn }),
       };
-      fetch('/getCreds', reqParams)
+      fetch('/aws/getCreds', reqParams)
         .then((res) => res.json())
         .then((credentialsData) => {
           console.log('logging from useEffect fetch: ', credentialsData);
@@ -199,7 +199,7 @@ function Dashboard(props) {
               />
             </CardHeader>
             <CardBody>
-              <h4 className={classes.cardTitle}>Email Subscriptions</h4>
+              <h4 className={classes.cardTitle}>Total Invocations</h4>
               <p className={classes.cardCategory}>Last Campaign Performance</p>
             </CardBody>
             <CardFooter chart>

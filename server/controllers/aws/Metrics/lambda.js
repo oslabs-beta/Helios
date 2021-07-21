@@ -1,4 +1,4 @@
-const { REGION } = require('../libs/stsClient.js');
+const { REGION } = require('../Credentials/libs/stsClient.js');
 const {
   Lambda,
   LambdaClient,

@@ -1,6 +1,6 @@
 // import { stsClient, REGION } from '../libs/stsClient.js';
-const { stsClient, REGION } = require('../libs/stsClient.js');
-const AWSUtilFunc = require('../utils/AWSUtilFunc.js');
+const { stsClient, REGION } = require('./libs/stsClient.js');
+const AWSUtilFunc = require('../Metrics/utils/AWSUtilFunc.js');
 
 const { AssumeRoleCommand } = require('@aws-sdk/client-sts');
 const {

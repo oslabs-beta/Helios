@@ -1,5 +1,5 @@
-const { REGION } = require('../libs/stsClient.js');
-const AWSUtilFunc = require('../utils/AWSUtilFunc.js');
+const { REGION } = require('../Credentials/libs/stsClient.js');
+const AWSUtilFunc = require('./utils/AWSUtilFunc.js');
 const {
   CloudWatchClient,
   GetMetricDataCommand,

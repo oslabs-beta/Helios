@@ -68,7 +68,7 @@ function SignIn(props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     };
-    fetch('/login', reqParams)
+    fetch('/user/login', reqParams)
       .then((res) => res.json())
       .then((confirmation) => {
         if (confirmation.confirmed) {
@@ -145,7 +145,7 @@ function SignIn(props) {
             </Link>
           </Grid>
           <Grid item>
-            <Link to='/signup' variant='body2'>
+            <Link to='/user/signup' variant='body2'>
               {"Don't have an account? Sign Up"}
             </Link>
           </Grid>
