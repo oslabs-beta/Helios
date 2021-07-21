@@ -15,7 +15,7 @@ const getInvocationsAllFunc = async (req, res, next) => {
   });
 
   let graphPeriod, graphUnits, metricStat;
-  [graphPeriod, graphUnits, metricStat] = [30, 'minutes', 'Sum'];
+  [graphPeriod, graphUnits, metricStat] = [7, 'days', 'Sum'];
 
   //Metrics for All Functions (combined)
 
@@ -25,7 +25,8 @@ const getInvocationsAllFunc = async (req, res, next) => {
     'Invocations',
     'Sum'
   );
-
+  console.log('the input params: ', invocationsAllFuncInput);
+  console.log(typeof invocationsAllFuncInput.StartTime);
   try {
     const invocationsAllFunc = await cwClient.send(
       new GetMetricDataCommand(invocationsAllFuncInput)
@@ -52,15 +53,22 @@ const getInvocationsAllFunc = async (req, res, next) => {
     //     "StatusCode": "Complete",
     //     "Messages": []
     //   },
-    // ]   
-  //******************************* */
+    // ]
+    //******************************* */
 
-
-
-    const invocationsAllFuncData = invocationsAllFunc.MetricDataResults[0].Timestamps.map((timeStamp,index) => {
-      return {x: timeStamp, y:invocationsAllFunc.MetricDataResults[0].Values[index] }
-    })
-    const maxInvocations = Math.max(...invocationsAllFunc.MetricDataResults[0].Values,0)
+    const invocationsAllFuncData =
+      invocationsAllFunc.MetricDataResults[0].Timestamps.map(
+        (timeStamp, index) => {
+          return {
+            x: timeStamp,
+            y: invocationsAllFunc.MetricDataResults[0].Values[index],
+          };
+        }
+      );
+    const maxInvocations = Math.max(
+      ...invocationsAllFunc.MetricDataResults[0].Values,
+      0
+    );
 
     res.locals.invocationsAllFunc = {
       title: invocationsAllFunc.MetricDataResults[0].Label,
@@ -70,11 +78,10 @@ const getInvocationsAllFunc = async (req, res, next) => {
         endTime: invocationsAllFuncInput.EndTime,
         graphPeriod,
         graphUnits,
-        maxInvocations
-
-      }
+        maxInvocations,
+      },
     };
-    console.log(res.locals.invocationsAllFunc)
+    console.log(res.locals.invocationsAllFunc);
     return next();
   } catch (err) {
     console.log('Error in CW getMetricsData All Functions', err);

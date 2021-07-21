@@ -21,16 +21,9 @@ export default function LogTable(props) {
         {tableHead !== undefined ? (
           <TableHead className={classes[tableHeaderColor + 'TableHeader']}>
             <TableRow className={classes.tableHeadRow}>
-              {tableHead.map((prop, key) => {
-                return (
-                  <TableCell
-                    className={classes.tableCell + ' ' + classes.tableHeadCell}
-                    key={key}
-                  >
-                    {prop}
-                  </TableCell>
-                );
-              })}
+              <TableCell className={classes.streamCell}>Log Stream</TableCell>
+              <TableCell className={classes.dateCell}>Date</TableCell>
+              <TableCell className={classes.msgCell}>Message</TableCell>
             </TableRow>
           </TableHead>
         ) : null}

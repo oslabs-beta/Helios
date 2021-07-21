@@ -48,13 +48,33 @@ const tableStyle = (theme) => ({
     // minWidth: '30px',
     // maxWidth: '30px'
   },
+  dateCell: {
+    color: 'inherit',
+    ...defaultFont,
+    fontSize: '1em',
+    width: '50px',
+    fontWeight: 'bold',
+  },
+  streamCell: {
+    color: 'inherit',
+    ...defaultFont,
+    fontSize: '1em',
+    width: '70px',
+    fontWeight: 'bold',
+  },
+  msgCell: {
+    color: 'inherit',
+    ...defaultFont,
+    fontSize: '1em',
+    width: '200px',
+    fontWeight: 'bold',
+  },
   tableCell: {
     ...defaultFont,
     lineHeight: '1.42857143',
     padding: '12px 8px',
     verticalAlign: 'middle',
     fontSize: '0.8125rem',
-    width: '70px 30px 300px',
   },
   tableResponsive: {
     // width: '100%',

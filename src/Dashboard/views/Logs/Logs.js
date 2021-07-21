@@ -51,7 +51,8 @@ const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
   addFunctionLogs: (logObj) => dispatch(actions.addFunctionLogs(logObj)),
-  removeFunctionLogs: (functionName) => dispatch(actions.removeFunctionLogs(functionName))
+  removeFunctionLogs: (functionName) =>
+    dispatch(actions.removeFunctionLogs(functionName)),
 });
 
 function Logs(props) {
@@ -69,7 +70,11 @@ function Logs(props) {
         <CardBody>
           <LogTable
             tableHeaderColor='warning'
-            tableHead={['Last 5 Characters of Log Stream Name', 'Date', 'Message']}
+            tableHead={[
+              'Last 5 Characters of Log Stream Name',
+              'Date',
+              'Message',
+            ]}
             tableData={logObj.streams}
           />
         </CardBody>
@@ -77,32 +82,45 @@ function Logs(props) {
     );
   });
 
-  const [dateSelect, setDateRange] = useState('1hr')
+  const [dateSelect, setDateRange] = useState('1hr');
 
   const handleDateChange = (e) => {
-    setDateRange(e.target.value)
-    console.log(e.target.value)
-  }
+    setDateRange(e.target.value);
+    console.log(e.target.value);
+  };
 
   return (
     <div className={classes.logGrid}>
-      <GridContainer>
-      
-        <GridItem xs={3} sm={3} md={3}>
-        
-        <div className={classes.sortBy}>
-                
-                <FormControl className={classes.timeRange}>
-                <InputLabel htmlFor="date-change-select" className={classes.dateSpec}> <DateRange/> Time Period</InputLabel>
-                <br/>
-                <Select id="date-change-select" value={dateSelect} className={classes.dateSpec} onChange={handleDateChange}>
-                <MenuItem value='30min' className={classes.dateSpec}>Last 30 Minutes</MenuItem>
-                <MenuItem value='1hr' className={classes.dateSpec}>Last Hour</MenuItem>
-          <MenuItem value='24hr' className={classes.dateSpec}>Last 24 Hours</MenuItem>
-          <MenuItem value='7d' className={classes.dateSpec}>Last 7 Days</MenuItem>
-        </Select>
+      <div className={classes.sortBy}>
+        <FormControl className={classes.timeRange}>
+          <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
+            {' '}
+            <DateRange /> Time Period
+          </InputLabel>
+          <br />
+          <Select
+            id='date-change-select'
+            value={dateSelect}
+            className={classes.dateSpec}
+            onChange={handleDateChange}
+          >
+            <MenuItem value='30min' className={classes.dateSpec}>
+              Last 30 Minutes
+            </MenuItem>
+            <MenuItem value='1hr' className={classes.dateSpec}>
+              Last Hour
+            </MenuItem>
+            <MenuItem value='24hr' className={classes.dateSpec}>
+              Last 24 Hours
+            </MenuItem>
+            <MenuItem value='7d' className={classes.dateSpec}>
+              Last 7 Days
+            </MenuItem>
+          </Select>
         </FormControl>
-              </div>
+      </div>
+      <GridContainer>
+        <GridItem xs={4} sm={4} md={4}>
           <CustomTabs
             // title='Lambda Functions:'
             headerColor='primary'
@@ -111,7 +129,6 @@ function Logs(props) {
                 tabName: 'Lambda Functions',
                 tabIcon: Cloud,
                 tabContent: (
-                  
                   <LambdaList
                     checkedIndexes={[]}
                     tasksIndexes={indexArr}
@@ -127,7 +144,7 @@ function Logs(props) {
           />
         </GridItem>
 
-        <GridItem xs={9} sm={9} md={9}>
+        <GridItem xs={8} sm={8} md={8}>
           {mappedMsgs}
         </GridItem>
       </GridContainer>

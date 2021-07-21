@@ -138,4 +138,27 @@ AWSUtilFunc.prepCwMetricQueryLambdaByFunc = (
 
 // export default AWSUtilFunc;
 
+AWSUtilFunc.prepCwLogEventQuery = (timeRangeNum, timeRangeUnits) => {
+  const timeRound = timeRoundMultiplier[timeRangeUnits];
+  //define the End and Start times in UNIX time Stamp format for getMetricsData method
+  //Rounded off to nearest timeRoundMultiplier
+  const EndTime =
+    Math.round(new Date().getTime() / 1000 / 60 / timeRound) * 60 * timeRound; //current time in Unix TimeStamp
+  const StartTime =
+    EndTime - timeRangeNum * timeRangeMultiplier[timeRangeUnits];
+
+  const period = timeRangePeriod[timeRangeUnits];
+
+  //initialize the parameters
+  const metricParamsBase = {
+    StartTime: new Date(StartTime * 1000),
+    EndTime: new Date(EndTime * 1000),
+    LabelOptions: {
+      Timezone: '-0400',
+    },
+  };
+
+  return { StartTime, EndTime, metricParamsBase };
+};
+
 module.exports = AWSUtilFunc;
