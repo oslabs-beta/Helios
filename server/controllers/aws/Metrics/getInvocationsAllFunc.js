@@ -25,8 +25,7 @@ const getInvocationsAllFunc = async (req, res, next) => {
     'Invocations',
     'Sum'
   );
-  console.log('the input params: ', invocationsAllFuncInput);
-  console.log(typeof invocationsAllFuncInput.StartTime);
+
   try {
     const invocationsAllFunc = await cwClient.send(
       new GetMetricDataCommand(invocationsAllFuncInput)
