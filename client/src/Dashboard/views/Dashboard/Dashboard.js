@@ -215,13 +215,13 @@ function Dashboard(props) {
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
             <CardHeader color="danger">
-              <ChartistGraph
+              {/* <ChartistGraph
                 className="ct-chart"
                 data={invocationBarChartFunc(props).errorData}
                 type="Bar"
                 responsiveOptions={props.errorsAllData.responsiveOptions}
                 listener={props.errorsAllData.animation}
-              />
+              /> */}
             </CardHeader>
             <CardBody>
               <h4 className={classes.cardTitle}>Completed Tasks</h4>
