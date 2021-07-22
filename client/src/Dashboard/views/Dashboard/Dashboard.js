@@ -32,6 +32,11 @@ import CardBody from '../../components/Card/CardBody.js';
 import CardFooter from '../../components/Card/CardFooter.js';
 import * as actions from '../../../Actions/actions';
 
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import { bugs, website, server } from '../../variables/general.js';
 
 import {
@@ -54,6 +59,7 @@ const mapStateToProps = (state) => ({
   aws: state.aws,
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
+  throttlesAllData: state.aws.throttlesAllData
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -61,8 +67,9 @@ const mapDispatchToProps = (dispatch) => ({
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
 
   addInvocationsAlldata: (invocationsAllData) => dispatch(actions.addInvocationsAlldata(invocationsAllData)),
-  addErrorsAlldata: (errorsAllData) => dispatch(actions.addErrorsAlldata(errorsAllData))
-
+  addErrorsAlldata: (errorsAllData) => dispatch(actions.addErrorsAlldata(errorsAllData)),
+  addThrottlesAlldata: (throttlesAllData) => dispatch(actions.addThrottlesAlldata(throttlesAllData)),
+  updateRender: () => dispatch(actions.updateRender())
 });
 
 function Dashboard(props) {
@@ -85,8 +92,53 @@ function Dashboard(props) {
     }
   }, []);
 
+  const [dateSelect, setDateRange] = useState('1hr');
+
+  const handleDateChange = (e) => {
+    setDateRange(e.target.value);
+    console.log(e.target.value);
+    props.updateRender()
+  };
+
   return (
     <div>
+            <div className={classes.sortBy}>
+        <FormControl className={classes.timeRange}>
+          <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
+            {' '}
+            <DateRange /> Time Period
+          </InputLabel>
+          <br />
+          <br />
+          <Select
+            id='date-change-select'
+            value={dateSelect}
+            className={classes.dateSpec}
+            onChange={handleDateChange}
+          >
+            <MenuItem value='30min' className={classes.dateSpec}>
+              Last 30 Minutes
+            </MenuItem>
+            <MenuItem value='1hr' className={classes.dateSpec}>
+              Last Hour
+            </MenuItem>
+            <MenuItem value='24hr' className={classes.dateSpec}>
+              Last 24 Hours
+            </MenuItem>
+            <MenuItem value='7d' className={classes.dateSpec}>
+              Last 7 Days
+            </MenuItem>
+            <MenuItem value='14d' className={classes.dateSpec}>
+              Last 14 Days
+            </MenuItem>
+            <MenuItem value='30d' className={classes.dateSpec}>
+              Last 30 Days
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      <br/>
+      <br/>
       <GridContainer>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
@@ -168,21 +220,16 @@ function Dashboard(props) {
           <Card chart>
             <CardHeader color='success'>
               <ChartistGraph
-                className='ct-chart'
-                data={dailySalesChart.data}
-                type='Line'
-                options={dailySalesChart.options}
-                listener={dailySalesChart.animation}
+                className="ct-chart"
+                data={props.throttlesAllData.data}
+                type="Bar"
+                options={props.throttlesAllData.options}                
+                responsiveOptions={props.throttlesAllData.responsiveOptions}
+                listener={props.throttlesAllData.animation}
               />
             </CardHeader>
             <CardBody>
-              <h4 className={classes.cardTitle}>Daily Sales</h4>
-              <p className={classes.cardCategory}>
-                <span className={classes.successText}>
-                  <ArrowUpward className={classes.upArrowCardCategory} /> 55%
-                </span>{' '}
-                increase in today sales.
-              </p>
+              <h4 className={classes.cardTitle}>Total Throttles</h4>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
@@ -196,20 +243,20 @@ function Dashboard(props) {
             <CardHeader color='warning'>
               <ChartistGraph
                 className="ct-chart"
-                data={invocationBarChartFunc(props).invocationData}
+                data={invocationBarChartFunc(props,dateSelect).invocationData}
                 type="Bar"
                 options={props.invocationsAllData.options}
                 responsiveOptions={props.invocationsAllData.responsiveOptions}
                 listener={props.invocationsAllData.animation}
+                
               />
             </CardHeader>
             <CardBody>
               <h4 className={classes.cardTitle}>Total Invocations</h4>
-              <p className={classes.cardCategory}>Last Campaign Performance</p>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
+                <AccessTime /> updated 4 minutes ago
               </div>
             </CardFooter>
           </Card>
@@ -229,11 +276,10 @@ function Dashboard(props) {
             </CardHeader>
             <CardBody>
               <h4 className={classes.cardTitle}>Total Erros</h4>
-              <p className={classes.cardCategory}>Errors</p>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
+                <AccessTime /> updated 4 minutes ago
               </div>
             </CardFooter>
           </Card>
