@@ -50,3 +50,8 @@ export const updateRender = () => {
   console.log('inside update Render action: ');
   return { type: types.UPDATE_RENDER};
 };
+
+export const updateFetchTime = () => {
+  console.log('inside update Render action: ');
+  return { type: types.UPDATE_FETCH_TIME};
+};

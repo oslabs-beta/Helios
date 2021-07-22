@@ -37,6 +37,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import moment from 'moment';
 
 import { bugs, website, server } from '../../variables/general.js';
 
@@ -74,12 +75,15 @@ const mapDispatchToProps = (dispatch) => ({
   addThrottlesAlldata: (throttlesAllData) =>
     dispatch(actions.addThrottlesAlldata(throttlesAllData)),
   updateRender: () => dispatch(actions.updateRender()),
+  updateFetchTime: () => dispatch(actions.updateFetchTime()),
 });
 
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
   const [totalInvocations, setInvocationTotal] = useState(0);
+
+  // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
   useEffect(() => {
     console.log('ARN: ', props.arn);
@@ -99,6 +103,7 @@ function Dashboard(props) {
           console.log('Error inside initial get credentials fetch: ', err)
         );
     }
+    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
   }, []);
 
   const [dateSelect, setDateRange] = useState('7d');
@@ -260,7 +265,8 @@ function Dashboard(props) {
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> updated 4 minutes ago
+                <AccessTime /> Last Fetched{' '}
+                {moment(props.lastMetricFetchTime).fromNow()}
               </div>
             </CardFooter>
           </Card>
@@ -283,7 +289,8 @@ function Dashboard(props) {
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> updated 4 minutes ago
+                <AccessTime /> Last Fetched{' '}
+                {moment(props.lastMetricFetchTime).fromNow()}
               </div>
             </CardFooter>
           </Card>
@@ -307,7 +314,8 @@ function Dashboard(props) {
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> updated 4 minutes ago
+                <AccessTime /> Last Fetched{' '}
+                {moment(props.lastMetricFetchTime).fromNow()}
               </div>
             </CardFooter>
           </Card>
