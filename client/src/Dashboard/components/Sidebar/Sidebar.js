@@ -93,7 +93,7 @@ export default function Sidebar(props) {
         <div className={classes.logoImage}>
           <img src={logo} alt='logo' className={classes.img} />
         </div>
-        {logoText}
+        HELIOS
       </a>
     </div>
   );
@@ -158,7 +158,6 @@ Sidebar.propTypes = {
   bgColor: PropTypes.oneOf(['purple', 'blue', 'green', 'orange', 'red']),
   logo: PropTypes.string,
   image: PropTypes.string,
-  logoText: PropTypes.string,
   routes: PropTypes.arrayOf(PropTypes.object),
   open: PropTypes.bool,
 };

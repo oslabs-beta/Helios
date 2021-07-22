@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
 
 //AWS specific details
@@ -8,6 +8,7 @@ const getMetricsAllFunc = require('../controllers/aws/Metrics/getMetricsAllFunc'
 const getLogs = require('../controllers/aws/Logs/getLogs');
 
 //AWS Root User Credentials
+
 router
 .route("/getCreds")
 .post(getCredentials, (req, res) => {
@@ -32,15 +33,18 @@ router
   res.status(200).json(res.locals.metricAllFuncData);
 });
 
- //Returing Lambda Functions Logs
- router
- .route('/getLogs')
- .post(getLogs, (req, res) => {
-  //console.log(req.body)
-  console.log("Returning Lambda Functions Logs")
+// //Returing Lambda Functions Total Invocations
+// router
+//   .route('/getLambdaInvocationsAllfunc')
+//   .post(getInvocationsAllFunc, (req, res) => {
+//     console.log('Returning Lambda Functions Invocations:');
+//     res.status(200).json(res.locals.invocationsAllFunc);
+//   });
+
+//Returing Lambda Functions Logs
+router.route('/getLogs').post(getLogs, (req, res) => {
+  console.log('Returning Lambda Functions Logs');
   res.status(200).json(res.locals.functionLogs);
 });
 
-
-
-  module.exports = router;
+module.exports = router;
