@@ -1,61 +1,116 @@
 const moment = require('moment');
-const AWSUtilFunc = require('../Metrics/utils/AWSUtilFunc.js');
+const AWSLogRecursiveFunc = require('./AWSLogRecursiveFunc.js');
 const { REGION } = require('../Credentials/libs/stsClient.js');
 const {
   CloudWatchLogsClient,
   FilterLogEventsCommand,
+  DescribeLogStreamsCommand,
 } = require('@aws-sdk/client-cloudwatch-logs');
-
+console.log(
+  moment(
+    new Date(new Date().setMinutes(new Date().getMinutes() - 30))
+  ).valueOf()
+);
 const getLogs = async (req, res, next) => {
   const logGroupName = '/aws/lambda/' + req.body.function;
-  console.log(logGroupName);
-  console.log(req.body);
+
   const cwLogsClient = new CloudWatchLogsClient({
     region: REGION,
     credentials: req.body.credentials,
   });
 
-  let timePeriod, timeUnits;
+  let StartTime;
   if (req.body.timePeriod === '30min') {
-    [timePeriod, timeUnits] = [30, 'minutes'];
+    StartTime = moment(
+      new Date(new Date().setMinutes(new Date().getMinutes() - 30))
+    ).valueOf();
   } else if (req.body.timePeriod === '1hr') {
-    [timePeriod, timeUnits] = [60, 'minutes'];
+    StartTime = moment(
+      new Date(new Date().setMinutes(new Date().getMinutes() - 60))
+    ).valueOf();
   } else if (req.body.timePeriod === '24hr') {
-    [timePeriod, timeUnits] = [24, 'hours'];
+    StartTime = moment(
+      new Date(new Date().setDate(new Date().getDate() - 24))
+    ).valueOf();
   } else if (req.body.timePeriod === '7d') {
-    [timePeriod, timeUnits] = [7, 'days'];
+    StartTime = moment(
+      new Date(new Date().setDate(new Date().getDate() - 7))
+    ).valueOf();
+  } else if (req.body.timePeriod === '14d') {
+    StartTime = moment(
+      new Date(new Date().setDate(new Date().getDate() - 14))
+    ).valueOf();
+  } else if (req.body.timePeriod === '30d') {
+    StartTime = moment(
+      new Date(new Date().setDate(new Date().getDate() - 730))
+    ).valueOf();
   }
-  const input = AWSUtilFunc.prepCwLogEventQuery(timePeriod, timeUnits);
-  console.log(input);
-  console.log(input.metricParamsBase.EndTime);
+
+  async function helperFunc(nextToken, data = []) {
+    console.log(nextToken);
+    if (!nextToken) {
+      return data;
+    }
+    const nextLogEvents = await cwLogsClient.send(
+      new FilterLogEventsCommand({
+        logGroupName,
+        endTime: moment(new Date()).valueOf(),
+        startTime: StartTime,
+        nextToken,
+        filterPattern: '- START - END - REPORT',
+        // limit: 600,
+      })
+    );
+    data.push(nextLogEvents.events);
+    return helperFunc(nextLogEvents.nextToken, data);
+  }
+
   try {
     const logEvents = await cwLogsClient.send(
       new FilterLogEventsCommand({
         logGroupName,
-        endTime: input.EndTime,
-        startTime: input.StartTime,
+        endTime: moment(new Date()).valueOf(),
+        startTime: StartTime,
+        filterPattern: '- START - END - REPORT',
+        limit: 400,
       })
     );
-    console.log(logEvents.events);
+    const shortenedEvents = [];
+    if (logEvents.nextToken) {
+      const helperFuncResults = await helperFunc(logEvents.nextToken);
+      // console.log(helperFuncResults[0].slice(0, 25));
+      console.log(helperFuncResults.length);
+      let poppedEl;
+      while (helperFuncResults.length) {
+        poppedEl = helperFuncResults.pop();
+        for (let i = poppedEl.length - 1; i >= 0; i -= 1) {
+          if (shortenedEvents.length === 50) {
+            break;
+          }
+          shortenedEvents.push(poppedEl[i]);
+        }
+      }
+    }
+    if (!logEvents.nextToken) {
+      for (let i = logEvents.events.length - 1; i >= 0; i -= 1) {
+        if (shortenedEvents.length === 50) break;
+        shortenedEvents.push(logEvents.events[i]);
+      }
+    }
     const eventLog = { name: req.body.function };
     const streams = [];
-    logEvents.events.forEach((eventObj) => {
-      /// take off the redundant log events with just the start and end info
-      if (
-        eventObj.message.slice(0, 5) !== 'START' &&
-        eventObj.message.slice(0, 3) !== 'END'
-      ) {
-        // create the individual arrays to populate the table, this info makes up one row
-        const dataArr = [];
-        dataArr.push('...' + eventObj.logStreamName.slice(-5));
-        dataArr.push(moment(eventObj.timestamp).format('lll'));
-        dataArr.push(eventObj.message);
-        // push to the larger array to then make up the table
-        streams.push(dataArr);
-      }
-    });
+
+    for (let i = 0; i < shortenedEvents.length; i += 1) {
+      let eventObj = shortenedEvents[i];
+      // create the individual arrays to populate the table, this info makes up one row
+      const dataArr = [];
+      dataArr.push('...' + eventObj.logStreamName.slice(-5));
+      dataArr.push(moment(eventObj.timestamp).format('lll'));
+      dataArr.push(eventObj.message.slice(67));
+      // push to the larger array to then make up the table
+      streams.push(dataArr);
+    }
     eventLog.streams = streams;
-    console.log(eventLog);
     res.locals.functionLogs = eventLog;
     return next();
   } catch (err) {
