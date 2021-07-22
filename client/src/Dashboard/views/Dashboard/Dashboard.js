@@ -214,7 +214,7 @@ function Dashboard(props) {
           <Card chart>
             <CardHeader color='danger'>
               <ChartistGraph
-                className='ct-chart'
+                className={classes.ctChart}
                 data={completedTasksChart.data}
                 type='Line'
                 options={completedTasksChart.options}

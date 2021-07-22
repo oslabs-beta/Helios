@@ -77,6 +77,14 @@ const dashboardStyle = {
       lineHeight: '1',
     },
   },
+  ctChart: {
+    color: whiteColor,
+  },
+  '.ct-chart-line .ct-label, .ct-chart-bar .ct-label': {},
+  '.ct-label': {
+    fill: grayColor[1],
+    lineHeight: 1,
+  },
 };
 
 export default dashboardStyle;
