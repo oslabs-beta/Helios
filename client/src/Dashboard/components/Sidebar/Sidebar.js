@@ -11,6 +11,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
+
 // core components
 import AdminNavbarLinks from '../../components/Navbars/AdminNavbarLinks.js';
 import RTLNavbarLinks from '../../components/Navbars/RTLNavbarLinks.js';
@@ -84,16 +85,19 @@ export default function Sidebar(props) {
   var brand = (
     <div className={classes.logo}>
       <a
-        href='https://www.creative-tim.com?ref=mdr-sidebar'
+        href='https://github.com/oslabs-beta/Helios'
         className={classNames(classes.logoLink, {
           [classes.logoLinkRTL]: props.rtlActive,
         })}
         target='_blank'
       >
         <div className={classes.logoImage}>
-          <img src={logo} alt='logo' className={classes.img} />
+          <img
+            src='../../assets/img/helios-logo-tr.png'
+            alt='logo'
+            className={classes.img}
+          />
         </div>
-        HELIOS
       </a>
     </div>
   );

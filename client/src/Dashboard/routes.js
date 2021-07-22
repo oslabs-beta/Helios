@@ -40,7 +40,7 @@ import RTLPage from './views/RTLPage/RTLPage.js';
 const dashboardRoutes = [
   {
     path: '/dashboard',
-    name: 'Dashboard',
+    name: 'AWS Lambda Metrics',
     rtlName: 'لوحة القيادة',
     icon: Dashboard,
     component: DashboardPage,

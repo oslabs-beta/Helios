@@ -13,7 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 console.log(__dirname);
 
 app.use(express.static(path.resolve(__dirname, '../client/src/Dashboard')));
-// app.use(express.static(path.resolve(__dirname, '../client/src/Dashboard')));
+app.use(express.static(path.resolve(__dirname, '../client/src')));
+
 app.use('/build', express.static(path.resolve(__dirname, '../build')));
 //Route all User related requests to User Router
 app.use('/user', userRouter);

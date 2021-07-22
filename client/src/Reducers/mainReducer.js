@@ -25,7 +25,7 @@ const mainReducer = (state = initialState, action) => {
     }
 
     case types.ADD_ARN: {
-      arn = action.payload.arn;
+      arn = action.payload;
       return {
         ...state,
         arn,
