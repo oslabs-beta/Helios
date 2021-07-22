@@ -14,6 +14,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import * as actions from '../Actions/actions';
 
 function Copyright() {
   return (
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 const mapStateToProps = (state) => ({
   userEmail: state.main.email,
+  main: state.main,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -65,14 +67,15 @@ function Register(props) {
   let email = props.userEmail;
 
   const handleRegisterBtn = () => {
+    console.log(props.main);
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, arn }),
     };
     fetch('/user/register', reqParams)
-      .then((res) => res.json())
       .then((data) => {
+        console.log('Registered');
         props.addArn(arn);
         history.push('/admin');
       })

@@ -21,66 +21,55 @@ var delays2 = 80,
 // // // Email Subscriptions
 // #############################
 
-const barChartFunc = (props) => {
-  console.log('Credentials inside barChartFunc: ', props.credentials);
-  console.log("AWS Render: ", props.aws.render);
+const errorBarChartFunc = (props) => {
+  //console.log('Credentials inside barChartFunc: ', props.credentials);
+  console.log("AWS Get Errors: ", props.aws.getErrors);
   console.log("Credentials: ", props.credentials)
   // let data = { labels: [], series: [[]] };
   // let [userData, setData] = useState({
   //   labels: [],
   //   series: [[]],
   // });
-  console.log('data before if: ', props.invocationsAllData);
-  if (props.aws.render && props.credentials) {
+  console.log('Error data before if: ', props.errorsAllData);
+  if (props.aws.getErrors && props.credentials) {
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credentials: props.credentials }),
+      body: JSON.stringify({ credentials: props.credentials,
+        timePeriod: '7d'  }),
     };
-    fetch('/aws/getLambdaFunctions', reqParams)
+    // fetch('/aws/getLambdaFunctions', reqParams)
+    //   .then((res) => res.json())
+    //   .then((functions) => {
+    //     props.addLambda(functions);
+    //   })
+    //   .catch((err) => console.log(err));
+
+    fetch('/aws/getMetricsAllfunc/Errors', reqParams)
       .then((res) => res.json())
-      .then((functions) => {
-        props.addLambda(functions);
-      })
-      .catch((err) => console.log(err));
+      .then((errorData) => {
 
-    fetch('/aws/getLambdaInvocationsAllfunc', reqParams)
-      .then((res) => res.json())
-      .then((invocationData) => {
+        props.addErrorsAlldata(errorData);
+        console.log("Printing from Inside Errors Bar Chart: ", props.errorsAllData)
 
-        props.addInvocationsAlldata(invocationData);
-        console.log("Printing from Inside TestBarChart: ", props.invocationsAllData)
-
-
-        // invocationData.series[0] = invocationData.series[0].slice(0,3)
-        // console.log("Invocations: ", invocationData)
-        // invocationData.labels = invocationData.labels.slice(0,3)
-        // let labels_new = invocationData.labels.map(date => new Date(date))
-        // console.log(labels_new)
-
-        // setData({
-        //  // labels: invocationData.labels.slice(0,3),
-        //  labels: labels_new,
-        //   series: invocationData.series,
-        // });
       })
       .catch((err) => console.log(err));
 
     // setData({
-    //   labels: jsonLambdaInvocations.labels,
-    //   series: jsonLambdaInvocations.series,
+    //   labels: jsonLambdaErrors.labels,
+    //   series: jsonLambdaErrors.series,
     // });
 
     //   .then((data) => {
     //     console.log(
-    //       'Data in the barchart and after getting the Invocations for all Lambda Func: ',
+    //       'Data in the barchart and after getting the Errors for all Lambda Func: ',
     //       data
     //     );
     //   })
     //   .catch((err) => console.log(err));
   }
   return {
-    data: props.invocationsAllData.data,
+    data: props.errorsAllData.data,
     options: {
       axisX: {
         showGrid: false,
@@ -128,4 +117,4 @@ const barChartFunc = (props) => {
   };
 };
 
-export default barChartFunc;
+export default errorBarChartFunc;

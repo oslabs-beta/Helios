@@ -41,7 +41,8 @@ import {
   invocationsChart,
 } from '../../variables/charts.js';
 
-import barChartFunc from '../../variables/testBarChart.js';
+import invocationBarChartFunc from '../../variables/invocationBarChart.js';
+import errorBarChartFunc from '../../variables/errorBarChart.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
@@ -52,20 +53,26 @@ const mapStateToProps = (state) => ({
   credentials: state.main.credentials,
   aws: state.aws,
   invocationsAllData: state.aws.invocationsAllData,
+  errorsAllData: state.aws.errorsAllData,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
+
   addInvocationsAlldata: (invocationsAllData) =>
     dispatch(actions.addInvocationsAlldata(invocationsAllData)),
+  addErrorsAlldata: (errorsAllData) =>
+    dispatch(actions.addErrorsAlldata(errorsAllData)),
 });
 
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
+  const [totalInvocations, setInvocationTotal] = useState(0);
 
   useEffect(() => {
+    console.log(props.arn);
     if (!props.credentials) {
       const reqParams = {
         method: 'POST',
@@ -77,22 +84,25 @@ function Dashboard(props) {
         .then((credentialsData) => {
           console.log('logging from useEffect fetch: ', credentialsData);
           props.addCredentials(credentialsData);
-        });
+        })
+        .catch((err) =>
+          console.log('Error inside initial get credentials fetch: ', err)
+        );
     }
   }, []);
 
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={6} md={3}>
+        <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='warning' stats icon>
-              <CardIcon color='warning'>
+            <CardHeader color='success' stats icon>
+              <CardIcon color='success'>
                 <Icon>content_copy</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Used Space</p>
+              <p className={classes.cardCategory}>Total Throttles</p>
               <h3 className={classes.cardTitle}>
-                49/50 <small>GB</small>
+                0{/* 0 <small>GB</small> */}
               </h3>
             </CardHeader>
             <CardFooter stats>
@@ -107,44 +117,49 @@ function Dashboard(props) {
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
+
+        <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='success' stats icon>
-              <CardIcon color='success'>
-                <Store />
+            <CardHeader color='info' stats icon>
+              <CardIcon color='info'>
+                <Cloud />
               </CardIcon>
-              <p className={classes.cardCategory}>Revenue</p>
-              <h3 className={classes.cardTitle}>$34,245</h3>
+              <p className={classes.cardCategory}>Total Invocations</p>
+              <h3 className={classes.cardTitle}>
+                {props.invocationsAllData.total}
+              </h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
                 <DateRange />
-                Last 24 Hours
+                Last 7 Days
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
+
+        <GridItem xs={12} sm={6} md={4}>
           <Card>
             <CardHeader color='danger' stats icon>
               <CardIcon color='danger'>
                 <Icon>info_outline</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Fixed Issues</p>
-              <h3 className={classes.cardTitle}>75</h3>
+              <p className={classes.cardCategory}>Total Errors</p>
+              <h3 className={classes.cardTitle}>{props.errorsAllData.total}</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
                 <LocalOffer />
-                Tracked from Github
+                Tracked from Lambda Logs
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
+
+        {/* <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='info' stats icon>
-              <CardIcon color='info'>
+            <CardHeader color='warning' stats icon>
+              <CardIcon color='warning'>
                 <Accessibility />
               </CardIcon>
               <p className={classes.cardCategory}>Followers</p>
@@ -157,13 +172,15 @@ function Dashboard(props) {
               </div>
             </CardFooter>
           </Card>
-        </GridItem>
+        </GridItem>*/}
       </GridContainer>
+
       <GridContainer>
-        <GridItem xs={12} sm={12} md={4}>
+        <GridItem xs={12} sm={12} md={6}>
           <Card chart>
             <CardHeader color='success'>
               <ChartistGraph
+                id='testing'
                 className='ct-chart'
                 data={dailySalesChart.data}
                 type='Line'
@@ -187,16 +204,17 @@ function Dashboard(props) {
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
+
+        <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='warning'>
+            <CardHeader color='info'>
               <ChartistGraph
                 className='ct-chart'
-                data={barChartFunc(props).data}
+                data={invocationBarChartFunc(props).invocationData}
                 type='Bar'
                 options={props.invocationsAllData.options}
-                responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                listener={emailsSubscriptionChart.animation}
+                responsiveOptions={props.invocationsAllData.responsiveOptions}
+                listener={props.invocationsAllData.animation}
               />
             </CardHeader>
             <CardBody>
@@ -210,20 +228,22 @@ function Dashboard(props) {
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
+
+        <GridItem xs={12} sm={12} md={6}>
           <Card chart>
             <CardHeader color='danger'>
               <ChartistGraph
-                className={classes.ctChart}
-                data={completedTasksChart.data}
-                type='Line'
-                options={completedTasksChart.options}
-                listener={completedTasksChart.animation}
+                className='ct-chart'
+                data={props.errorsAllData.data}
+                type='Bar'
+                options={props.errorsAllData.options}
+                responsiveOptions={props.errorsAllData.responsiveOptions}
+                listener={props.errorsAllData.animation}
               />
             </CardHeader>
             <CardBody>
-              <h4 className={classes.cardTitle}>Completed Tasks</h4>
-              <p className={classes.cardCategory}>Last Campaign Performance</p>
+              <h4 className={classes.cardTitle}>Total Errors</h4>
+              <p className={classes.cardCategory}>Errors</p>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
@@ -233,7 +253,8 @@ function Dashboard(props) {
           </Card>
         </GridItem>
       </GridContainer>
-      <GridContainer>
+
+      {/* <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <CustomTabs
             title='Tasks:'
@@ -297,7 +318,7 @@ function Dashboard(props) {
             </CardBody>
           </Card>
         </GridItem>
-      </GridContainer>
+      </GridContainer> */}
     </div>
   );
 }

@@ -84,7 +84,7 @@ export default function Sidebar(props) {
   var brand = (
     <div className={classes.logo}>
       <a
-        href='https://www.creative-tim.com?ref=mdr-sidebar'
+        href='https://github.com/oslabs-beta/Helios'
         className={classNames(classes.logoLink, {
           [classes.logoLinkRTL]: props.rtlActive,
         })}

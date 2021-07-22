@@ -6,11 +6,12 @@ export const addUserInfo = (userInfo) => {
 };
 
 export const addArn = (arn) => {
+  console.log('Addding ARN: ', arn);
   return { type: types.ADD_ARN, payload: arn };
 };
 
 export const addLoginInfo = (userInfo) => {
-  console.log(userInfo);
+  console.log('adding login info in action: ', userInfo);
   return { type: types.ADD_LOGIN_INFO, payload: userInfo };
 };
 
@@ -34,4 +35,8 @@ export const removeFunctionLogs = (functionName) => {
 export const addInvocationsAlldata = (invocationsAllData) => {
   console.log('inside add Lambda action: ', invocationsAllData);
   return { type: types.ADD_INVOCATIONS_ALLDATA, payload: invocationsAllData };
+};
+export const addErrorsAlldata = (errorsAllData) => {
+  console.log('inside add Lambda action: ', errorsAllData);
+  return { type: types.ADD_ERRORS_ALLDATA, payload: errorsAllData };
 };
