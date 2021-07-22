@@ -1,31 +1,35 @@
-import Dexie from 'dexie';
+import Dexie from "dexie";
 //
 // Define your database
 //
-var db = new Dexie("friend_database");
+var db = new Dexie("helios_database");
+
 db.version(1).stores({
-    friends: 'name,shoeSize'
+  lambdas: "invocations,  metrics",
 });
 
 //
 // Put some data into it
 //
-db.friends.put({name: "Nicolas", shoeSize: 8}).then (function(){
+db.lambdas
+  .put({ invocations: "invocationsArr", metrics: "metricsArr" })
+  .then(function () {
     //
     // Then when data is stored, read from it
     //
-    return db.friends.get('Nicolas');
-}).then(function (friend) {
+    return db.lambdas.get("invocationsArr");
+  })
+  .then(function (lambda) {
     //
     // Display the result
     //
-    alert ("Nicolas has shoe size " + friend.shoeSize);
-}).catch(function(error) {
-   //
-   // Finally don't forget to catch any error
-   // that could have happened anywhere in the
-   // code blocks above.
-   //
-   alert ("Ooops: " + error);
-});
-
+    alert("This is the log " + lambda.invocations);
+  })
+  .catch(function (error) {
+    //
+    // Finally don't forget to catch any error
+    // that could have happened anywhere in the
+    // code blocks above.
+    //
+    console.log(error, "error")
+  });
