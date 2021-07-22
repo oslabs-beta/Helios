@@ -29,6 +29,10 @@ const getMetricsAllFunc = async (req, res, next) => {
     [graphPeriod, graphUnits] = [24, 'hours'];
   } else if (req.body.timePeriod === '7d') {
     [graphPeriod, graphUnits] = [7, 'days'];
+  } else if (req.body.timePeriod === '14d') {
+    [graphPeriod, graphUnits] = [14, 'days'];
+  } else if (req.body.timePeriod === '30d') {
+    [graphPeriod, graphUnits] = [30, 'days'];
   }
 
   if (!req.body.metricStat) graphMetricStat = 'Sum'

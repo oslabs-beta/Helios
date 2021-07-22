@@ -14,6 +14,7 @@ const initialState = {
   functions: [],
   render: true,
   getInvocations: true,
+  getThrottles: true,
   getErrors: true,
   functionLogs: [],
   graphDefaultOptions: {
@@ -76,6 +77,15 @@ const initialState = {
     animation: {},
     total: 0,
   },
+  throttlesAllData: {
+    data: {
+      series: [{ name: '', data: [] }],
+    },
+    options: {},
+    responsiveOptions: [],
+    animation: {},
+    total: 0,
+  },
 };
 
 const generateTicks = (startTime, metricTimeRange, metricTimeUnits) => {
@@ -83,20 +93,47 @@ const generateTicks = (startTime, metricTimeRange, metricTimeUnits) => {
 
   switch (metricTimeUnits) {
     case 'days': {
-      for (let i = 0; i <= metricTimeRange; i++) {
-        ticks.push(moment(startTime).add(i, 'days'));
+      if (metricTimeRange <= 14) {
+        for (let i = 0; i <= metricTimeRange; i++) {
+          ticks.push(moment(startTime).add(i, 'days'));
+        }
+      } else if (metricTimeRange <= 30) {
+        for (let i = 0; i <= metricTimeRange + 1; i += 3) {
+          ticks.push(moment(startTime).add(i, 'days'));
+        }
+      } else if (metricTimeRange > 30) {
+        for (let i = 0; i <= metricTimeRange + 1; i += 5) {
+          ticks.push(moment(startTime).add(i, 'days'));
+        }
       }
+
       return ticks;
     }
     case 'hours': {
-      for (let i = 0; i <= metricTimeRange; i++) {
-        ticks.push(moment(startTime).add(i, 'hours'));
+      if (metricTimeRange <= 10) {
+        for (let i = 0; i <= metricTimeRange; i++) {
+          ticks.push(moment(startTime).add(i, 'hours'));
+        }
+      } else if (metricTimeRange <= 24) {
+        for (let i = 0; i <= metricTimeRange + 1; i += 3) {
+          ticks.push(moment(startTime).add(i, 'hours'));
+        }
+      } else if (metricTimeRange > 24) {
+        for (let i = 0; i <= metricTimeRange + 1; i += 6) {
+          ticks.push(moment(startTime).add(i, 'hours'));
+        }
       }
       return ticks;
     }
     case 'minutes': {
-      for (let i = 0; i <= metricTimeRange; i += 5) {
-        ticks.push(moment(startTime).add(i, 'minutes'));
+      if (metricTimeRange < 30) {
+        for (let i = 0; i <= metricTimeRange; i += 5) {
+          ticks.push(moment(startTime).add(i, 'minutes'));
+        }
+      } else if (metricTimeRange > 30) {
+        for (let i = 0; i <= metricTimeRange; i += 10) {
+          ticks.push(moment(startTime).add(i, 'minutes'));
+        }
       }
       return ticks;
     }
@@ -121,10 +158,14 @@ const awsReducer = (state = initialState, action) => {
   // let getInvocations, getErrors;
 
   switch (action.type) {
+    case types.UPDATE_RENDER: {
+      render = true;
+      return { ...state, render };
+    }
     case types.ADD_LAMBDA: {
       functions = action.payload;
-      render = !state.render;
-      return { ...state, functions, render };
+      //render = !state.render;
+      return { ...state, functions };
     }
     case types.ADD_FUNCTION_LOGS: {
       functionLogs = state.functionLogs.slice(0);
@@ -287,37 +328,118 @@ const awsReducer = (state = initialState, action) => {
 
       return { ...state, errorsAllData, getErrors };
     }
-    default: {
+
+    case types.ADD_THROTTLES_ALLDATA: {
       let series_data;
-      let invocationsAllData;
-      let errorsAllData;
+
+      let throttlesAllData;
       let graphOptions, graphResponsiveOptions, graphtAnimation;
       let graphPeriod, graphUnits;
       let startTime, endTime;
       let ticks = [];
       let labelFormat;
-      let getInvocations, getErrors;
+      let getThrottles;
+      let total = 0;
 
+      console.log('Inside Add Throttles All Data');
+
+      // let getThrottles;
+      // let throttlesAllData;
+
+      getThrottles = !state.getThrottles;
+      series_data = action.payload.data.map((xydata) => {
+        return { x: new Date(xydata.x), y: xydata.y };
+      });
       graphOptions = { ...state.graphDefaultOptions };
       graphResponsiveOptions = [...state.graphDefaultResponsiveOptions];
       graphtAnimation = { ...state.graphtDefaultAnimation };
 
-      invocationsAllData = {
-        ...state.invocationsAllData,
-        options: graphOptions,
-        responsiveOptions: graphResponsiveOptions,
-        animation: graphtAnimation,
+      graphOptions.high = Math.max(
+        Math.round(action.payload.options.metricMaxValue / 100) * 100,
+        100
+      );
+
+      graphPeriod = action.payload.options.graphPeriod;
+      graphUnits = action.payload.options.graphUnits;
+      startTime = new Date(action.payload.options.startTime);
+      endTime = new Date(action.payload.options.endTime);
+
+      ticks = generateTicks(startTime, graphPeriod, graphUnits);
+
+      graphOptions.axisX.ticks = ticks;
+      console.log(ticks);
+
+      if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
+      else graphOptions.axisX.type = Chartist.FixedScaleAxis;
+
+      //add dummy data for the chart to show up
+      series_data.unshift({
+        x: moment(startTime).subtract(5, 'minutes'),
+        y: null,
+      });
+      series_data.push({ x: moment(endTime).add(5, 'minutes'), y: null });
+
+      graphOptions.axisX.labelInterpolationFnc = (value) => {
+        if (graphUnits === 'days') labelFormat = 'MMM Do';
+        if (graphUnits === 'hours') labelFormat = 'LT';
+        if (graphUnits === 'minutes') labelFormat = 'LT';
+
+        return moment(value).format(labelFormat);
       };
 
-      errorsAllData = {
-        ...state.errorsAllData,
+      action.payload.data.forEach((dataPt) => {
+        total += dataPt.y;
+      });
+
+      throttlesAllData = {
+        data: {
+          series: [{ name: action.payload.title, data: series_data }],
+        },
         options: graphOptions,
         responsiveOptions: graphResponsiveOptions,
         animation: graphtAnimation,
+        total,
       };
+
+      console.log('Throttle Data from reducer: ', throttlesAllData);
+      render = false;
+
+      return { ...state, throttlesAllData, getThrottles, render };
+    }
+
+    default: {
+      // let invocationsAllData;
+      // let errorsAllData;
+      // let throttlesAllData;
+      // let graphOptions, graphResponsiveOptions, graphtAnimation;
+
+      //     graphOptions = { ...state.graphDefaultOptions };
+      //     graphResponsiveOptions =  [...state.graphDefaultResponsiveOptions];
+      //     graphtAnimation = { ...state.graphtDefaultAnimation };
+
+      //     invocationsAllData = {
+      //       ...state.invocationsAllData,
+      //       options: graphOptions,
+      //       responsiveOptions: graphResponsiveOptions,
+      //       animation: graphtAnimation,
+      //     };
+
+      //     errorsAllData = {
+      //       ...state.errorsAllData,
+      //       options: graphOptions,
+      //       responsiveOptions: graphResponsiveOptions,
+      //       animation: graphtAnimation,
+      //     };
+
+      //     throttlesAllData = {
+      //       ...state.throttlesAllData,
+      //       options: graphOptions,
+      //       responsiveOptions: graphResponsiveOptions,
+      //       animation: graphtAnimation,
+      //     };
 
       //return { ...state, invocationsAllData, errorsAllData };
-      return { ...state, invocationsAllData };
+      return { ...state };
     }
   }
 };

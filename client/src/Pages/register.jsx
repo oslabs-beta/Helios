@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  logoImg: {
+    width: '300px',
+  },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
@@ -86,27 +89,43 @@ function Register(props) {
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+        {/* <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
-        </Avatar>
+        </Avatar> */}
+        <img
+          alt='Helios Logo'
+          src='../Dashboard/assets/img/helios-black-logo-t.png'
+          className={classes.logoImg}
+        />
         <Typography component='h1' variant='h5'>
           Connect your AWS account
           <br />
         </Typography>
-        <Typography variant='h6'>
-          <br />
-          <a
-            target='_blank'
-            href='https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=helios-delegation&templateURL=https://project-helios-template.s3.us-east-2.amazonaws.com/cloudformationHelios.yaml'
-          >
-            Link your accounts...
-          </a>
-          <br />
-          <br />
+        <br />
+        <Typography variant='body1'>
+          It's quick and easy to connect your AWS account to Helios! Just follow
+          the below steps and we'll get you all set up!
+          <ol>
+            <li>
+              <a
+                target='_blank'
+                href='https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=helios-delegation&templateURL=https://project-helios-template.s3.us-east-2.amazonaws.com/cloudformationHelios.yaml'
+              >
+                Add Helios CloudFormation stack to AWS
+              </a>
+            </li>
+            <li>
+              Make sure you check "I acknowledge that AWS CloudFormation might
+              create IAM resources.
+            </li>
+            <li>Click "Create"</li>
+            <li>
+              Wait until the stack creation completes. Then head to the
+              "Outputs" tab. Copy the "ARN" value below!
+            </li>
+          </ol>
         </Typography>
-        <Typography component='h1' variant='body1'>
-          After you link your account, give us the returned ARN:
-        </Typography>
+
         <TextField
           variant='outlined'
           margin='normal'

@@ -9,6 +9,15 @@ const dashboardStyle = {
   successText: {
     color: successColor[0],
   },
+  timeRange: {
+    width: '160px',
+    fontSize: '14px',
+  },
+
+  dateSpec: {
+    fontSize: '14px',
+    color: grayColor[0],
+  },
   upArrowCardCategory: {
     width: '16px',
     height: '16px',
