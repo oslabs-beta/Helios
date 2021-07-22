@@ -13,6 +13,7 @@ const delays2 = 80,
 const initialState = {
   functions: [],
   render: true,
+  lastMetricFetchTime: new Date(),
   getInvocations:true,
   getThrottles:true,
   getErrors:true,
@@ -151,6 +152,7 @@ const awsReducer = (state = initialState, action) => {
   let functions;
   let render;
   let functionLogs;
+  let lastMetricFetchTime
   // let series_data;
   // let invocationsAllData;
   // let errorsAllData;
@@ -168,6 +170,13 @@ const awsReducer = (state = initialState, action) => {
       render = true
       return { ...state,  render };
     }
+
+    case types.UPDATE_RENDER: {
+
+      lastMetricFetchTime = new Date()
+      return { ...state,  lastMetricFetchTime };
+    }
+
     case types.ADD_LAMBDA: {
 
 
