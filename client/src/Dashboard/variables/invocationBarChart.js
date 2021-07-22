@@ -21,7 +21,7 @@ var delays2 = 80,
 // // // Email Subscriptions
 // #############################
 
-const barChartFunc = (props) => {
+const invocationBarChartFunc = (props) => {
   console.log('Credentials inside barChartFunc: ', props.credentials);
   console.log("AWS Render: ", props.aws.render);
   console.log("Credentials: ", props.credentials)
@@ -35,7 +35,8 @@ const barChartFunc = (props) => {
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credentials: props.credentials }),
+      body: JSON.stringify({ credentials: props.credentials,
+        timePeriod: '7d'  }),
     };
     fetch('/aws/getLambdaFunctions', reqParams)
       .then((res) => res.json())
@@ -44,7 +45,7 @@ const barChartFunc = (props) => {
       })
       .catch((err) => console.log(err));
 
-    fetch('/aws/getLambdaInvocationsAllfunc', reqParams)
+    fetch('/aws/getMetricsAllfunc/Invocations', reqParams)
       .then((res) => res.json())
       .then((invocationData) => {
 
@@ -128,4 +129,4 @@ const barChartFunc = (props) => {
   };
 };
 
-export default barChartFunc;
+export default invocationBarChartFunc;

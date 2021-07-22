@@ -41,7 +41,7 @@ import {
   invocationsChart,
 } from '../../variables/charts.js';
 
-import barChartFunc from '../../variables/testBarChart.js';
+import invocationBarChartFunc from '../../variables/invocationBarChart.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
@@ -191,7 +191,7 @@ function Dashboard(props) {
             <CardHeader color="warning">
               <ChartistGraph
                 className="ct-chart"
-                data={barChartFunc(props).data}
+                data={invocationBarChartFunc(props).data}
                 type="Bar"
                 options={props.invocationsAllData.options}
                 responsiveOptions={emailsSubscriptionChart.responsiveOptions}

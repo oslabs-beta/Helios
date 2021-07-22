@@ -4,7 +4,7 @@ const router = express.Router();
 //AWS specific details
 const getCredentials = require('../controllers/aws/Credentials/getCreds');
 const getFunctions = require('../controllers/aws/Metrics/getLambdaFuncs');
-const getMetricsAllFunc = require('../controllers/aws/Metrics/getMetricsAllFunc');
+const getInvocationsAllFunc = require('../controllers/aws/Metrics/getInvocationsAllFunc');
 const getLogs = require('../controllers/aws/Logs/getLogs');
 
 //AWS Root User Credentials
@@ -26,10 +26,10 @@ router
 
  //Returing Lambda Functions Total Invocations
  router
- .route('/getMetricsAllfunc/:metricName')
- .post(getMetricsAllFunc, (req, res) => {
+ .route('/getLambdaInvocationsAllfunc')
+ .post(getInvocationsAllFunc, (req, res) => {
   console.log("Returning Lambda Functions Invocations:")
-  res.status(200).json(res.locals.metricAllFuncData);
+  res.status(200).json(res.locals.invocationsAllFunc);
 });
 
  //Returing Lambda Functions Logs
