@@ -65,6 +65,7 @@ const invocationBarChartFunc = (props, timePeriod) => {
       .then((errorData) => {
 
         props.addErrorsAlldata(errorData);
+        props.updateFetchTime()
         console.log("Printing from Inside Errors Bar Chart: ", props.errorsAllData)
 
       })
@@ -78,6 +79,7 @@ const invocationBarChartFunc = (props, timePeriod) => {
       .then((throttleData) => {
 
         props.addThrottlesAlldata(throttleData);
+
         console.log("Printing from Inside Throttles Bar Chart: ", props.throttlesAllData)
 
       })
