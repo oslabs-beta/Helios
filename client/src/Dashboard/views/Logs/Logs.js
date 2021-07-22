@@ -30,7 +30,7 @@ import CardHeader from '../../components/Card/CardHeader.js';
 import CardIcon from '../../components/Card/CardIcon.js';
 import CardBody from '../../components/Card/CardBody.js';
 import CardFooter from '../../components/Card/CardFooter.js';
-import Radio from '@material-ui/core/Radio';
+
 import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import * as actions from '../../../Actions/actions';
@@ -65,7 +65,9 @@ function Logs(props) {
     return (
       <LogCard>
         <CardHeader color='warning'>
-          <h4 className={classes.cardTitleWhite}>{logObj.name}</h4>
+          <h4 className={classes.cardTitleWhite}>
+            {logObj.name + ' (only shows most recent 50)'}
+          </h4>
         </CardHeader>
         <CardBody>
           <LogTable
@@ -115,6 +117,12 @@ function Logs(props) {
             </MenuItem>
             <MenuItem value='7d' className={classes.dateSpec}>
               Last 7 Days
+            </MenuItem>
+            <MenuItem value='14d' className={classes.dateSpec}>
+              Last 14 Days
+            </MenuItem>
+            <MenuItem value='30d' className={classes.dateSpec}>
+              Last 30 Days
             </MenuItem>
           </Select>
         </FormControl>
