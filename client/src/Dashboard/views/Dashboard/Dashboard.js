@@ -42,6 +42,7 @@ import {
 } from '../../variables/charts.js';
 
 import invocationBarChartFunc from '../../variables/invocationBarChart.js';
+import errorBarChartFunc from '../../variables/errorBarChart.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
@@ -51,13 +52,15 @@ const mapStateToProps = (state) => ({
   arn: state.main.arn,
   credentials: state.main.credentials,
   aws: state.aws,
-  invocationsAllData: state.aws.invocationsAllData
+  invocationsAllData: state.aws.invocationsAllData,
+  errorsAllData: state.aws.invocationsAllData,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
   addInvocationsAlldata: (invocationsAllData) => dispatch(actions.addInvocationsAlldata(invocationsAllData)),
+  addErrorsAlldata: (errorsAllData) => dispatch(actions.addErrorsAlldata(errorsAllData))
 });
 
 function Dashboard(props) {
@@ -191,11 +194,11 @@ function Dashboard(props) {
             <CardHeader color="warning">
               <ChartistGraph
                 className="ct-chart"
-                data={invocationBarChartFunc(props).data}
+                data={invocationBarChartFunc(props).invocationData}
                 type="Bar"
                 options={props.invocationsAllData.options}
-                responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                listener={emailsSubscriptionChart.animation}
+                responsiveOptions={props.invocationsAllData.responsiveOptions}
+                listener={props.invocationsAllData.animation}
               />
             </CardHeader>
             <CardBody>
@@ -214,10 +217,10 @@ function Dashboard(props) {
             <CardHeader color="danger">
               <ChartistGraph
                 className="ct-chart"
-                data={completedTasksChart.data}
-                type="Line"
-                options={completedTasksChart.options}
-                listener={completedTasksChart.animation}
+                data={invocationBarChartFunc(props).errorData}
+                type="Bar"
+                responsiveOptions={props.errorsAllData.responsiveOptions}
+                listener={props.errorsAllData.animation}
               />
             </CardHeader>
             <CardBody>

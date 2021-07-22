@@ -35,3 +35,7 @@ export const addInvocationsAlldata = (invocationsAllData) => {
   console.log('inside add Lambda action: ', invocationsAllData);
   return { type: types.ADD_INVOCATIONS_ALLDATA, payload: invocationsAllData };
 };
+export const addErrorsAlldata = (errorsAllData) => {
+  console.log('inside add Lambda action: ', errorsAllData);
+  return { type: types.ADD_ERRORS_ALLDATA, payload: errorsAllData };
+};

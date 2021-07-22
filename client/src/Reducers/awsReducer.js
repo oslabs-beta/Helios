@@ -14,7 +14,7 @@ const initialState = {
   functions: [],
   render: true,
   getInvocations:true,
-  // getErrors:true,
+  getErrors:true,
   functionLogs: [],
   graphDefaultOptions: {
     axisX: {
@@ -66,14 +66,14 @@ const initialState = {
     responsiveOptions: [],
     animation: {},
   },
-  // errorsAllData: {
-  //   data: {
-  //     series: [{ name: '', data: [] }],
-  //   },
-  //   options: {},
-  //   responsiveOptions: [],
-  //   animation: {},
-  // },
+  errorsAllData: {
+    data: {
+      series: [{ name: '', data: [] }],
+    },
+    options: {},
+    responsiveOptions: [],
+    animation: {},
+  },
 };
 
 const generateTicks = (startTime, metricTimeRange, metricTimeUnits) => {
@@ -108,15 +108,15 @@ const awsReducer = (state = initialState, action) => {
   let functions;
   let render;
   let functionLogs;
-  let series_data;
-        let invocationsAllData;
-      let errorsAllData;
-  let graphOptions, graphResponsiveOptions, graphtAnimation;
-  let graphPeriod, graphUnits;
-  let startTime, endTime;
-  let ticks = [];
-  let labelFormat;
-  let getInvocations
+  // let series_data;
+  // let invocationsAllData;
+  // let errorsAllData;
+  // let graphOptions, graphResponsiveOptions, graphtAnimation;
+  // let graphPeriod, graphUnits;
+  // let startTime, endTime;
+  // let ticks = [];
+  // let labelFormat;
+  // let getInvocations, getErrors;
 
   switch (action.type) {
     case types.ADD_LAMBDA: {
@@ -141,6 +141,19 @@ const awsReducer = (state = initialState, action) => {
       return { ...state, functionLogs };
     }
     case types.ADD_INVOCATIONS_ALLDATA: {
+
+  let series_data;
+  let invocationsAllData;
+  let graphOptions, graphResponsiveOptions, graphtAnimation;
+  let graphPeriod, graphUnits;
+  let startTime, endTime;
+  let ticks = [];
+  let labelFormat;
+  let getInvocations;
+
+
+
+      console.log("Inside Add Invocations All Data")
 
 
 
@@ -194,66 +207,94 @@ const awsReducer = (state = initialState, action) => {
         animation: graphtAnimation,
       };
 
+      //console.log("Invocation Data from Reducer: ",errorsAllData )
+
       return { ...state, invocationsAllData,getInvocations };
     }
-    // case types.ADD_ERRORS_ALLDATA: {
+    case types.ADD_ERRORS_ALLDATA: {
 
-    //   let getErrors;
-    //   let errorsAllData;
+  let series_data;
   
-    //   getErrors = !state.getErrors
-    //   series_data = action.payload.data.map((xydata) => {
-    //     return { x: new Date(xydata.x), y: xydata.y };
-    //   });
-    //   graphOptions = { ...state.graphDefaultOptions };
-    //   graphResponsiveOptions =  [...state.graphDefaultResponsiveOptions];
-    //   graphtAnimation = { ...state.graphtDefaultAnimation };
+  let errorsAllData;
+  let graphOptions, graphResponsiveOptions, graphtAnimation;
+  let graphPeriod, graphUnits;
+  let startTime, endTime;
+  let ticks = [];
+  let labelFormat;
+  let  getErrors;
+
+
+
+      console.log("Inside Add Erros All Data")
+
+      // let getErrors;
+      // let errorsAllData;
   
-    //   graphOptions.high = Math.max(
-    //     Math.round(action.payload.options.metricMaxValue / 100) * 100,
-    //     100
-    //   );
+      getErrors = !state.getErrors
+      series_data = action.payload.data.map((xydata) => {
+        return { x: new Date(xydata.x), y: xydata.y };
+      });
+      graphOptions = { ...state.graphDefaultOptions };
+      graphResponsiveOptions =  [...state.graphDefaultResponsiveOptions];
+      graphtAnimation = { ...state.graphtDefaultAnimation };
   
-    //   graphPeriod = action.payload.options.graphPeriod;
-    //   graphUnits = action.payload.options.graphUnits;
-    //   startTime = new Date(action.payload.options.startTime);
-    //   endTime = new Date(action.payload.options.endTime);
+      graphOptions.high = Math.max(
+        Math.round(action.payload.options.metricMaxValue / 100) * 100,
+        100
+      );
   
-    //   ticks = generateTicks(startTime, graphPeriod, graphUnits);
+      graphPeriod = action.payload.options.graphPeriod;
+      graphUnits = action.payload.options.graphUnits;
+      startTime = new Date(action.payload.options.startTime);
+      endTime = new Date(action.payload.options.endTime);
   
-    //   graphOptions.axisX.ticks = ticks;
-    //   console.log(ticks);
+      ticks = generateTicks(startTime, graphPeriod, graphUnits);
   
-    //   if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
-    //   else graphOptions.axisX.type = Chartist.FixedScaleAxis;
+      graphOptions.axisX.ticks = ticks;
+      console.log(ticks);
   
-    //   //add dummy data for the chart to show up
-    //   series_data.unshift({
-    //     x: moment(startTime).subtract(5, 'minutes'),
-    //     y: null,
-    //   });
-    //   series_data.push({ x: moment(endTime).add(5, 'minutes'), y: null });
+      if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
+      else graphOptions.axisX.type = Chartist.FixedScaleAxis;
   
-    //   graphOptions.axisX.labelInterpolationFnc = (value) => {
-    //     if (graphUnits === 'days') labelFormat = 'MMM Do';
-    //     if (graphUnits === 'hours') labelFormat = 'LT';
-    //     if (graphUnits === 'minutes') labelFormat = 'LT';
+      //add dummy data for the chart to show up
+      series_data.unshift({
+        x: moment(startTime).subtract(5, 'minutes'),
+        y: null,
+      });
+      series_data.push({ x: moment(endTime).add(5, 'minutes'), y: null });
   
-    //     return moment(value).format(labelFormat);
-    //   };
+      graphOptions.axisX.labelInterpolationFnc = (value) => {
+        if (graphUnits === 'days') labelFormat = 'MMM Do';
+        if (graphUnits === 'hours') labelFormat = 'LT';
+        if (graphUnits === 'minutes') labelFormat = 'LT';
   
-    //   errorsAllData = {
-    //     data: {
-    //       series: [{ name: action.payload.title, data: series_data }],
-    //     },
-    //     options: graphOptions,
-    //     responsiveOptions: graphResponsiveOptions,
-    //     animation: graphtAnimation,
-    //   };
+        return moment(value).format(labelFormat);
+      };
   
-    //   return { ...state, errorsAllData,getErrors };
-    // }
+      errorsAllData = {
+        data: {
+          series: [{ name: action.payload.title, data: series_data }],
+        },
+        options: graphOptions,
+        responsiveOptions: graphResponsiveOptions,
+        animation: graphtAnimation,
+      };
+
+      console.log("Error Data from reducer: ",errorsAllData )
+  
+      return { ...state, errorsAllData,getErrors };
+    }
     default: {
+
+  let series_data;
+  let invocationsAllData;
+  let errorsAllData;
+  let graphOptions, graphResponsiveOptions, graphtAnimation;
+  let graphPeriod, graphUnits;
+  let startTime, endTime;
+  let ticks = [];
+  let labelFormat;
+  let getInvocations, getErrors;
 
 
 
@@ -268,15 +309,15 @@ const awsReducer = (state = initialState, action) => {
         animation: graphtAnimation,
       };
 
-      // errorsAllData = {
-      //   ...state.errorsAllData,
-      //   options: graphOptions,
-      //   responsiveOptions: graphResponsiveOptions,
-      //   animation: graphtAnimation,
-      // };
+      errorsAllData = {
+        ...state.errorsAllData,
+        options: graphOptions,
+        responsiveOptions: graphResponsiveOptions,
+        animation: graphtAnimation,
+      };
 
-      // return { ...state, invocationsAllData, errorsAllData };
-      return { ...state, invocationsAllData };
+       //return { ...state, invocationsAllData, errorsAllData };
+     return { ...state, invocationsAllData };
     }
   }
 };
