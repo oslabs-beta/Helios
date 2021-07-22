@@ -30,7 +30,7 @@ const getLogs = async (req, res, next) => {
     ).valueOf();
   } else if (req.body.timePeriod === '24hr') {
     StartTime = moment(
-      new Date(new Date().setDate(new Date().getDate() - 24))
+      new Date(new Date().setDate(new Date().getDate() - 1))
     ).valueOf();
   } else if (req.body.timePeriod === '7d') {
     StartTime = moment(
@@ -42,12 +42,11 @@ const getLogs = async (req, res, next) => {
     ).valueOf();
   } else if (req.body.timePeriod === '30d') {
     StartTime = moment(
-      new Date(new Date().setDate(new Date().getDate() - 730))
+      new Date(new Date().setDate(new Date().getDate() - 30))
     ).valueOf();
   }
 
   async function helperFunc(nextToken, data = []) {
-    console.log(nextToken);
     if (!nextToken) {
       return data;
     }
@@ -58,7 +57,6 @@ const getLogs = async (req, res, next) => {
         startTime: StartTime,
         nextToken,
         filterPattern: '- START - END - REPORT',
-        // limit: 600,
       })
     );
     data.push(nextLogEvents.events);
@@ -72,14 +70,11 @@ const getLogs = async (req, res, next) => {
         endTime: moment(new Date()).valueOf(),
         startTime: StartTime,
         filterPattern: '- START - END - REPORT',
-        limit: 400,
       })
     );
     const shortenedEvents = [];
     if (logEvents.nextToken) {
       const helperFuncResults = await helperFunc(logEvents.nextToken);
-      // console.log(helperFuncResults[0].slice(0, 25));
-      console.log(helperFuncResults.length);
       let poppedEl;
       while (helperFuncResults.length) {
         poppedEl = helperFuncResults.pop();

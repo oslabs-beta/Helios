@@ -3,8 +3,8 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 
-const awsRouter = require('./routes/aws.js')
-const userRouter = require('./routes/user.js')
+const awsRouter = require('./routes/aws.js');
+const userRouter = require('./routes/user.js');
 
 const PORT = 3000;
 
@@ -12,16 +12,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 console.log(__dirname);
 
-app.use('/build', express.static(path.resolve(__dirname, '../build')));
 app.use(express.static(path.resolve(__dirname, '../client/src/Dashboard')));
-
-
+// app.use(express.static(path.resolve(__dirname, '../client/src/Dashboard')));
+app.use('/build', express.static(path.resolve(__dirname, '../build')));
 //Route all User related requests to User Router
-app.use('/user', userRouter)
+app.use('/user', userRouter);
 
 //Route all AWS requests to AWS router
-app.use('/aws', awsRouter)
-
+app.use('/aws', awsRouter);
 
 //server index.html for the root call
 app.get('/', (req, res) => {
@@ -29,7 +27,6 @@ app.get('/', (req, res) => {
     .status(200)
     .sendFile(path.resolve(__dirname, '../public/index.html'));
 });
-
 
 // catch-all route handler for any requests
 app.use((req, res) => {
