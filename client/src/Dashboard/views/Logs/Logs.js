@@ -127,6 +127,7 @@ function Logs(props) {
           </Select>
         </FormControl>
       </div>
+      <br />
       <GridContainer>
         <GridItem xs={4} sm={4} md={4}>
           <CustomTabs

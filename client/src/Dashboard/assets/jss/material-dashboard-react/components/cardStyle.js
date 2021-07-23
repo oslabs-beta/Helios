@@ -30,6 +30,7 @@ const cardStyle = {
     textAlign: 'center',
   },
   cardChart: {
+    height: '410px',
     '& p': {
       marginTop: '0px',
       paddingTop: '0px',

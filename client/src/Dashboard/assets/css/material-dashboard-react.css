@@ -43,6 +43,10 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.ct-chart {
+  height: 270px;
+}
+
 .ct-chart-line .ct-label,
 .ct-chart-bar .ct-label {
   display: block;

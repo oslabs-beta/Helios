@@ -18,6 +18,7 @@ import Accessibility from '@material-ui/icons/Accessibility';
 import BugReport from '@material-ui/icons/BugReport';
 import Code from '@material-ui/icons/Code';
 import Cloud from '@material-ui/icons/Cloud';
+import Speed from '@material-ui/icons/Speed';
 // core components
 import GridItem from '../../components/Grid/GridItem.js';
 import GridContainer from '../../components/Grid/GridContainer.js';
@@ -31,6 +32,12 @@ import CardIcon from '../../components/Card/CardIcon.js';
 import CardBody from '../../components/Card/CardBody.js';
 import CardFooter from '../../components/Card/CardFooter.js';
 import * as actions from '../../../Actions/actions';
+
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import moment from 'moment';
 
 import { bugs, website, server } from '../../variables/general.js';
 
@@ -54,22 +61,32 @@ const mapStateToProps = (state) => ({
   aws: state.aws,
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
+  throttlesAllData: state.aws.throttlesAllData,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
 
-  addInvocationsAlldata: (invocationsAllData) => dispatch(actions.addInvocationsAlldata(invocationsAllData)),
-  addErrorsAlldata: (errorsAllData) => dispatch(actions.addErrorsAlldata(errorsAllData))
-
+  addInvocationsAlldata: (invocationsAllData) =>
+    dispatch(actions.addInvocationsAlldata(invocationsAllData)),
+  addErrorsAlldata: (errorsAllData) =>
+    dispatch(actions.addErrorsAlldata(errorsAllData)),
+  addThrottlesAlldata: (throttlesAllData) =>
+    dispatch(actions.addThrottlesAlldata(throttlesAllData)),
+  updateRender: () => dispatch(actions.updateRender()),
+  updateFetchTime: () => dispatch(actions.updateFetchTime()),
 });
 
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
+  const [totalInvocations, setInvocationTotal] = useState(0);
+
+  // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
   useEffect(() => {
+    console.log('ARN: ', props.arn);
     if (!props.credentials) {
       const reqParams = {
         method: 'POST',
@@ -81,74 +98,140 @@ function Dashboard(props) {
         .then((credentialsData) => {
           console.log('logging from useEffect fetch: ', credentialsData);
           props.addCredentials(credentialsData);
-        });
+        })
+        .catch((err) =>
+          console.log('Error inside initial get credentials fetch: ', err)
+        );
     }
+    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
   }, []);
+
+  const [dateSelect, setDateRange] = useState('7d');
+
+  const handleDateChange = (e) => {
+    setDateRange(e.target.value);
+    console.log(e.target.value);
+    props.updateRender();
+  };
+
+  let timePeriod;
+
+  if (dateSelect === '7d') {
+    timePeriod = 'Last 7 Days';
+  } else if (dateSelect === '30min') {
+    timePeriod = 'Last 30 Minutes';
+  } else if (dateSelect === '1hr') {
+    timePeriod = 'Last Hour';
+  } else if (dateSelect === '24hr') {
+    timePeriod = 'Last 24 Hours';
+  } else if (dateSelect === '14d') {
+    timePeriod = 'Last 14 Days';
+  } else if (dateSelect === '30d') {
+    timePeriod = 'Last 30 Days';
+  } else {
+    timePeriod = 'Invalid Time Period';
+  }
 
   return (
     <div>
+      <div className={classes.sortBy}>
+        <FormControl className={classes.timeRange}>
+          <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
+            {' '}
+            <DateRange /> Time Period
+          </InputLabel>
+          <br />
+          <Select
+            id='date-change-select'
+            value={dateSelect}
+            className={classes.dateSpec}
+            onChange={handleDateChange}
+          >
+            <MenuItem value='30min' className={classes.dateSpec}>
+              Last 30 Minutes
+            </MenuItem>
+            <MenuItem value='1hr' className={classes.dateSpec}>
+              Last Hour
+            </MenuItem>
+            <MenuItem value='24hr' className={classes.dateSpec}>
+              Last 24 Hours
+            </MenuItem>
+            <MenuItem value='7d' className={classes.dateSpec}>
+              Last 7 Days
+            </MenuItem>
+            <MenuItem value='14d' className={classes.dateSpec}>
+              Last 14 Days
+            </MenuItem>
+            <MenuItem value='30d' className={classes.dateSpec}>
+              Last 30 Days
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      <br />
       <GridContainer>
-        <GridItem xs={12} sm={6} md={3}>
+        <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='warning' stats icon>
-              <CardIcon color='warning'>
-                <Icon>content_copy</Icon>
+            <CardHeader color='success' stats icon>
+              <CardIcon color='success'>
+                <Speed />
               </CardIcon>
-              <p className={classes.cardCategory}>Used Space</p>
+              <p className={classes.cardCategory}>Total Throttles</p>
               <h3 className={classes.cardTitle}>
-                49/50 <small>GB</small>
+                {props.throttlesAllData.total}
               </h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
-                <Danger>
-                  <Warning />
-                </Danger>
-                <a href='#pablo' onClick={(e) => e.preventDefault()}>
-                  Get more space
-                </a>
+                <DateRange />
+                {timePeriod}
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
+
+        <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='success' stats icon>
-              <CardIcon color='success'>
-                <Store />
+            <CardHeader color='info' stats icon>
+              <CardIcon color='info'>
+                <Cloud />
               </CardIcon>
-              <p className={classes.cardCategory}>Revenue</p>
-              <h3 className={classes.cardTitle}>$34,245</h3>
+              <p className={classes.cardCategory}>Total Invocations</p>
+              <h3 className={classes.cardTitle}>
+                {props.invocationsAllData.total}
+              </h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
                 <DateRange />
-                Last 24 Hours
+                {timePeriod}
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
+
+        <GridItem xs={12} sm={6} md={4}>
           <Card>
             <CardHeader color='danger' stats icon>
               <CardIcon color='danger'>
                 <Icon>info_outline</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Fixed Issues</p>
-              <h3 className={classes.cardTitle}>75</h3>
+              <p className={classes.cardCategory}>Total Errors</p>
+              <h3 className={classes.cardTitle}>{props.errorsAllData.total}</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
-                <LocalOffer />
-                Tracked from Github
+                <DateRange />
+                {timePeriod}
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
+
+        {/* <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color='info' stats icon>
-              <CardIcon color='info'>
+            <CardHeader color='warning' stats icon>
+              <CardIcon color='warning'>
                 <Accessibility />
               </CardIcon>
               <p className={classes.cardCategory}>Followers</p>
@@ -161,43 +244,41 @@ function Dashboard(props) {
               </div>
             </CardFooter>
           </Card>
-        </GridItem>
+        </GridItem>*/}
       </GridContainer>
+
       <GridContainer>
-        <GridItem xs={12} sm={12} md={4}>
+        <GridItem xs={12} sm={12} md={6}>
           <Card chart>
             <CardHeader color='success'>
               <ChartistGraph
                 className='ct-chart'
-                data={dailySalesChart.data}
-                type='Line'
-                options={dailySalesChart.options}
-                listener={dailySalesChart.animation}
+                data={props.throttlesAllData.data}
+                type='Bar'
+                options={props.throttlesAllData.options}
+                responsiveOptions={props.throttlesAllData.responsiveOptions}
+                listener={props.throttlesAllData.animation}
               />
             </CardHeader>
             <CardBody>
-              <h4 className={classes.cardTitle}>Daily Sales</h4>
-              <p className={classes.cardCategory}>
-                <span className={classes.successText}>
-                  <ArrowUpward className={classes.upArrowCardCategory} /> 55%
-                </span>{' '}
-                increase in today sales.
-              </p>
+              <h4 className={classes.cardTitle}>Total Throttles</h4>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> updated 4 minutes ago
+                <AccessTime /> Last Fetched{' '}
+                {moment(props.lastMetricFetchTime).fromNow()}
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
+
+        <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='warning'>
+            <CardHeader color='info'>
               <ChartistGraph
-                className="ct-chart"
-                data={invocationBarChartFunc(props).invocationData}
-                type="Bar"
+                className='ct-chart'
+                data={invocationBarChartFunc(props, dateSelect).invocationData}
+                type='Bar'
                 options={props.invocationsAllData.options}
                 responsiveOptions={props.invocationsAllData.responsiveOptions}
                 listener={props.invocationsAllData.animation}
@@ -205,41 +286,43 @@ function Dashboard(props) {
             </CardHeader>
             <CardBody>
               <h4 className={classes.cardTitle}>Total Invocations</h4>
-              <p className={classes.cardCategory}>Last Campaign Performance</p>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
+                <AccessTime /> Last Fetched{' '}
+                {moment(props.lastMetricFetchTime).fromNow()}
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
+
+        <GridItem xs={12} sm={12} md={6}>
           <Card chart>
             <CardHeader color='danger'>
               <ChartistGraph
-                className="ct-chart"
+                className='ct-chart'
                 data={props.errorsAllData.data}
-                type="Bar"
-                options={props.errorsAllData.options}                
+                type='Bar'
+                options={props.errorsAllData.options}
                 responsiveOptions={props.errorsAllData.responsiveOptions}
                 listener={props.errorsAllData.animation}
-
               />
             </CardHeader>
             <CardBody>
-              <h4 className={classes.cardTitle}>Total Erros</h4>
+              <h4 className={classes.cardTitle}>Total Errors</h4>
               <p className={classes.cardCategory}>Errors</p>
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
+                <AccessTime /> Last Fetched{' '}
+                {moment(props.lastMetricFetchTime).fromNow()}
               </div>
             </CardFooter>
           </Card>
         </GridItem>
       </GridContainer>
-      <GridContainer>
+
+      {/* <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <CustomTabs
             title='Tasks:'
@@ -303,7 +386,7 @@ function Dashboard(props) {
             </CardBody>
           </Card>
         </GridItem>
-      </GridContainer>
+      </GridContainer> */}
     </div>
   );
 }

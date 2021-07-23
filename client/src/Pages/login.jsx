@@ -38,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  logoImg: {
+    width: '300px',
+  },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
@@ -84,9 +87,14 @@ function SignIn(props) {
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
+        {/* <Avatar className={classes.avatar}> */}
+        {/* <LockOutlinedIcon /> */}
+        <img
+          alt='Helios Logo'
+          src='../Dashboard/assets/img/helios-black-logo-t.png'
+          className={classes.logoImg}
+        />
+        {/* </Avatar> */}
         <Typography component='h1' variant='h5'>
           Sign in
         </Typography>

@@ -21,7 +21,7 @@ var delays2 = 80,
 // // // Email Subscriptions
 // #############################
 
-const invocationBarChartFunc = (props) => {
+const invocationBarChartFunc = (props, timePeriod) => {
   //console.log('Credentials inside barChartFunc: ', props.credentials);
   console.log("AWS Get Invocations: ", props.aws.getInvocations);
   console.log("AWS Render: ",props.aws.render )
@@ -37,7 +37,7 @@ const invocationBarChartFunc = (props) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ credentials: props.credentials,
-        timePeriod: '7d'  }),
+        timePeriod: timePeriod  }),
     };
     console.log("Props Render before Fetch:", props.aws.render)
     fetch('/aws/getLambdaFunctions', reqParams)
@@ -46,7 +46,8 @@ const invocationBarChartFunc = (props) => {
         props.addLambda(functions);
       })
       .catch((err) => console.log(err));
-
+//Invocations
+//********************************************************* */
     fetch('/aws/getMetricsAllfunc/Invocations', reqParams)
       .then((res) => res.json())
       .then((invocationData) => {
@@ -57,12 +58,29 @@ const invocationBarChartFunc = (props) => {
       })
       .catch((err) => console.log(err));
 
+//Errors
+//********************************************************* */
     fetch('/aws/getMetricsAllfunc/Errors', reqParams)
       .then((res) => res.json())
       .then((errorData) => {
 
         props.addErrorsAlldata(errorData);
+        props.updateFetchTime()
         console.log("Printing from Inside Errors Bar Chart: ", props.errorsAllData)
+
+      })
+      .catch((err) => console.log(err));
+
+//Throttles
+//********************************************************* */
+
+      fetch('/aws/getMetricsAllfunc/Throttles', reqParams)
+      .then((res) => res.json())
+      .then((throttleData) => {
+
+        props.addThrottlesAlldata(throttleData);
+
+        console.log("Printing from Inside Throttles Bar Chart: ", props.throttlesAllData)
 
       })
       .catch((err) => console.log(err));
@@ -71,7 +89,7 @@ const invocationBarChartFunc = (props) => {
   }
   return {
     invocationData: props.invocationsAllData.data,
-    errorData: props.errorsAllData.data,
+    
     // options: {
     //   axisX: {
     //     showGrid: false,
