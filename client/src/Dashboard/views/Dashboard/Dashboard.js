@@ -322,7 +322,7 @@ function Dashboard(props) {
         </GridItem>
       </GridContainer>
 
-      {/* <GridContainer>
+      <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <CustomTabs
             title='Tasks:'
@@ -386,7 +386,7 @@ function Dashboard(props) {
             </CardBody>
           </Card>
         </GridItem>
-      </GridContainer> */}
+      </GridContainer>
     </div>
   );
 }
