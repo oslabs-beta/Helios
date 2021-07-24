@@ -95,6 +95,14 @@ const tableStyle = (theme) => ({
     outline: 'none',
     verticalAlign: 'middle',
   },
+  errorTableBodyRow: {
+    height: '48px',
+    color: 'inherit',
+    display: 'table-row',
+    outline: 'none',
+    verticalAlign: 'middle',
+    backgroundColor: dangerColor[0],
+  },
 });
 
 export default tableStyle;

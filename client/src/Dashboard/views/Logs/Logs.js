@@ -53,6 +53,8 @@ const mapDispatchToProps = (dispatch) => ({
   addFunctionLogs: (logObj) => dispatch(actions.addFunctionLogs(logObj)),
   removeFunctionLogs: (functionName) =>
     dispatch(actions.removeFunctionLogs(functionName)),
+  updateFunctionLogs: (updatedLogs) =>
+    dispatch(actions.updateFunctionLogs(updatedLogs)),
 });
 
 function Logs(props) {
@@ -61,26 +63,47 @@ function Logs(props) {
     return i;
   });
 
-  const mappedMsgs = props.aws.functionLogs.map((logObj) => {
+  const mappedMsgs = props.aws.functionLogs.map((logObj, i) => {
     return (
-      <LogCard>
-        <CardHeader color='warning'>
-          <h4 className={classes.cardTitleWhite}>
-            {logObj.name + ' (only shows most recent 50)'}
-          </h4>
-        </CardHeader>
-        <CardBody>
-          <LogTable
-            tableHeaderColor='warning'
-            tableHead={[
-              'Last 5 Characters of Log Stream Name',
-              'Date',
-              'Message',
-            ]}
-            tableData={logObj.streams}
-          />
-        </CardBody>
-      </LogCard>
+      <CustomTabs
+        key={i}
+        headerColor='warning'
+        title={logObj.name}
+        tabs={[
+          {
+            tabName: 'Logs',
+            tabIcon: Cloud,
+            tabContent: (
+              <LogTable
+                tableHeaderColor='warning'
+                tableHead={[
+                  'Last 5 Characters of Log Stream Name',
+                  'Date',
+                  'Message',
+                ]}
+                tableData={logObj.streams}
+                status='logs'
+              />
+            ),
+          },
+          {
+            tabName: 'Errors',
+            tabIcon: Warning,
+            tabContent: (
+              <LogTable
+                tableHeaderColor='danger'
+                tableHead={[
+                  'Last 5 Characters of Log Stream Name',
+                  'Date',
+                  'Message',
+                ]}
+                tableData={logObj.errors}
+                status='errors'
+              />
+            ),
+          },
+        ]}
+      />
     );
   });
 
@@ -88,7 +111,23 @@ function Logs(props) {
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
-    console.log(e.target.value);
+    if (props.aws.functionLogs) {
+      const reqParams = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          logs: props.aws.functionLogs,
+          newTimePeriod: e.target.value,
+          credentials: props.credentials,
+        }),
+      };
+      fetch('/aws/updateLogs', reqParams)
+        .then((res) => res.json())
+        .then((updatedLogs) => {
+          props.updateFunctionLogs(updatedLogs);
+        })
+        .catch((err) => console.log('Error in refreshing updateLogs: ', err));
+    }
   };
 
   return (
@@ -132,7 +171,7 @@ function Logs(props) {
         <GridItem xs={4} sm={4} md={4}>
           <CustomTabs
             // title='Lambda Functions:'
-            headerColor='primary'
+            headerColor='info'
             tabs={[
               {
                 tabName: 'Lambda Functions',

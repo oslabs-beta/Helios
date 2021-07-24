@@ -181,6 +181,10 @@ const awsReducer = (state = initialState, action) => {
       }
       return { ...state, functionLogs };
     }
+    case types.UPDATE_FUNCTION_LOGS: {
+      functionLogs = action.payload;
+      return { ...state, functionLogs };
+    }
     case types.ADD_INVOCATIONS_ALLDATA: {
       let series_data;
       let invocationsAllData;

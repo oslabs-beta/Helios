@@ -84,8 +84,6 @@ function Dashboard(props) {
 
   const [dateSelect, setDateRange] = useState('7d');
 
- 
-
   useEffect(() => {
     console.log('ARN: ', props.arn);
     if (!props.credentials) {
@@ -104,20 +102,11 @@ function Dashboard(props) {
           console.log('Error inside initial get credentials fetch: ', err)
         );
     }
-
-
-
-
-
-
   }, []);
-    
 
-     if (props.aws.render && props.credentials) {
-      metricAllFuncBarChart(props, dateSelect)
-
-
-    }
+  if (props.aws.render && props.credentials) {
+    metricAllFuncBarChart(props, dateSelect);
+  }
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
@@ -275,10 +264,7 @@ function Dashboard(props) {
               <h4 className={classes.cardTitle}>Total Throttles</h4>
             </CardBody>
             <CardFooter chart>
-
-              <FetchTime
-              lastMetricFetchTime = {props.aws.lastMetricFetchTime}
-              />
+              <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
             </CardFooter>
           </Card>
         </GridItem>
@@ -299,9 +285,7 @@ function Dashboard(props) {
               <h4 className={classes.cardTitle}>Total Invocations</h4>
             </CardBody>
             <CardFooter chart>
-            <FetchTime
-              lastMetricFetchTime = {props.aws.lastMetricFetchTime}
-              />
+              <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
             </CardFooter>
           </Card>
         </GridItem>
@@ -323,9 +307,7 @@ function Dashboard(props) {
               <p className={classes.cardCategory}>Errors</p>
             </CardBody>
             <CardFooter chart>
-            <FetchTime
-              lastMetricFetchTime = {props.aws.lastMetricFetchTime}
-              />
+              <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
             </CardFooter>
           </Card>
         </GridItem>
