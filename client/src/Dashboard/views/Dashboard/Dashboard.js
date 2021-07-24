@@ -49,7 +49,6 @@ import {
 } from '../../variables/charts.js';
 
 import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
-import errorBarChartFunc from '../../variables/errorBarChart.js';
 import FetchTime from '../../components/FetchTime/FetchTime.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
@@ -82,11 +81,10 @@ const mapDispatchToProps = (dispatch) => ({
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
-  const [totalInvocations, setInvocationTotal] = useState(0);
 
-  // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
+  const [dateSelect, setDateRange] = useState('7d');
 
-  
+ 
 
   useEffect(() => {
     console.log('ARN: ', props.arn);
@@ -110,13 +108,16 @@ function Dashboard(props) {
 
 
 
+
+
   }, []);
+    
 
-      // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
+     if (props.aws.render && props.credentials) {
+      metricAllFuncBarChart(props, dateSelect)
 
-     // setInterval(function() {setTime(temp++)}, 60000)      
 
-  const [dateSelect, setDateRange] = useState('7d');
+    }
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
@@ -287,7 +288,7 @@ function Dashboard(props) {
             <CardHeader color='info'>
               <ChartistGraph
                 className='ct-chart'
-                data={metricAllFuncBarChart(props, dateSelect).invocationData}
+                data={props.invocationsAllData.data}
                 type='Bar'
                 options={props.invocationsAllData.options}
                 responsiveOptions={props.invocationsAllData.responsiveOptions}

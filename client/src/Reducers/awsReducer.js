@@ -149,15 +149,7 @@ const awsReducer = (state = initialState, action) => {
   let render;
   let functionLogs;
   let lastMetricFetchTime;
-  // let series_data;
-  // let invocationsAllData;
-  // let errorsAllData;
-  // let graphOptions, graphResponsiveOptions, graphtAnimation;
-  // let graphPeriod, graphUnits;
-  // let startTime, endTime;
-  // let ticks = [];
-  // let labelFormat;
-  // let getInvocations, getErrors;
+
 
   switch (action.type) {
     case types.UPDATE_RENDER: {
@@ -416,37 +408,7 @@ const awsReducer = (state = initialState, action) => {
     }
 
     default: {
-      // let invocationsAllData;
-      // let errorsAllData;
-      // let throttlesAllData;
-      // let graphOptions, graphResponsiveOptions, graphtAnimation;
 
-      //     graphOptions = { ...state.graphDefaultOptions };
-      //     graphResponsiveOptions =  [...state.graphDefaultResponsiveOptions];
-      //     graphtAnimation = { ...state.graphtDefaultAnimation };
-
-      //     invocationsAllData = {
-      //       ...state.invocationsAllData,
-      //       options: graphOptions,
-      //       responsiveOptions: graphResponsiveOptions,
-      //       animation: graphtAnimation,
-      //     };
-
-      //     errorsAllData = {
-      //       ...state.errorsAllData,
-      //       options: graphOptions,
-      //       responsiveOptions: graphResponsiveOptions,
-      //       animation: graphtAnimation,
-      //     };
-
-      //     throttlesAllData = {
-      //       ...state.throttlesAllData,
-      //       options: graphOptions,
-      //       responsiveOptions: graphResponsiveOptions,
-      //       animation: graphtAnimation,
-      //     };
-
-      //return { ...state, invocationsAllData, errorsAllData };
       return { ...state };
     }
   }

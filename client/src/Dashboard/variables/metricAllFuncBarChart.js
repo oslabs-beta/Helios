@@ -22,17 +22,13 @@ var delays2 = 80,
 // #############################
 
 const metricAllFuncBarChart = (props, timePeriod) => {
-  //console.log('Credentials inside barChartFunc: ', props.credentials);
+
   console.log("AWS Get Invocations: ", props.aws.getInvocations);
   console.log("AWS Render: ",props.aws.render )
   console.log("Credentials: ", props.credentials)
-  // let data = { labels: [], series: [[]] };
-  // let [userData, setData] = useState({
-  //   labels: [],
-  //   series: [[]],
-  // });
+
   console.log('data before if: ', props.invocationsAllData);
-  if (props.aws.render && props.credentials) {
+  // if (props.aws.render && props.credentials) {
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -89,59 +85,7 @@ const metricAllFuncBarChart = (props, timePeriod) => {
       })
       .catch((err) => console.log(err));
 
-//Throttles
-//********************************************************* */      
 
-
-  }
-  return {
-    invocationData: props.invocationsAllData.data,
-    
-    // options: {
-    //   axisX: {
-    //     showGrid: false,
-    //   },
-    //   low: 0,
-    //   high: 2000,
-    //   chartPadding: {
-    //     top: 0,
-    //     right: 5,
-    //     bottom: 0,
-    //     left: 0,
-    //   },
-    // },
-    // responsiveOptions: [
-    //   [
-    //     'screen and (max-width: 640px)',
-    //     {
-    //       // seriesBarDistance: 5,
-    //       axisX: {
-    //         divisor: 5,
-    //         type: Chartist.FixedScaleAxis,
-    //         labelInterpolationFnc: function (value) {
-    //           // return value[0];
-    //           return moment(value[0]).format('LT');
-    //         },
-    //       },
-    //     },
-    //   ],
-    // ],
-    // animation: {
-    //   draw: function (data) {
-    //     if (data.type === 'bar') {
-    //       data.element.animate({
-    //         opacity: {
-    //           begin: (data.index + 1) * delays2,
-    //           dur: durations2,
-    //           from: 0,
-    //           to: 1,
-    //           easing: 'ease',
-    //         },
-    //       });
-    //     }
-    //   },
-    // },
-  };
 };
 
 export default metricAllFuncBarChart;
