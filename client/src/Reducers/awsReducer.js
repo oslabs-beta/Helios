@@ -165,7 +165,7 @@ const awsReducer = (state = initialState, action) => {
       return { ...state, render };
     }
 
-    case types.UPDATE_RENDER: {
+    case types.UPDATE_FETCH_TIME: {
       lastMetricFetchTime = new Date();
       return { ...state, lastMetricFetchTime };
     }

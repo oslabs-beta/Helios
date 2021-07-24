@@ -48,8 +48,9 @@ import {
   invocationsChart,
 } from '../../variables/charts.js';
 
-import invocationBarChartFunc from '../../variables/invocationBarChart.js';
+import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
 import errorBarChartFunc from '../../variables/errorBarChart.js';
+import FetchTime from '../../components/FetchTime/FetchTime.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 
@@ -85,6 +86,8 @@ function Dashboard(props) {
 
   // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
+  
+
   useEffect(() => {
     console.log('ARN: ', props.arn);
     if (!props.credentials) {
@@ -103,8 +106,15 @@ function Dashboard(props) {
           console.log('Error inside initial get credentials fetch: ', err)
         );
     }
-    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
+
+
+
+
   }, []);
+
+      // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
+
+     // setInterval(function() {setTime(temp++)}, 60000)      
 
   const [dateSelect, setDateRange] = useState('7d');
 
@@ -264,10 +274,10 @@ function Dashboard(props) {
               <h4 className={classes.cardTitle}>Total Throttles</h4>
             </CardBody>
             <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> Last Fetched{' '}
-                {moment(props.lastMetricFetchTime).fromNow()}
-              </div>
+
+              <FetchTime
+              lastMetricFetchTime = {props.aws.lastMetricFetchTime}
+              />
             </CardFooter>
           </Card>
         </GridItem>
@@ -277,7 +287,7 @@ function Dashboard(props) {
             <CardHeader color='info'>
               <ChartistGraph
                 className='ct-chart'
-                data={invocationBarChartFunc(props, dateSelect).invocationData}
+                data={metricAllFuncBarChart(props, dateSelect).invocationData}
                 type='Bar'
                 options={props.invocationsAllData.options}
                 responsiveOptions={props.invocationsAllData.responsiveOptions}
@@ -288,10 +298,9 @@ function Dashboard(props) {
               <h4 className={classes.cardTitle}>Total Invocations</h4>
             </CardBody>
             <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> Last Fetched{' '}
-                {moment(props.lastMetricFetchTime).fromNow()}
-              </div>
+            <FetchTime
+              lastMetricFetchTime = {props.aws.lastMetricFetchTime}
+              />
             </CardFooter>
           </Card>
         </GridItem>
@@ -313,10 +322,9 @@ function Dashboard(props) {
               <p className={classes.cardCategory}>Errors</p>
             </CardBody>
             <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> Last Fetched{' '}
-                {moment(props.lastMetricFetchTime).fromNow()}
-              </div>
+            <FetchTime
+              lastMetricFetchTime = {props.aws.lastMetricFetchTime}
+              />
             </CardFooter>
           </Card>
         </GridItem>

@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const AWSUtilFunc = require('../src/aws/utils/AWSUtilFunc')
+const AWSUtilFunc = require('../server/controllers/aws/Metrics/utils/AWSUtilFunc')
 
 AWS.config.credentials = new AWS.SharedIniFileCredentials({
   profile: 'work-account',
