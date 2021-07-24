@@ -71,7 +71,7 @@ const getLogs = async (req, res, next) => {
     if (logEvents.nextToken) {
       const helperFuncResults = await helperFunc(logEvents.nextToken);
       let poppedEl;
-      while (helperFuncResults.length) {
+      while (helperFuncResults.length && shortenedEvents.length <= 50) {
         poppedEl = helperFuncResults.pop();
         for (let i = poppedEl.length - 1; i >= 0; i -= 1) {
           if (shortenedEvents.length === 50) {
