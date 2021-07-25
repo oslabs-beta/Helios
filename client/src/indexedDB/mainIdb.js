@@ -1,6 +1,20 @@
 import Dexie from "dexie";
 
-let db = new Dexie("helios_database");
+let db = new Dexie("Helios");
+
+db.version(1).stores({
+    signup: "email, firstName, lastName, password",
+    signin: "email, password",
+    registerArn: "arn"
+
+})
+
+db.open().catch(function(e){
+    console.error('error' + e);
+
+
+})
+ 
 
 // db.lambdas
 //   .put({ invocations: "invocationsArr", metrics: "metricsArr" })
@@ -24,3 +38,4 @@ let db = new Dexie("helios_database");
 //   });
 
 export default db;
+

@@ -16,7 +16,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import * as actions from "../Actions/actions";
-import db from "../indexedDB/mainIdb";
+import updateIDBSignUp from "../indexedDB/updateIDBSignUp";
 
 function Copyright() {
   return (
@@ -79,27 +79,18 @@ function SignUp(props) {
         if (response.confirmation && response.emailStatus) {
           props.addUserInfo(response.userInfo);
           history.push("/user/register");
+
+          // save once signed up is confirmed
+          updateIDBSignUp({ firstName, lastName, email, password })
+            .then((user) => {
+              console.log("updateIDPSignUp" + user);
+            })
+            .catch((error) => {
+              console.log("error sign up to stored data", error);
+            });
         } else if (!response.emailStatus) {
           setValidEmail(true);
         }
-        db.version(1).stores({
-          users: "email, firstName",
-        });
-
-        db.users
-          .put({
-            email,
-            firstName,
-          })
-          .then(function () {
-            return db.users.get();
-          })
-          .then(function (user) {
-            console.log("user" + user);
-          })
-          .catch(function (error) {
-            console.log(error, "error");
-          });
       });
   }
 
