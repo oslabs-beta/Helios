@@ -19,6 +19,10 @@ export const addCredentials = (credentials) => {
   return { type: types.ADD_CREDENTIALS, payload: credentials };
 };
 
+//###############################################
+//AWS Reducer All Functions
+//###############################################
+
 export const addLambda = (functions) => {
   console.log('inside add Lambda action: ', functions);
   return { type: types.ADD_LAMBDA, payload: functions };
@@ -32,6 +36,8 @@ export const addFunctionLogs = (logObj) => {
 export const removeFunctionLogs = (functionName) => {
   return { type: types.REMOVE_FUNCTION_LOGS, payload: functionName };
 };
+
+
 export const addInvocationsAlldata = (invocationsAllData) => {
   console.log('inside add Invocation action: ', invocationsAllData);
   return { type: types.ADD_INVOCATIONS_ALLDATA, payload: invocationsAllData };
@@ -58,4 +64,22 @@ export const updateFetchTime = () => {
 
 export const updateFunctionLogs = (updatedLogs) => {
   return { type: types.UPDATE_FUNCTION_LOGS, payload: updatedLogs };
+};
+
+//###############################################
+//AWS Reducer By Function
+//###############################################
+export const addInvocationsByFuncdata = (invocationsByFuncData) => {
+  console.log('inside add Invocation By Func action: ', invocationsByFuncData);
+  return { type: types.ADD_INVOCATIONS_BYFUNCDATA, payload: invocationsByFuncData };
+};
+
+export const updateFetchTimeByFunc = () => {
+  console.log('inside update Fetch Time By Func action: ');
+  return { type: types.UPDATE_FETCH_TIME_BYFUNC };
+};
+
+export const updateRenderByFunc = () => {
+  console.log('inside update Render By Func action: ');
+  return { type: types.UPDATE_RENDER_BYFUNC };
 };

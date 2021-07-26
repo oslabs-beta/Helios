@@ -1,25 +1,6 @@
-// ##############################
-// // // javascript library for creating charts
-// #############################
-// var Chartist = require('chartist');
-// import Chartist from 'chartist';
-import { PinDropSharp } from '@material-ui/icons';
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import moment from 'moment';
-import Chartist from 'chartist';
-// ##############################
-// // // variables used to create animation on charts
-// #############################
-var delays = 80,
-  durations = 500;
-var delays2 = 80,
-  durations2 = 500;
-
-// ##############################
-// // // Email Subscriptions
-// #############################
+// #######################################
+// Lambda Metrics All Function Totals
+// #######################################
 
 const metricAllFuncBarChart = (props, timePeriod) => {
 

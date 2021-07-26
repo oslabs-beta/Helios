@@ -37,16 +37,9 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import moment from 'moment';
 
-import { bugs, website, server } from '../../variables/general.js';
 
-import {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart,
-  invocationsChart,
-} from '../../variables/charts.js';
+
 
 import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
 import FetchTime from '../../components/FetchTime/FetchTime.js';
@@ -62,6 +55,10 @@ const mapStateToProps = (state) => ({
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
   throttlesAllData: state.aws.throttlesAllData,
+
+  awsByFunc: state.awsByFunc,
+
+
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -76,6 +73,13 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(actions.addThrottlesAlldata(throttlesAllData)),
   updateRender: () => dispatch(actions.updateRender()),
   updateFetchTime: () => dispatch(actions.updateFetchTime()),
+
+  addInvocationsByFuncData: (invocationsByFuncData) =>
+  dispatch(actions.addInvocationsByFuncData(invocationsByFuncData)),  
+  updateRenderByFunc: () => dispatch(actions.updateRenderByFunc()),
+  updateFetchTimeByFunc: () => dispatch(actions.updateFetchTimeByFunc()),
+
+
 });
 
 function Dashboard(props) {
@@ -112,6 +116,8 @@ function Dashboard(props) {
     setDateRange(e.target.value);
     console.log(e.target.value);
     props.updateRender();
+    props.updateRenderByFunc();
+
   };
 
   let timePeriod;

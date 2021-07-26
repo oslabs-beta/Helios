@@ -17,7 +17,7 @@ export default function FetchTime(props) {
     useEffect(() => {
     
         const interval = setInterval(() => {
-          //setTemp(temp => temp + 1)
+
           setFetchTime(moment(props.lastMetricFetchTime).fromNow())
     
         }, 1000)
