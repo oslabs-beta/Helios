@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { useHistory, Link } from 'react-router-dom';
 import classNames from 'classnames';
 // @material-ui/core components
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,12 +20,16 @@ import Search from '@material-ui/icons/Search';
 // core components
 import CustomInput from '../../components/CustomInput/CustomInput.js';
 import Button from '../../components/CustomButtons/Button.js';
-
+import { handleLogout } from '../../../Actions/actions';
 import styles from '../../assets/jss/material-dashboard-react/components/headerLinksStyle.js';
 
 const useStyles = makeStyles(styles);
 
-export default function AdminNavbarLinks() {
+const mapDispatchToProps = (dispatch) => ({
+  handleLogout: () => dispatch(handleLogout()),
+});
+
+function AdminNavbarLinks(props) {
   const classes = useStyles();
   const [openNotification, setOpenNotification] = React.useState(null);
   const [openProfile, setOpenProfile] = React.useState(null);
@@ -47,6 +53,18 @@ export default function AdminNavbarLinks() {
   const handleCloseProfile = () => {
     setOpenProfile(null);
   };
+  const handleRouteToProfile = () => {
+    setOpenProfile(null);
+    history.push('/admin/user');
+  };
+
+  const handleLogoutAndChange = () => {
+    setOpenProfile(null);
+    props.handleLogout();
+    history.push('/');
+  };
+
+  const history = useHistory();
   return (
     <div>
       <div className={classes.searchWrapper}>
@@ -65,18 +83,20 @@ export default function AdminNavbarLinks() {
           <Search />
         </Button>
       </div>
-      <Button
-        color={window.innerWidth > 959 ? 'transparent' : 'white'}
-        justIcon={window.innerWidth > 959}
-        simple={!(window.innerWidth > 959)}
-        aria-label='Dashboard'
-        className={classes.buttonLink}
-      >
-        <Dashboard className={classes.icons} />
-        <Hidden mdUp implementation='css'>
-          <p className={classes.linkText}>Dashboard</p>
-        </Hidden>
-      </Button>
+      <Link to='/admin/dashboard'>
+        <Button
+          color={window.innerWidth > 959 ? 'transparent' : 'white'}
+          justIcon={window.innerWidth > 959}
+          simple={!(window.innerWidth > 959)}
+          aria-label='Dashboard'
+          className={classes.buttonLink}
+        >
+          <Dashboard className={classes.icons} />
+          <Hidden mdUp implementation='css'>
+            <p className={classes.linkText}>Dashboard</p>
+          </Hidden>
+        </Button>
+      </Link>
       <div className={classes.manager}>
         <Button
           color={window.innerWidth > 959 ? 'transparent' : 'white'}
@@ -194,7 +214,7 @@ export default function AdminNavbarLinks() {
                 <ClickAwayListener onClickAway={handleCloseProfile}>
                   <MenuList role='menu'>
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      onClick={handleRouteToProfile}
                       className={classes.dropdownItem}
                     >
                       Profile
@@ -207,7 +227,7 @@ export default function AdminNavbarLinks() {
                     </MenuItem>
                     <Divider light />
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      onClick={handleLogoutAndChange}
                       className={classes.dropdownItem}
                     >
                       Logout
@@ -222,3 +242,4 @@ export default function AdminNavbarLinks() {
     </div>
   );
 }
+export default connect(null, mapDispatchToProps)(AdminNavbarLinks);

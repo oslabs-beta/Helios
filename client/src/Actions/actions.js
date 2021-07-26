@@ -59,3 +59,7 @@ export const updateFetchTime = () => {
 export const updateFunctionLogs = (updatedLogs) => {
   return { type: types.UPDATE_FUNCTION_LOGS, payload: updatedLogs };
 };
+
+export const handleLogout = () => {
+  return { type: types.HANDLE_LOGOUT };
+};

@@ -37,8 +37,7 @@ userController.createUser = (req, res, next) => {
 userController.verifyUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });
-    if (user.comparePassword(req.body.password)) {
-      console.log('Compared Password worked');
+    if (await user.comparePassword(req.body.password)) {
       res.locals.confirmation = {
         confirmed: true,
         userInfo: {
@@ -69,7 +68,6 @@ userController.addArn = async (req, res, next) => {
       { arn: req.body.arn },
       { new: true }
     );
-    console.log(user);
     return next();
   } catch (err) {
     if (err) {

@@ -4,15 +4,14 @@ const Schema = mongoose.Schema;
 const mongoURI =
   'mongodb+srv://helios:ProjectHelios21@projecthelios.fjemz.mongodb.net/Helios?retryWrites=true&w=majority';
 
-  mongoose
+mongoose
   .connect(mongoURI, {
     dbName: 'Helios',
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.log(err));  
-
+  .catch((err) => console.log(err));
 
 const SALT_WORK_FACTOR = 10;
 const bcrypt = require('bcryptjs');
@@ -33,9 +32,9 @@ userSchema.pre('save', function (next) {
     return next();
   });
 });
-userSchema.methods.comparePassword = function (potentialPass) {
+userSchema.methods.comparePassword = async function (potentialPass) {
   const user = this;
-  return bcrypt.compare(potentialPass, user.password);
+  return await bcrypt.compare(potentialPass, user.password);
 };
 
 module.exports = mongoose.model('User', userSchema);

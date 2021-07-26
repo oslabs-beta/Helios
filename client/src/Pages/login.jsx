@@ -62,8 +62,8 @@ function SignIn(props) {
   const classes = useStyles();
   const history = useHistory();
   const [unconfirmed, setConfirmed] = useState(false);
-  let email = '';
-  let password = '';
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   function handleSubmit() {
     const reqParams = {
@@ -75,10 +75,13 @@ function SignIn(props) {
       .then((res) => res.json())
       .then((confirmation) => {
         if (confirmation.confirmed) {
+          console.log('after login: ', confirmation);
           props.addLoginInfo(confirmation.userInfo);
           history.push('/admin');
         } else {
           setConfirmed(true);
+          password.value = '';
+          email.value = '';
         }
       });
   }
@@ -114,8 +117,9 @@ function SignIn(props) {
           name='email'
           autoComplete='email'
           autoFocus
+          value={email}
           onChange={(e) => {
-            email = e.target.value;
+            setEmail(e.target.value);
           }}
         />
         <TextField
@@ -128,8 +132,9 @@ function SignIn(props) {
           type='password'
           id='password'
           autoComplete='current-password'
+          value={password}
           onChange={(e) => {
-            password = e.target.value;
+            setPassword(e.target.value);
           }}
         />
         <FormControlLabel

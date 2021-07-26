@@ -7,31 +7,22 @@ import moment from 'moment';
 
 const useStyles = makeStyles(styles);
 
-
-
 export default function FetchTime(props) {
+  const classes = useStyles();
 
-    const classes = useStyles();
+  const [fetchTime, setFetchTime] = useState('');
+  useEffect(() => {
+    const interval = setInterval(() => {
+      //setTemp(temp => temp + 1)
+      setFetchTime(moment(props.lastMetricFetchTime).fromNow());
+    }, 1000);
 
-    const [fetchTime, setFetchTime] = useState('')
-    useEffect(() => {
-    
-        const interval = setInterval(() => {
-          //setTemp(temp => temp + 1)
-          setFetchTime(moment(props.lastMetricFetchTime).fromNow())
-    
-        }, 1000)
-    
-        return () => clearInterval(interval);
-    
-    
-    
-      }, []);    
+    return () => clearInterval(interval);
+  }, []);
 
-    return (
-        <div className={classes.stats}>
-        <AccessTime /> Last Fetched{' '}
-        {fetchTime}
-      </div>
-    );
-  }
+  return (
+    <div className={classes.stats}>
+      <AccessTime /> Last fetched {fetchTime}
+    </div>
+  );
+}
