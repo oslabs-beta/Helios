@@ -16,7 +16,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import * as actions from "../Actions/actions";
-import updateIDBSignUp from "../indexedDB/updateIDBSignUp";
+import updateUserInfoIDB from "../indexedDB/updateUserInfoIDB";
 
 function Copyright() {
   return (
@@ -80,13 +80,12 @@ function SignUp(props) {
           props.addUserInfo(response.userInfo);
           history.push("/user/register");
 
-          // save once signed up is confirmed
-          updateIDBSignUp({ firstName, lastName, email, password })
+          updateUserInfoIDB({ firstName, email })
             .then((user) => {
-              console.log("updateIDPSignUp" + user);
+              console.log("successfully stored data");
             })
             .catch((error) => {
-              console.log("error sign up to stored data", error);
+              console.log("error while updating user info", error);
             });
         } else if (!response.emailStatus) {
           setValidEmail(true);

@@ -17,7 +17,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 // import { addLoginInfo } from '../Actions/actions';
 import * as actions from "../Actions/actions";
-import updateIDBSignIn from "../indexedDB/updateIDBSignIn";
+import updateUserInfoIDB from "../indexedDB/updateUserInfoIDB";
+import updateArnIDB from "../indexedDB/updateArnIDB";
 
 function Copyright() {
   return (
@@ -73,20 +74,23 @@ function SignIn(props) {
       body: JSON.stringify({ email, password }),
     };
 
-    updateIDBSignIn({ email, password })
-      .then((user) => {
-        console.log("updateIDPSignIn" + user);
-      })
-      .catch((error) => {
-        console.log("error sign in to stored data", error);
-      });
-
     fetch("/user/login", reqParams)
       .then((res) => res.json())
       .then((confirmation) => {
         if (confirmation.confirmed) {
           props.addLoginInfo(confirmation.userInfo);
+
+          const { firstName, email, arn } = confirmation.userInfo;
+
+          updateArnIDB({ arn }).catch((error) => {
+            console.error("error while updating login arn", error);
+          });
+
+          updateUserInfoIDB({ firstName, email }).catch((error) => {
+            console.error("error while updating login user info", error);
+          });
           history.push("/admin");
+          console.log(confirmation.userInfo, confirmation.confirmed);
         } else {
           setConfirmed(true);
         }

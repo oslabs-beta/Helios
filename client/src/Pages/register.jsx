@@ -15,7 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import * as actions from "../Actions/actions";
-import updateArn from "../indexedDB/updateArn";
+import updateArnIDB from "../indexedDB/updateArnIDB";
 
 function Copyright() {
   return (
@@ -82,15 +82,12 @@ function Register(props) {
       .then((data) => {
         console.log("Registered");
         props.addArn(arn);
+        updateArnIDB({ arn }).catch((error) => {
+          console.error("error while updating arn", error);
+        });
         history.push("/admin");
 
-        updateArn({arn })
-          .then((user) => {
-            console.log("updateArn" + user);
-          })
-          .catch((error) => {
-            console.log("error to delete arn from store data", error);
-          });
+        // TO DO SAVE ARN IN IDB
       })
       .catch((err) => console.log(err));
   };
