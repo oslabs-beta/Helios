@@ -14,7 +14,7 @@ const useStyles = makeStyles(styles);
 
 export default function LogTable(props) {
   const classes = useStyles();
-  const { tableHead, tableData, tableHeaderColor } = props;
+  const { tableHead, tableData, tableHeaderColor, status } = props;
   return (
     <div className={classes.tableResponsive}>
       <Table className={classes.table}>
@@ -29,17 +29,34 @@ export default function LogTable(props) {
         ) : null}
         <TableBody>
           {tableData.map((prop, key) => {
-            return (
-              <TableRow key={key} className={classes.tableBodyRow}>
-                {prop.map((prop, key) => {
-                  return (
-                    <TableCell className={classes.tableCell} key={key}>
-                      {prop}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            );
+            if (
+              prop[2].slice(0, 13).toLowerCase().trim() === 'invoke error' &&
+              status !== 'errors'
+            ) {
+              return (
+                <TableRow key={key} className={classes.errorTableBodyRow}>
+                  {prop.map((prop, key) => {
+                    return (
+                      <TableCell className={classes.tableCell} key={key}>
+                        {prop}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            } else {
+              return (
+                <TableRow key={key} className={classes.tableBodyRow}>
+                  {prop.map((prop, key) => {
+                    return (
+                      <TableCell className={classes.tableCell} key={key}>
+                        {prop}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            }
           })}
         </TableBody>
       </Table>
