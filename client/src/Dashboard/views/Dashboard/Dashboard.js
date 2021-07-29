@@ -1,57 +1,61 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React from "react";
+import { useEffect, useState } from "react";
 // react plugin for creating charts
-import ChartistGraph from 'react-chartist';
-import { connect } from 'react-redux';
+import ChartistGraph from "react-chartist";
+import { connect } from "react-redux";
 // @material-ui/core
-import { makeStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
+import { makeStyles } from "@material-ui/core/styles";
+import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import Store from '@material-ui/icons/Store';
-import Warning from '@material-ui/icons/Warning';
-import DateRange from '@material-ui/icons/DateRange';
-import LocalOffer from '@material-ui/icons/LocalOffer';
-import Update from '@material-ui/icons/Update';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import AccessTime from '@material-ui/icons/AccessTime';
-import Accessibility from '@material-ui/icons/Accessibility';
-import BugReport from '@material-ui/icons/BugReport';
-import Code from '@material-ui/icons/Code';
-import Cloud from '@material-ui/icons/Cloud';
-import Speed from '@material-ui/icons/Speed';
+import Store from "@material-ui/icons/Store";
+import Warning from "@material-ui/icons/Warning";
+import DateRange from "@material-ui/icons/DateRange";
+import LocalOffer from "@material-ui/icons/LocalOffer";
+import Update from "@material-ui/icons/Update";
+import ArrowUpward from "@material-ui/icons/ArrowUpward";
+import AccessTime from "@material-ui/icons/AccessTime";
+import Accessibility from "@material-ui/icons/Accessibility";
+import BugReport from "@material-ui/icons/BugReport";
+import Code from "@material-ui/icons/Code";
+import Cloud from "@material-ui/icons/Cloud";
+import Speed from "@material-ui/icons/Speed";
 // core components
-import GridItem from '../../components/Grid/GridItem.js';
-import GridContainer from '../../components/Grid/GridContainer.js';
-import Table from '../../components/Table/Table.js';
-import Tasks from '../../components/Tasks/Tasks.js';
-import CustomTabs from '../../components/CustomTabs/CustomTabs.js';
-import Danger from '../../components/Typography/Danger.js';
-import Card from '../../components/Card/Card.js';
-import CardHeader from '../../components/Card/CardHeader.js';
-import CardIcon from '../../components/Card/CardIcon.js';
-import CardBody from '../../components/Card/CardBody.js';
-import CardFooter from '../../components/Card/CardFooter.js';
-import * as actions from '../../../Actions/actions';
+import GridItem from "../../components/Grid/GridItem.js";
+import GridContainer from "../../components/Grid/GridContainer.js";
+import Table from "../../components/Table/Table.js";
+import Tasks from "../../components/Tasks/Tasks.js";
+import CustomTabs from "../../components/CustomTabs/CustomTabs.js";
+import Danger from "../../components/Typography/Danger.js";
+import Card from "../../components/Card/Card.js";
+import CardHeader from "../../components/Card/CardHeader.js";
+import CardIcon from "../../components/Card/CardIcon.js";
+import CardBody from "../../components/Card/CardBody.js";
+import CardFooter from "../../components/Card/CardFooter.js";
+import * as actions from "../../../Actions/actions";
 
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import moment from 'moment';
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import moment from "moment";
 
-import { bugs, website, server } from '../../variables/general.js';
+import { bugs, website, server } from "../../variables/general.js";
 
 import {
   dailySalesChart,
   emailsSubscriptionChart,
   completedTasksChart,
   invocationsChart,
-} from '../../variables/charts.js';
+} from "../../variables/charts.js";
 
-import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
-import FetchTime from '../../components/FetchTime/FetchTime.js';
+// import invocationBarChartFunc from "../../variables/invocationBarChart.js";
+import errorBarChartFunc from "../../variables/errorBarChart.js";
+import metricAllFuncBarChart from "../../variables/metricAllFuncBarChart.js";
+import FetchTime from "../../components/FetchTime/FetchTime.js";
 
-import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
+import styles from "../../assets/jss/material-dashboard-react/views/dashboardStyle.js";
+import getArnArrayIDB from "../../../indexedDB/getArnArrayIDB.js";
+import { useLiveQuery } from "dexie-react-hooks";
 
 const useStyles = makeStyles(styles);
 
@@ -80,29 +84,41 @@ const mapDispatchToProps = (dispatch) => ({
 
 function Dashboard(props) {
   const classes = useStyles();
-  console.log('logging from dashboard component (parent): ', props.credentials);
+  console.log("logging from dashboard component (parent): ", props.credentials);
+  const [totalInvocations, setInvocationTotal] = useState(0);
 
-  const [dateSelect, setDateRange] = useState('7d');
+  const arnArray = useLiveQuery(getArnArrayIDB);
+
+  // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
+  console.log("logging from dashboard component (parent): ", props.credentials);
+
+  const [dateSelect, setDateRange] = useState("7d");
 
   useEffect(() => {
-    console.log('ARN: ', props.arn);
     if (!props.credentials) {
-      const reqParams = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ arn: props.arn }),
-      };
-      fetch('/aws/getCreds', reqParams)
-        .then((res) => res.json())
-        .then((credentialsData) => {
-          console.log('logging from useEffect fetch: ', credentialsData);
-          props.addCredentials(credentialsData);
-        })
-        .catch((err) =>
-          console.log('Error inside initial get credentials fetch: ', err)
-        );
+      // check before accessing arnArray, because
+      // it can be undefined if IDB is not yet ready
+      if (arnArray && arnArray[0]) {
+        const reqParams = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ arn: arnArray[0].arn }),
+        };
+
+        fetch("/aws/getCreds", reqParams)
+          .then((res) => res.json())
+          .then((credentialsData) => {
+            console.log("logging from useEffect fetch: ", credentialsData);
+            props.addCredentials(credentialsData);
+          })
+          .catch((err) =>
+            console.log("Error inside initial get credentials fetch: ", err)
+          );
+      }
     }
-  }, []);
+
+    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
+  }, [arnArray]);
 
   if (props.aws.render && props.credentials) {
     metricAllFuncBarChart(props, dateSelect);
@@ -116,53 +132,53 @@ function Dashboard(props) {
 
   let timePeriod;
 
-  if (dateSelect === '7d') {
-    timePeriod = 'Last 7 Days';
-  } else if (dateSelect === '30min') {
-    timePeriod = 'Last 30 Minutes';
-  } else if (dateSelect === '1hr') {
-    timePeriod = 'Last Hour';
-  } else if (dateSelect === '24hr') {
-    timePeriod = 'Last 24 Hours';
-  } else if (dateSelect === '14d') {
-    timePeriod = 'Last 14 Days';
-  } else if (dateSelect === '30d') {
-    timePeriod = 'Last 30 Days';
+  if (dateSelect === "7d") {
+    timePeriod = "Last 7 Days";
+  } else if (dateSelect === "30min") {
+    timePeriod = "Last 30 Minutes";
+  } else if (dateSelect === "1hr") {
+    timePeriod = "Last Hour";
+  } else if (dateSelect === "24hr") {
+    timePeriod = "Last 24 Hours";
+  } else if (dateSelect === "14d") {
+    timePeriod = "Last 14 Days";
+  } else if (dateSelect === "30d") {
+    timePeriod = "Last 30 Days";
   } else {
-    timePeriod = 'Invalid Time Period';
+    timePeriod = "Invalid Time Period";
   }
 
   return (
     <div>
       <div className={classes.sortBy}>
         <FormControl className={classes.timeRange}>
-          <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
-            {' '}
+          <InputLabel htmlFor="date-change-select" className={classes.dateSpec}>
+            {" "}
             <DateRange /> Time Period
           </InputLabel>
           <br />
           <Select
-            id='date-change-select'
+            id="date-change-select"
             value={dateSelect}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >
-            <MenuItem value='30min' className={classes.dateSpec}>
+            <MenuItem value="30min" className={classes.dateSpec}>
               Last 30 Minutes
             </MenuItem>
-            <MenuItem value='1hr' className={classes.dateSpec}>
+            <MenuItem value="1hr" className={classes.dateSpec}>
               Last Hour
             </MenuItem>
-            <MenuItem value='24hr' className={classes.dateSpec}>
+            <MenuItem value="24hr" className={classes.dateSpec}>
               Last 24 Hours
             </MenuItem>
-            <MenuItem value='7d' className={classes.dateSpec}>
+            <MenuItem value="7d" className={classes.dateSpec}>
               Last 7 Days
             </MenuItem>
-            <MenuItem value='14d' className={classes.dateSpec}>
+            <MenuItem value="14d" className={classes.dateSpec}>
               Last 14 Days
             </MenuItem>
-            <MenuItem value='30d' className={classes.dateSpec}>
+            <MenuItem value="30d" className={classes.dateSpec}>
               Last 30 Days
             </MenuItem>
           </Select>
@@ -172,8 +188,8 @@ function Dashboard(props) {
       <GridContainer>
         <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='success' stats icon>
-              <CardIcon color='success'>
+            <CardHeader color="success" stats icon>
+              <CardIcon color="success">
                 <Speed />
               </CardIcon>
               <p className={classes.cardCategory}>Total Throttles</p>
@@ -192,8 +208,8 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='info' stats icon>
-              <CardIcon color='info'>
+            <CardHeader color="info" stats icon>
+              <CardIcon color="info">
                 <Cloud />
               </CardIcon>
               <p className={classes.cardCategory}>Total Invocations</p>
@@ -212,8 +228,8 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='danger' stats icon>
-              <CardIcon color='danger'>
+            <CardHeader color="danger" stats icon>
+              <CardIcon color="danger">
                 <Icon>info_outline</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Total Errors</p>
@@ -250,11 +266,11 @@ function Dashboard(props) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='success'>
+            <CardHeader color="success">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={props.throttlesAllData.data}
-                type='Bar'
+                type="Bar"
                 options={props.throttlesAllData.options}
                 responsiveOptions={props.throttlesAllData.responsiveOptions}
                 listener={props.throttlesAllData.animation}
@@ -271,11 +287,11 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='info'>
+            <CardHeader color="info">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={props.invocationsAllData.data}
-                type='Bar'
+                type="Bar"
                 options={props.invocationsAllData.options}
                 responsiveOptions={props.invocationsAllData.responsiveOptions}
                 listener={props.invocationsAllData.animation}
@@ -292,11 +308,11 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='danger'>
+            <CardHeader color="danger">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={props.errorsAllData.data}
-                type='Bar'
+                type="Bar"
                 options={props.errorsAllData.options}
                 responsiveOptions={props.errorsAllData.responsiveOptions}
                 listener={props.errorsAllData.animation}
