@@ -51,6 +51,15 @@ const mainReducer = (state = initialState, action) => {
       };
     }
 
+    case types.HANDLE_LOGOUT: {
+      return {
+        email: '',
+        firstName: '',
+        arn: '',
+        credentials: null,
+      };
+    }
+
     default: {
       return state;
     }

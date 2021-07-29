@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 // @material-ui/core components
@@ -16,12 +17,18 @@ import Close from '@material-ui/icons/Close';
 import Check from '@material-ui/icons/Check';
 // core components
 import styles from '../../assets/jss/material-dashboard-react/components/tasksStyle.js';
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from 'react-promise-tracker';
+import { Spinner } from '../../variables/spinner';
+import Loader from 'react-loader-spinner';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 const useStyles = makeStyles(styles);
 
 export default function LambdaList(props) {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([...props.checkedIndexes]);
+  const [checked, setChecked] = useState([...props.checkedIndexes]);
+  const { promiseInProgress } = usePromiseTracker();
 
   const handleToggle = (value) => {
     const currentIndex = checked.indexOf(value);
@@ -34,18 +41,18 @@ export default function LambdaList(props) {
         body: JSON.stringify({
           function: props.tasks[value],
           credentials: props.credentials,
-          timePeriod: props.timePeriod
+          timePeriod: props.timePeriod,
         }),
       };
-      fetch('/aws/getLogs', reqParams)
+      trackPromise(fetch('/aws/getLogs', reqParams))
         .then((res) => res.json())
         .then((logs) => {
           console.log(logs);
-          props.addFunctionLogs(logs)
+          props.addFunctionLogs(logs);
         });
     } else {
       newChecked.splice(currentIndex, 1);
-      props.removeFunctionLogs(props.tasks[value])
+      props.removeFunctionLogs(props.tasks[value]);
     }
     setChecked(newChecked);
   };
@@ -54,28 +61,41 @@ export default function LambdaList(props) {
     [classes.tableCellRTL]: rtlActive,
   });
   return (
-    <Table className={classes.table}>
-      <TableBody>
-        {tasksIndexes.map((value) => (
-          <TableRow key={value} className={classes.tableRow}>
-            <TableCell className={tableCellClasses}>
-              <Checkbox
-                checked={checked.indexOf(value) !== -1}
-                tabIndex={-1}
-                onClick={() => handleToggle(value)}
-                checkedIcon={<Check className={classes.checkedIcon} />}
-                icon={<Check className={classes.uncheckedIcon} />}
-                classes={{
-                  checked: classes.checked,
-                  root: classes.root,
-                }}
-              />
-            </TableCell>
-            <TableCell className={tableCellClasses}>{tasks[value]}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div>
+      {promiseInProgress || props.updatePromise ? (
+        <center>
+          <Loader
+            type='TailSpin'
+            color='#00BFFF'
+            height={50}
+            width={50}
+            className={classes.loader}
+          />
+        </center>
+      ) : null}
+      <Table className={classes.table}>
+        <TableBody>
+          {tasksIndexes.map((value) => (
+            <TableRow key={value} className={classes.tableRow}>
+              <TableCell className={tableCellClasses}>
+                <Checkbox
+                  checked={checked.indexOf(value) !== -1}
+                  tabIndex={-1}
+                  onClick={() => handleToggle(value)}
+                  checkedIcon={<Check className={classes.checkedIcon} />}
+                  icon={<Check className={classes.uncheckedIcon} />}
+                  classes={{
+                    checked: classes.checked,
+                    root: classes.root,
+                  }}
+                />
+              </TableCell>
+              <TableCell className={tableCellClasses}>{tasks[value]}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

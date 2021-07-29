@@ -8,11 +8,11 @@ const cardAvatarStyle = {
     },
   },
   cardAvatarProfile: {
-    maxWidth: '130px',
-    maxHeight: '130px',
+    maxWidth: '180px',
+    maxHeight: '150px',
     margin: '-50px auto 0',
-    borderRadius: '50%',
-    overflow: 'hidden',
+    borderRadius: '5%',
+    overflow: 'visible',
     padding: '0',
     boxShadow:
       '0 16px 38px -12px rgba(' +
@@ -22,9 +22,9 @@ const cardAvatarStyle = {
       ', 0.12), 0 8px 10px -5px rgba(' +
       hexToRgb(blackColor) +
       ', 0.2)',
-    '&$cardAvatarPlain': {
-      marginTop: '0',
-    },
+    // '&$cardAvatarPlain': {
+    //   marginTop: '0',
+    // },
   },
   cardAvatarPlain: {},
 };

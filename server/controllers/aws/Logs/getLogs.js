@@ -99,7 +99,14 @@ const getLogs = async (req, res, next) => {
       const dataArr = [];
       dataArr.push('...' + eventObj.logStreamName.slice(-5));
       dataArr.push(moment(eventObj.timestamp).format('lll'));
-      dataArr.push(eventObj.message.slice(67));
+      if (
+        eventObj.message.slice(0, 4) !== 'LOGS' &&
+        eventObj.message.slice(0, 9) !== 'EXTENSION'
+      ) {
+        dataArr.push(eventObj.message.slice(67));
+      } else {
+        dataArr.push(eventObj.message);
+      }
       // push to the larger array to then make up the table
       streams.push(dataArr);
     }
