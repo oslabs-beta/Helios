@@ -40,17 +40,9 @@ const getAPIData = async (req, res, next) => {
         } else {
           resourceEl.methodsArr = undefined;
         }
+
         apiData[i].resources.push(resourceEl);
       }
-      // for (let k = 0; k < apiData[i].resources.length; k += 1) {
-      //   const apiResource = apiData[i].resources[k];
-      //   for (let m = 0; m < apiResource.methodsArr.length; m += 1) {
-      //     const method = apiResource.methodsArr[m];
-      //     console.log('method: ', method, ' from ', apiResource);
-      //     console.log(apiData[0]);
-      //     console.log(apiData[1]);
-      //   }
-      // }
     }
 
     for (let j = 0; j < apiData.length; j += 1) {
@@ -74,8 +66,17 @@ const getAPIData = async (req, res, next) => {
                 currMethodObj = {
                   method: currHttpMethod,
                   type: integrationData.type,
-                  uri: integrationData.uri,
                 };
+                if (integrationData.uri.includes('lambda')) {
+                  const cutString = integrationData.uri.slice(
+                    integrationData.uri.indexOf('function:')
+                  );
+                  const lambdaFunc = cutString.slice(9).slice(0, -12);
+                  currMethodObj.service = 'Lambda';
+                  currMethodObj.endPoint = lambdaFunc;
+                } else if (integrationData.uri.includes('dynamodb')) {
+                  currMethodObj.service = 'DynamoDB';
+                }
                 currResource.methods.push(currMethodObj);
               } catch (err) {
                 console.log('Error after integration attempt: ', err.stack);
@@ -83,32 +84,15 @@ const getAPIData = async (req, res, next) => {
             }
           }
         }
+        if (!currResource.methods || currResource.methods.length === 0) {
+          console.log(currResource);
+          delete currResource.methods;
+        }
       }
     }
   } catch (err) {
     console.log('Error after try/catch: ', err);
   }
-  //   console.log(apiData[1]);
-  //   const refreshProfitsIntegration = await client.send(
-  //     new GetIntegrationCommand({
-  //       restApiId: '3mi5k0hgr1',
-  //       resourceId: 'tq2zyj',
-  //       httpMethod: 'GET',
-  //     })
-  //   );
-  //   if (!refreshProfitsIntegration) {
-  //     console.log('moving on');
-  //   }
-  //   console.log(refreshProfitsIntegration);
-
-  // console.log('returned object: ', apiData);
-
-  //   const secondResource = await client.send(
-  //     new GetResourcesCommand({ restApiId: '3mi5k0hgr1' })
-  //   );
-  //   console.log(secondResource);
-  //   console.log(secondResource.items[0].resourceMethods);
-  //   console.log(secondResource.items[7].resourceMethods);
   res.locals.apiData = apiData;
   return next();
 };

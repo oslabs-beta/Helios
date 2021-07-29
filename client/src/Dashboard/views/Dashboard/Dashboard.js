@@ -81,7 +81,6 @@ const mapDispatchToProps = (dispatch) => ({
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
-
   const [dateSelect, setDateRange] = useState('7d');
 
   useEffect(() => {

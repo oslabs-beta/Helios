@@ -51,6 +51,7 @@ import SendIcon from '@material-ui/icons/Send';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
+import { latencyChart } from '../../variables/apiCharts';
 
 const useStyles = makeStyles(styles);
 
@@ -58,10 +59,14 @@ const mapStateToProps = (state) => ({
   arn: state.main.arn,
   credentials: state.main.credentials,
   aws: state.aws,
+  api: state.api,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
+  addApiGateways: (apiData) => dispatch(actions.addApiGateways(apiData)),
+  addApiMetrics: (apiData) => dispatch(actions.addApiMetrics(apiData)),
+  removeApiMetrics: (apiName) => dispatch(actions.removeApiMetrics(apiName)),
 });
 
 function APIGateway(props) {
@@ -80,37 +85,142 @@ function APIGateway(props) {
           credentials: props.credentials,
         }),
       };
-      fetch('/aws/updateLogs', reqParams)
-        .then((res) => res.json())
-        .then((updatedLogs) => {
-          props.updateFunctionLogs(updatedLogs);
-        })
-        .catch((err) => console.log('Error in refreshing updateLogs: ', err));
+      // fetch('/aws/updateLogs', reqParams)
+      //   .then((res) => res.json())
+      //   .then((updatedLogs) => {
+      //     props.updateFunctionLogs(updatedLogs);
+      //   })
+      //   .catch((err) => console.log('Error in refreshing updateLogs: ', err));
     }
   };
 
   useEffect(() => {
+    console.log(props.api.apiMetrics);
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        credentials: {
-          accessKeyId: 'ASIASCGOUE2KPFA52XOG',
-          secretAccessKey: 'jzU+W77kpxe3+Oy0WiXjFcbmrQvES2hvZ8/pWK0x',
-          sessionToken:
-            'IQoJb3JpZ2luX2VjEEQaCXVzLWVhc3QtMiJIMEYCIQCFLKo9dMnJOXRpIkpPcuz8cevx9yXhVvT9+Y86UpdBUwIhAMuudPZRmA6+6TbCQSAno3MTeHAJUwvHOFOQNSzPZUgLKpoCCE0QABoMMTQyMTY3MjU0Njc2IgzZ+vxHHnVvnpwz8boq9wGfyVY7pURIGLrBFV4ta386gtfujR7/wmuzDneGQiHSqSjeI2GVjZHYy1QWc6H93AxDp0J5Qz2cJtIY/gBm/BccUdv27iNMedxzLbhZ7t5FLCikN7rU6DbI1tu4OlNmAO9SDs38sNavD9pCKpKZz+5ndbjaEKu4H1evwD2vtocCPPUj/WVS2qptwx0zfahY/qFRWscpcSKmIifFhm8nrRaEW1u9YsdWmcF7iiz7gIPordmQ05M08Edl4aI0jKynFRnOYZZ/n4ut+wlUgCrBWBdi72eUO+oIP9+GgL7Doqf5+EsB9dTeEWelFrPCE//OvO2b5H3zEsRHMKmr/IcGOpwBQduiOryUBRrfpbvRJA86/KdwxlnrbP9P62vi+VhWj30axbSgLhpQdgCGgjzOsgGTsAfefGmKpvwI8IFO4pqCAf0Gw6EkEGM4Z49LUq0fLeQrFLuldU5uHc5YENPx+d8WbXd3TkQTZ0VA7F3egT8d3zTBMYBcxz2/m5q8arL8mRqp6ClOOhdHZfBaGzLFvOwO5Njf6h2XyrJcnynS',
-        },
+        credentials: props.credentials,
       }),
     };
     fetch('/aws/apiGateway', reqParams)
       .then((res) => res.json())
       .then((apiData) => {
         console.log('logging from API Gateway useEffect fetch: ', apiData);
+        props.addApiGateways(apiData);
       })
       .catch((err) =>
         console.log('Error inside API Gateway useEffect fetch: ', err)
       );
   }, []);
+  console.log(props.api.apiMetrics);
+
+  const mappedMetrics = props.api.apiMetrics.map((apiName, i) => {
+    return (
+      <CustomTabs
+        key={i}
+        headerColor='warning'
+        tabs={[
+          {
+            tabName: 'Latency',
+            tabContent: (
+              <Card chart>
+                <CardHeader color='success'>
+                  <ChartistGraph
+                    className='ct-chart'
+                    data={apiName.Latency.data}
+                    type='Bar'
+                    options={apiName.Latency.options}
+                    responsiveOptions={apiName.Latency.responsiveOptions}
+                    listener={apiName.Latency.animation}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <h4 className={classes.cardTitle}>
+                    {apiName.name} API Latency
+                  </h4>
+                </CardBody>
+                <CardFooter chart>
+                  <p>Total: {apiName.Latency.total}ms</p>
+                </CardFooter>
+              </Card>
+            ),
+          },
+          {
+            tabName: 'Count',
+            tabContent: (
+              <Card chart>
+                <CardHeader color='success'>
+                  <ChartistGraph
+                    className='ct-chart'
+                    data={apiName.Count.data}
+                    type='Line'
+                    options={apiName.Count.options}
+                    responsiveOptions={apiName.Count.responsiveOptions}
+                    listener={apiName.Count.animation}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <h4 className={classes.cardTitle}>
+                    {apiName.name} API Count
+                  </h4>
+                </CardBody>
+                <CardFooter chart>
+                  <p>Total: {apiName.Count.total}</p>
+                </CardFooter>
+              </Card>
+            ),
+          },
+          {
+            tabName: '5XX',
+            tabContent: (
+              <Card chart>
+                <CardHeader color='success'>
+                  <ChartistGraph
+                    className='ct-chart'
+                    data={apiName['5XX'].data}
+                    type='Bar'
+                    options={apiName['5XX'].options}
+                    responsiveOptions={apiName['5XX'].responsiveOptions}
+                    listener={apiName['5XX'].animation}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <h4 className={classes.cardTitle}>{apiName.name} API 5XX</h4>
+                </CardBody>
+                <CardFooter chart>
+                  <p>Total: {apiName['5XX'].total}</p>
+                </CardFooter>
+              </Card>
+            ),
+          },
+          {
+            tabName: '4XX',
+            tabContent: (
+              <Card chart>
+                <CardHeader color='success'>
+                  <ChartistGraph
+                    className='ct-chart'
+                    data={apiName['4XX'].data}
+                    type='Bar'
+                    options={apiName['4XX'].options}
+                    responsiveOptions={apiName['4XX'].responsiveOptions}
+                    listener={apiName['4XX'].animation}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <h4 className={classes.cardTitle}>{apiName.name} API 4XX</h4>
+                </CardBody>
+                <CardFooter chart>
+                  <p>Total: {apiName['4XX'].total}</p>
+                </CardFooter>
+              </Card>
+            ),
+          },
+        ]}
+      />
+    );
+  });
 
   return (
     <div className={classes.logGrid}>
@@ -157,56 +267,17 @@ function APIGateway(props) {
             </CardHeader>
             <CardBody>
               <APIList
-                apiList={[
-                  {
-                    name: 'Crypto',
-                    apiId: '3mi5k0hgr1',
-                    resources: [
-                      {
-                        resourceId: '2mwnpv',
-                        path: '/getchart/subgetchart',
-                        methods: [
-                          {
-                            method: 'GET',
-                            type: 'AWS',
-                            uri: 'arn:aws:apigateway:us-east-2:dynamodb:action/',
-                          },
-                        ],
-                      },
-                      {
-                        resourceId: '3um74j',
-                        path: '/refreshprofits',
-                        methods: [
-                          {
-                            method: 'POST',
-                            type: 'AWS_PROXY',
-                            uri: 'arn:aws:apigateway:us-east-2:lambda:path/2015-03-3…7254676:function:CryptoRefreshProfits/invocations',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    name: 'WildRydes',
-                    apiId: 'z1w95ck6jk',
-                    resources: [
-                      {
-                        resourceId: 'ye5gbz',
-                        path: '/ride',
-                        methods: [
-                          {
-                            method: 'POST',
-                            type: 'AWS_PROXY',
-                            uri: 'arn:aws:apigateway:us-east-2:lambda:path/2015-03-3…142167254676:function:RequestUnicorn2/invocations',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ]}
+                apiList={props.api.apiKeys}
+                timePeriod={dateSelect}
+                credentials={props.credentials}
+                addApiMetrics={props.addApiMetrics}
+                removeApiMetrics={props.removeApiMetrics}
               />
             </CardBody>
           </Card>
+        </GridItem>
+        <GridItem xs={8} sm={8} md={8}>
+          {mappedMetrics}
         </GridItem>
       </GridContainer>
     </div>

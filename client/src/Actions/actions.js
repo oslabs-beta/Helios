@@ -63,3 +63,19 @@ export const updateFunctionLogs = (updatedLogs) => {
 export const handleLogout = () => {
   return { type: types.HANDLE_LOGOUT };
 };
+
+export const addApiGateways = (apiData) => {
+  return { type: types.ADD_API_GATEWAYS, payload: apiData };
+};
+
+export const addApiMetrics = (apiMetrics) => {
+  return { type: types.ADD_API_METRIC_CHARTS, payload: apiMetrics };
+};
+
+export const removeApiMetrics = (apiName) => {
+  return { type: types.REMOVE_API_METRIC_CHARTS, payload: apiName };
+};
+
+export const updatedApiMetrics = (updatedApiMetrics) => {
+  return { type: types.UPDATE_API_METRIC_CHARTS, payload: updatedApiMetrics };
+};

@@ -3,6 +3,7 @@ import {
   primaryColor,
   dangerColor,
   grayColor,
+  successColor,
 } from '../../material-dashboard-react.js';
 import tooltipStyle from '../tooltipStyle.js';
 import checkboxAdnRadioStyle from '../checkboxAdnRadioStyle.js';
@@ -53,5 +54,10 @@ const tasksStyle = {
     color: dangerColor[0],
     boxShadow: 'none',
   },
+  // loader: {
+  //   color: successColor[0],
+  //   height: '50px',
+  //   width: '50px',
+  // },
 };
 export default tasksStyle;
