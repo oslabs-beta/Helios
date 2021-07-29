@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import App from './App.jsx';
 import store from './store.js';
 import './Dashboard/assets/css/material-dashboard-react.css';
-//import 'assets/css/material-dashboard-react.scss';
+import './Dashboard/assets/scss/chart_legend.scss';
 
 render(
   <Provider store={store}>

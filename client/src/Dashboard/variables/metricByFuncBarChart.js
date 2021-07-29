@@ -24,6 +24,7 @@ const metricByFuncBarChart = (props, timePeriod) => {
     fetch('/aws/getMetricsByFunc/Invocations', reqParams)
       .then((res) => res.json())
       .then((invocationData) => {
+        console.log("Invocations Data By Func from Server: ", invocationData)
 
         props.addInvocationsByFuncData(invocationData);
         console.log("Printing from Inside By Func Invocations Bar Chart Func: ", props.invocationsByFuncData)

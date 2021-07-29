@@ -1,7 +1,9 @@
 import * as types from '../Constants/actionTypes';
 import moment from 'moment';
 import Chartist from 'chartist';
-
+require ('chartist-plugin-legend')
+require('chartist-plugin-tooltips')
+//require('chartist-plugin-legend')
 // ##############################
 // // // variables used to create animation on charts
 // #############################
@@ -11,7 +13,7 @@ const delays2 = 80,
   durations2 = 500;
 
 const initialState = {
-  renderbyfunc: true,
+  renderByFunc: true,
   lastMetricFetchTime: new Date(),
   getInvocations: true,
   getThrottles: true,
@@ -29,7 +31,12 @@ const initialState = {
       bottom: 0,
       left: 0,
     },
+    plugins: [
+      Chartist.plugins.legend(),
+     // Chartist.plugins.tooltip({appendToBody: false}),
+  ],
     scaleMinSpace: 15,
+    legendNames:[],
   },
   graphDefaultResponsiveOptions: [
     [
@@ -62,8 +69,11 @@ const initialState = {
   invocationsByFuncData: {
     data: {
       series: [{ name: '', data: [] }],
+      //labels:[],
     },
     options: {},
+    
+
     responsiveOptions: [],
     animation: {},
     total: 0,
@@ -144,14 +154,16 @@ const generateTicks = (startTime, metricTimeRange, metricTimeUnits) => {
 };
 
 const awsReducerByFunc = (state = initialState, action) => {
-  let renderbyfunc;
+  let plugins;
+  let renderByFunc;
+  let legendNames;
 
   let lastMetricFetchTime;
 
   switch (action.type) {
     case types.UPDATE_RENDER_BYFUNC: {
-      renderbyfunc = true;
-      return { ...state, renderbyfunc };
+      renderByFunc = true;
+      return { ...state, renderByFunc };
     }
 
     case types.UPDATE_FETCH_TIME_BYFUNC: {
@@ -168,14 +180,14 @@ const awsReducerByFunc = (state = initialState, action) => {
       let ticks = [];
       let labelFormat;
       let getInvocations;
-      let total = 0;
+
 
       console.log('Inside Add Invocations All Data');
 
-      getInvocations = !state.getInvocations;
+      getInvocations = false
 
       series_data = action.payload.series.map((metricData) => {
-        let name = metricData;
+        let name = metricData.name;
 
         let data = metricData.data.map((xydata) => {
           return { x: new Date(xydata.x), y: xydata.y };
@@ -225,9 +237,12 @@ const awsReducerByFunc = (state = initialState, action) => {
         return moment(value).format(labelFormat);
       };
 
-      action.payload.data.forEach((dataPt) => {
-        total += dataPt.y;
-      });
+      // plugins = [
+      //     Chartist.plugins.legend({
+      //         clickable: false
+      //     })
+      // ];
+      graphOptions.legendNames = action.payload.options.funcNames
 
       invocationsByFuncData = {
         data: {
@@ -236,12 +251,14 @@ const awsReducerByFunc = (state = initialState, action) => {
         options: graphOptions,
         responsiveOptions: graphResponsiveOptions,
         animation: graphtAnimation,
-        total,
+        // plugins:plugins
+        
       };
 
       //console.log("Invocation Data from Reducer: ",errorsAllData )
+      renderByFunc = false
 
-      return { ...state, invocationsByFuncData, getInvocations };
+      return { ...state, invocationsByFuncData, getInvocations, renderByFunc };
     }
     // case types.ADD_ERRORS_BYFUNCDATA: {
     //   let series_data;
@@ -392,9 +409,9 @@ const awsReducerByFunc = (state = initialState, action) => {
     //   };
 
     //   console.log('Throttle Data from reducer: ', throttlesAllData);
-    //   renderbyfunc = false;
+    //   renderByFunc = false;
 
-    //   return { ...state, throttlesAllData, getThrottles, renderbyfunc };
+    //   return { ...state, throttlesAllData, getThrottles, renderByFunc };
     // }
 
     default: {

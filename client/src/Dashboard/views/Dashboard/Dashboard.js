@@ -42,6 +42,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 
 import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
+import metricByFuncBarChart from '../../variables/metricByFuncBarChart.js';
 import FetchTime from '../../components/FetchTime/FetchTime.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
@@ -57,6 +58,7 @@ const mapStateToProps = (state) => ({
   throttlesAllData: state.aws.throttlesAllData,
 
   awsByFunc: state.awsByFunc,
+  invocationsByFuncData: state.awsByFunc.invocationsByFuncData,
 
 
 });
@@ -108,8 +110,15 @@ function Dashboard(props) {
     }
   }, []);
 
+
+//fetch total metrics
   if (props.aws.render && props.credentials) {
     metricAllFuncBarChart(props, dateSelect);
+  }
+
+//fetch by Func metrics
+  if (props.awsByFunc.renderByFunc && props.credentials && props.aws.functions) {
+    metricByFuncBarChart(props, dateSelect);
   }
 
   const handleDateChange = (e) => {
@@ -233,6 +242,7 @@ function Dashboard(props) {
             </CardFooter>
           </Card>
         </GridItem>
+        
 
         {/* <GridItem xs={12} sm={6} md={3}>
           <Card>
@@ -317,6 +327,27 @@ function Dashboard(props) {
             </CardFooter>
           </Card>
         </GridItem>
+        <GridItem xs={12} sm={12} md={6}>
+          <Card chart>
+            <CardHeader color='info'>
+              <ChartistGraph
+                className='ct-chart'
+                data={props.invocationsByFuncData.data}
+                type='Bar'
+                options={props.invocationsByFuncData.options}
+                responsiveOptions={props.invocationsByFuncData.responsiveOptions}
+                listener={props.invocationsByFuncData.animation}
+                // plugins={props.invocationsByFuncData.plugins}
+              />
+            </CardHeader>
+            <CardBody>
+              <h4 className={classes.cardTitle}>Invocations By Function</h4>
+            </CardBody>
+            <CardFooter chart>
+              <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
+            </CardFooter>
+          </Card>
+        </GridItem>        
       </GridContainer>
 
       {/* <GridContainer>

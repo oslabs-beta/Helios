@@ -6,7 +6,7 @@ import awsReducerByFunc from './awsReducerbyFunc'
 const reducers = combineReducers({
   main: mainReducer,
   aws: awsReducer,
-  awsByfunc: awsReducerByFunc,
+  awsByFunc: awsReducerByFunc,
 });
 
 export default reducers;

@@ -69,7 +69,7 @@ export const updateFunctionLogs = (updatedLogs) => {
 //###############################################
 //AWS Reducer By Function
 //###############################################
-export const addInvocationsByFuncdata = (invocationsByFuncData) => {
+export const addInvocationsByFuncData = (invocationsByFuncData) => {
   console.log('inside add Invocation By Func action: ', invocationsByFuncData);
   return { type: types.ADD_INVOCATIONS_BYFUNCDATA, payload: invocationsByFuncData };
 };
