@@ -1,6 +1,6 @@
 // const { shell } = require('@electron/remote');
-const { app, BrowserWindow } = require('electron');
-require('@electron/remote/main').initialize();
+const { app, BrowserWindow } = require("electron");
+require("@electron/remote/main").initialize();
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -8,23 +8,24 @@ function createWindow() {
     height: 1200,
     webPreferences: {
       nodeIntegration: true,
+      nodeIntegrationInWorker: true,
       enableRemoteModule: true,
       worldSafeExecuteJavaScript: true,
       contextIsolation: true,
     },
   });
 
-  win.loadURL('http://localhost:8080');
+  win.loadURL("http://localhost:8080");
   // win.webContents.setWindowOpenHandler(({ url }) => {
   //   shell.openExternal(url);
   //   return { action: 'deny' };
   // });
 }
 
-app.on('ready', createWindow);
+app.on("ready", createWindow);
 
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') {
+app.on("window-all-closed", function () {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
@@ -34,6 +35,6 @@ app.on('window-all-closed', function () {
 //   app.shell.openExternal(url);
 // });
 
-app.on('activate', function () {
+app.on("activate", function () {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });

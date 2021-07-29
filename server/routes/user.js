@@ -15,4 +15,8 @@ router.route('/register').post(userController.addArn, (req, res) => {
   res.sendStatus(200);
 });
 
+router.route('/updateArn').post(userController.updateArn, (req, res) => {
+  res.status(200).json(res.locals.confirmation);
+});
+
 module.exports = router;

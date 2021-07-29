@@ -1,6 +1,36 @@
 const User = require('../Models/userModel');
 const userController = {};
 
+userController.updateArn = async (req, res, next) => {
+  console.log(req.body);
+
+  try {
+    const origUser = await User.findOneAndUpdate(
+      { email: req.body.email },
+      { arn: req.body.newArn }
+    );
+    // const update = { arn: req.body.newArn };
+    // await origUser.updateOne(update);
+    // const updatedUser = await User.updateOne(
+    //   { email: req.body.email },
+    //   { arn: req.body.newArn }
+    // );
+    // console.log(updatedUser);
+    const doubleCheck = await User.findOne({ email: req.body.email });
+    console.log(doubleCheck);
+    if (doubleCheck) {
+      res.locals.confirmation = { status: true, arn: doubleCheck.arn };
+      return next();
+    } else {
+      res.locals.confirmation = { status: false };
+      return next();
+    }
+  } catch (err) {
+    if (err) console.log(err);
+    return next(err);
+  }
+};
+
 userController.createUser = (req, res, next) => {
   User.create(
     {

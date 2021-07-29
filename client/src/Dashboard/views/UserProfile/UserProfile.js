@@ -49,10 +49,37 @@ const mapStateToProps = (state) => ({
   userInfo: state.main,
 });
 
+const handleUpdateArn = () => {
+  const reqParams = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: props.userInfo.email, newArn: updatedArn }),
+  };
+  displayUpdateProfile(false);
+};
+
 function UserProfile(props) {
-  const [updateProfile, displayUpdateProfile] = useState(true);
-  console.log(updateProfile);
+  const [updateProfile, displayUpdateProfile] = useState(false);
+  const [updatedArn, updateArn] = useState(props.userInfo.arn);
   const classes = useStyles();
+
+  const handleUpdateArn = () => {
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: props.userInfo.email, newArn: updatedArn }),
+    };
+    fetch('/user/updateArn', reqParams)
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) =>
+        console.log('Error in updating arn on User Profile: ', err)
+      );
+    displayUpdateProfile(false);
+  };
+
   return (
     <div>
       <GridContainer>
@@ -91,9 +118,6 @@ function UserProfile(props) {
         {updateProfile && (
           <GridItem xs={12} sm={12} md={8}>
             <Card>
-              {/* <CardHeader color='info'>
-                <h4 className={classes.cardTitleWhite}>Update Profile</h4>
-              </CardHeader> */}
               <CardBody>
                 <GridContainer>
                   <Card>
@@ -182,16 +206,14 @@ function UserProfile(props) {
                           formControlProps={{
                             fullWidth: true,
                           }}
+                          onChange={(e) => {
+                            updateArn(e.target.value);
+                          }}
                         />
                       </GridItem>
                     </CardBody>
                     <CardFooter>
-                      <Button
-                        color='success'
-                        onClick={() => {
-                          displayUpdateProfile(false);
-                        }}
-                      >
+                      <Button color='success' onClick={handleUpdateArn}>
                         Update ARN
                       </Button>
                     </CardFooter>

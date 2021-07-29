@@ -48,10 +48,14 @@ import {
   invocationsChart,
 } from '../../variables/charts.js';
 
+// import invocationBarChartFunc from "../../variables/invocationBarChart.js";
+import errorBarChartFunc from '../../variables/errorBarChart.js';
 import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
 import FetchTime from '../../components/FetchTime/FetchTime.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
+import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 const useStyles = makeStyles(styles);
 
@@ -81,27 +85,39 @@ const mapDispatchToProps = (dispatch) => ({
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
+  // const [totalInvocations, setInvocationTotal] = useState(0);
+
+  const arnArray = useLiveQuery(getArnArrayIDB);
+
+  // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
+
   const [dateSelect, setDateRange] = useState('7d');
 
   useEffect(() => {
-    console.log('ARN: ', props.arn);
     if (!props.credentials) {
-      const reqParams = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ arn: props.arn }),
-      };
-      fetch('/aws/getCreds', reqParams)
-        .then((res) => res.json())
-        .then((credentialsData) => {
-          console.log('logging from useEffect fetch: ', credentialsData);
-          props.addCredentials(credentialsData);
-        })
-        .catch((err) =>
-          console.log('Error inside initial get credentials fetch: ', err)
-        );
+      // check before accessing arnArray, because
+      // it can be undefined if IDB is not yet ready
+      if (arnArray && arnArray[0]) {
+        const reqParams = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ arn: arnArray[0].arn }),
+        };
+
+        fetch('/aws/getCreds', reqParams)
+          .then((res) => res.json())
+          .then((credentialsData) => {
+            console.log('logging from useEffect fetch: ', credentialsData);
+            props.addCredentials(credentialsData);
+          })
+          .catch((err) =>
+            console.log('Error inside initial get credentials fetch: ', err)
+          );
+      }
     }
-  }, []);
+
+    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
+  }, [arnArray]);
 
   if (props.aws.render && props.credentials) {
     metricAllFuncBarChart(props, dateSelect);
