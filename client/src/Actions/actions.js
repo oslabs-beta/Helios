@@ -76,6 +76,7 @@ export const removeApiMetrics = (apiName) => {
   return { type: types.REMOVE_API_METRIC_CHARTS, payload: apiName };
 };
 
-export const updatedApiMetrics = (updatedApiMetrics) => {
+export const updateApiMetrics = (updatedApiMetrics) => {
+  console.log(updatedApiMetrics);
   return { type: types.UPDATE_API_METRIC_CHARTS, payload: updatedApiMetrics };
 };

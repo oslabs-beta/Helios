@@ -137,13 +137,13 @@ h6 {
 }
 
 a {
-  color: #9c27b0;
+  color: inherit;
   text-decoration: none;
 }
 
 a:hover,
 a:focus {
-  color: #89229b;
+  color: none;
   text-decoration: none;
 }
 

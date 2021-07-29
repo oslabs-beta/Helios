@@ -1,5 +1,6 @@
 import React from 'react';
 // @material-ui/core components
+import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 // core components
@@ -12,8 +13,13 @@ import CardHeader from '../../components/Card/CardHeader.js';
 import CardAvatar from '../../components/Card/CardAvatar.js';
 import CardBody from '../../components/Card/CardBody.js';
 import CardFooter from '../../components/Card/CardFooter.js';
-
+import { connect } from 'react-redux';
 import avatar from '../../assets/img/faces/marc.jpg';
+import logo from '../../assets/img/helios-logo-background.jpg';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import Typography from '@material-ui/core/Typography';
 
 const styles = {
   cardCategoryWhite: {
@@ -32,147 +38,233 @@ const styles = {
     marginBottom: '3px',
     textDecoration: 'none',
   },
+  cardTitle: {
+    textAlign: 'left',
+  },
 };
 
 const useStyles = makeStyles(styles);
 
-export default function UserProfile() {
+const mapStateToProps = (state) => ({
+  userInfo: state.main,
+});
+
+function UserProfile(props) {
+  const [updateProfile, displayUpdateProfile] = useState(true);
+  console.log(updateProfile);
   const classes = useStyles();
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={8}>
-          <Card>
-            <CardHeader color='primary'>
-              <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
-              <p className={classes.cardCategoryWhite}>Complete your profile</p>
-            </CardHeader>
-            <CardBody>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={5}>
-                  <CustomInput
-                    labelText='Company (disabled)'
-                    id='company-disabled'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                    inputProps={{
-                      disabled: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={3}>
-                  <CustomInput
-                    labelText='Username'
-                    id='username'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText='Email address'
-                    id='email-address'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText='First Name'
-                    id='first-name'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText='Last Name'
-                    id='last-name'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText='City'
-                    id='city'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText='Country'
-                    id='country'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText='Postal Code'
-                    id='postal-code'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={12}>
-                  <InputLabel style={{ color: '#AAAAAA' }}>About me</InputLabel>
-                  <CustomInput
-                    labelText="Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."
-                    id='about-me'
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                    inputProps={{
-                      multiline: true,
-                      rows: 5,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-            </CardBody>
-            <CardFooter>
-              <Button color='primary'>Update Profile</Button>
-            </CardFooter>
-          </Card>
-        </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
             <CardAvatar profile>
-              <a href='#pablo' onClick={(e) => e.preventDefault()}>
-                <img src={avatar} alt='...' />
-              </a>
+              <img src={logo} alt='...' />
             </CardAvatar>
             <CardBody profile>
-              <h6 className={classes.cardCategory}>CEO / CO-FOUNDER</h6>
-              <h4 className={classes.cardTitle}>Alec Thompson</h4>
-              <p className={classes.description}>
-                Don{"'"}t be scared of the truth because we need to restart the
-                human foundation in truth And I love you like Kanye loves Kanye
-                I love Rick Owens’ bed design but the back is...
-              </p>
-              <Button color='primary' round>
-                Follow
+              <h4 className={classes.cardTitle}>
+                <big>Your Name: </big>
+                <br />
+                {props.userInfo.firstName}
+              </h4>
+              <h5 className={classes.cardTitle}>
+                <big>Your Email: </big>
+                <br />
+                {props.userInfo.email}
+              </h5>
+              <h5 className={classes.cardTitle}>
+                <big>AWS Helios Delegation Role: </big>
+                <br />
+                {props.userInfo.arn}
+              </h5>
+              <Button
+                color='info'
+                onClick={() => {
+                  displayUpdateProfile(true);
+                }}
+              >
+                Update Profile
               </Button>
             </CardBody>
           </Card>
         </GridItem>
+        {updateProfile && (
+          <GridItem xs={12} sm={12} md={8}>
+            <Card>
+              {/* <CardHeader color='info'>
+                <h4 className={classes.cardTitleWhite}>Update Profile</h4>
+              </CardHeader> */}
+              <CardBody>
+                <GridContainer>
+                  <Card>
+                    <CardHeader color='info'>
+                      <h4 className={classes.cardTitleWhite}>Update Email</h4>
+                    </CardHeader>
+                    <CardBody>
+                      <GridItem xs={12} sm={12} md={6}>
+                        <CustomInput
+                          labelText='Old Email'
+                          id='old-email'
+                          autoComplete='email'
+                          formControlProps={{
+                            fullWidth: true,
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={6}>
+                        <CustomInput
+                          labelText='New Email'
+                          id='new-email'
+                          autoComplete='email'
+                          formControlProps={{
+                            fullWidth: true,
+                          }}
+                        />
+                      </GridItem>
+                    </CardBody>
+                    <CardFooter>
+                      <Button
+                        color='success'
+                        onClick={() => {
+                          displayUpdateProfile(false);
+                        }}
+                      >
+                        Update Email
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </GridContainer>
+                <GridContainer>
+                  <Card>
+                    <CardHeader color='info'>
+                      <h4 className={classes.cardTitleWhite}>
+                        Update Linked AWS Account
+                      </h4>
+                    </CardHeader>
+                    <CardBody>
+                      <GridItem xs={11} sm={11} md={11}>
+                        <Typography
+                          variant='body1'
+                          style={{ color: '#AAAAAA' }}
+                        >
+                          Connect a different AWS account with Helios by
+                          creating a new CloudFormation stack below and updating
+                          your account.
+                          <ol>
+                            <li>
+                              <a
+                                target='_blank'
+                                href='https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=helios-delegation&templateURL=https://project-helios-template.s3.us-east-2.amazonaws.com/cloudformationHelios.yaml'
+                                className={classes.awsLink}
+                              >
+                                Add Helios CloudFormation stack to AWS
+                                <OpenInNew
+                                  style={{ color: '#AAAAAA', height: '15px' }}
+                                />
+                              </a>
+                            </li>
+                            <li>
+                              Make sure you check "I acknowledge that AWS
+                              CloudFormation might create IAM resources.
+                            </li>
+                            <li>Click "Create"</li>
+                            <li>
+                              Wait until the stack creation completes. Then head
+                              to the "Outputs" tab. Copy the "ARN" value below!
+                            </li>
+                          </ol>
+                        </Typography>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={6}>
+                        <CustomInput
+                          labelText='New ARN'
+                          id='new-arn'
+                          formControlProps={{
+                            fullWidth: true,
+                          }}
+                        />
+                      </GridItem>
+                    </CardBody>
+                    <CardFooter>
+                      <Button
+                        color='success'
+                        onClick={() => {
+                          displayUpdateProfile(false);
+                        }}
+                      >
+                        Update ARN
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </GridContainer>
+                <GridContainer>
+                  <Card>
+                    <CardHeader color='info'>
+                      <h4 className={classes.cardTitleWhite}>
+                        Change Password
+                      </h4>
+                    </CardHeader>
+                    <CardBody>
+                      <GridItem xs={12} sm={12} md={6}>
+                        <CustomInput
+                          labelText='Old Password'
+                          type='password'
+                          id='old-password'
+                          autoComplete='password'
+                          formControlProps={{
+                            fullWidth: true,
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={6}>
+                        <CustomInput
+                          labelText='New Password'
+                          id='new-password'
+                          type='password'
+                          formControlProps={{
+                            fullWidth: true,
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={6}>
+                        <CustomInput
+                          labelText='Confirm New Password'
+                          id='confirm-new-password'
+                          type='password'
+                          formControlProps={{
+                            fullWidth: true,
+                          }}
+                        />
+                      </GridItem>
+                    </CardBody>
+                    <CardFooter>
+                      <Button
+                        color='success'
+                        onClick={() => {
+                          displayUpdateProfile(false);
+                        }}
+                      >
+                        Change Password
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </GridContainer>
+              </CardBody>
+              <CardFooter>
+                <Button
+                  color='danger'
+                  onClick={() => {
+                    displayUpdateProfile(false);
+                  }}
+                >
+                  Close
+                </Button>
+              </CardFooter>
+            </Card>
+          </GridItem>
+        )}
       </GridContainer>
     </div>
   );
 }
+export default connect(mapStateToProps, null)(UserProfile);

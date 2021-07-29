@@ -67,6 +67,8 @@ const mapDispatchToProps = (dispatch) => ({
   addApiGateways: (apiData) => dispatch(actions.addApiGateways(apiData)),
   addApiMetrics: (apiData) => dispatch(actions.addApiMetrics(apiData)),
   removeApiMetrics: (apiName) => dispatch(actions.removeApiMetrics(apiName)),
+  updateApiMetrics: (updatedList) =>
+    dispatch(actions.updateApiMetrics(updatedList)),
 });
 
 function APIGateway(props) {
@@ -75,27 +77,29 @@ function APIGateway(props) {
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
-    if (props.aws.functionLogs) {
+    if (props.api.apiMetrics) {
       const reqParams = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          logs: props.aws.functionLogs,
+          apiList: props.api.apiMetrics,
           newTimePeriod: e.target.value,
           credentials: props.credentials,
         }),
       };
-      // fetch('/aws/updateLogs', reqParams)
-      //   .then((res) => res.json())
-      //   .then((updatedLogs) => {
-      //     props.updateFunctionLogs(updatedLogs);
-      //   })
-      //   .catch((err) => console.log('Error in refreshing updateLogs: ', err));
+      fetch('/aws/updateApiMetrics', reqParams)
+        .then((res) => res.json())
+        .then((updatedApiMetrics) => {
+          console.log(updatedApiMetrics);
+          props.updateApiMetrics(updatedApiMetrics);
+        })
+        .catch((err) =>
+          console.log('Error in refreshing update API Metrics: ', err)
+        );
     }
   };
 
   useEffect(() => {
-    console.log(props.api.apiMetrics);
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -106,20 +110,18 @@ function APIGateway(props) {
     fetch('/aws/apiGateway', reqParams)
       .then((res) => res.json())
       .then((apiData) => {
-        console.log('logging from API Gateway useEffect fetch: ', apiData);
         props.addApiGateways(apiData);
       })
       .catch((err) =>
         console.log('Error inside API Gateway useEffect fetch: ', err)
       );
   }, []);
-  console.log(props.api.apiMetrics);
 
   const mappedMetrics = props.api.apiMetrics.map((apiName, i) => {
     return (
       <CustomTabs
         key={i}
-        headerColor='warning'
+        headerColor='info'
         tabs={[
           {
             tabName: 'Latency',
@@ -136,12 +138,15 @@ function APIGateway(props) {
                   />
                 </CardHeader>
                 <CardBody>
-                  <h4 className={classes.cardTitle}>
+                  <h3 className={classes.cardTitle}>
                     {apiName.name} API Latency
-                  </h4>
+                  </h3>
                 </CardBody>
                 <CardFooter chart>
-                  <p>Total: {apiName.Latency.total}ms</p>
+                  <h5 className={classes.cardTitle}>
+                    <big>Total: </big>
+                    {apiName.Latency.total} <small>ms</small>
+                  </h5>
                 </CardFooter>
               </Card>
             ),
@@ -154,19 +159,22 @@ function APIGateway(props) {
                   <ChartistGraph
                     className='ct-chart'
                     data={apiName.Count.data}
-                    type='Line'
+                    type='Bar'
                     options={apiName.Count.options}
                     responsiveOptions={apiName.Count.responsiveOptions}
                     listener={apiName.Count.animation}
                   />
                 </CardHeader>
                 <CardBody>
-                  <h4 className={classes.cardTitle}>
+                  <h3 className={classes.cardTitle}>
                     {apiName.name} API Count
-                  </h4>
+                  </h3>
                 </CardBody>
                 <CardFooter chart>
-                  <p>Total: {apiName.Count.total}</p>
+                  <h5 className={classes.cardTitle}>
+                    <big>Total: </big>
+                    {apiName.Count.total}
+                  </h5>
                 </CardFooter>
               </Card>
             ),
@@ -186,10 +194,13 @@ function APIGateway(props) {
                   />
                 </CardHeader>
                 <CardBody>
-                  <h4 className={classes.cardTitle}>{apiName.name} API 5XX</h4>
+                  <h3 className={classes.cardTitle}>{apiName.name} API 5XX</h3>
                 </CardBody>
                 <CardFooter chart>
-                  <p>Total: {apiName['5XX'].total}</p>
+                  <h5 className={classes.cardTitle}>
+                    <big>Total: </big>
+                    {apiName['5XX'].total}
+                  </h5>
                 </CardFooter>
               </Card>
             ),
@@ -209,10 +220,13 @@ function APIGateway(props) {
                   />
                 </CardHeader>
                 <CardBody>
-                  <h4 className={classes.cardTitle}>{apiName.name} API 4XX</h4>
+                  <h3 className={classes.cardTitle}>{apiName.name} API 4XX</h3>
                 </CardBody>
                 <CardFooter chart>
-                  <p>Total: {apiName['4XX'].total}</p>
+                  <h5 className={classes.cardTitle}>
+                    <big>Total: </big>
+                    {apiName['4XX'].total}
+                  </h5>
                 </CardFooter>
               </Card>
             ),
@@ -262,7 +276,7 @@ function APIGateway(props) {
       <GridContainer>
         <GridItem xs={4} sm={4} md={4}>
           <Card>
-            <CardHeader color='danger'>
+            <CardHeader color='info'>
               <h4 className={classes.cardTitleWhite}>Rest APIs</h4>
             </CardHeader>
             <CardBody>

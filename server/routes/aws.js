@@ -9,6 +9,7 @@ const getLogs = require('../controllers/aws/Logs/getLogs');
 const updateLogs = require('../controllers/aws/Logs/updateLogs');
 const getAPIData = require('../controllers/aws/APIGateway/getAPI');
 const getApiMetrics = require('../controllers/aws/APIGateway/getAPIMetrics');
+const updateApiMetrics = require('../controllers/aws/APIGateway/updateAPIMetrics');
 //AWS Root User Credentials
 
 router.route('/getCreds').post(getCredentials, (req, res) => {
@@ -56,6 +57,10 @@ router.route('/apiGateway').post(getAPIData, (req, res) => {
 });
 
 router.route('/getApiMetrics').post(getApiMetrics, (req, res) => {
+  res.status(200).json(res.locals.apiMetrics);
+});
+
+router.route('/updateApiMetrics').post(updateApiMetrics, (req, res) => {
   res.status(200).json(res.locals.apiMetrics);
 });
 
