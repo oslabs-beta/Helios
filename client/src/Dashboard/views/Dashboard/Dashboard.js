@@ -48,13 +48,10 @@ import {
   invocationsChart,
 } from "../../variables/charts.js";
 
-<<<<<<< HEAD
-import invocationBarChartFunc from "../../variables/invocationBarChart.js";
+// import invocationBarChartFunc from "../../variables/invocationBarChart.js";
 import errorBarChartFunc from "../../variables/errorBarChart.js";
-=======
-import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
-import FetchTime from '../../components/FetchTime/FetchTime.js';
->>>>>>> 1014ce3498a27d21971e9134ce2d4018e3e18273
+import metricAllFuncBarChart from "../../variables/metricAllFuncBarChart.js";
+import FetchTime from "../../components/FetchTime/FetchTime.js";
 
 import styles from "../../assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import getArnArrayIDB from "../../../indexedDB/getArnArrayIDB.js";
@@ -93,9 +90,9 @@ function Dashboard(props) {
   const arnArray = useLiveQuery(getArnArrayIDB);
 
   // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
-  console.log('logging from dashboard component (parent): ', props.credentials);
+  console.log("logging from dashboard component (parent): ", props.credentials);
 
-  const [dateSelect, setDateRange] = useState('7d');
+  const [dateSelect, setDateRange] = useState("7d");
 
   useEffect(() => {
     if (!props.credentials) {
@@ -119,19 +116,13 @@ function Dashboard(props) {
           );
       }
     }
-<<<<<<< HEAD
 
     // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
   }, [arnArray]);
 
-  const [dateSelect, setDateRange] = useState("7d");
-=======
-  }, []);
-
   if (props.aws.render && props.credentials) {
     metricAllFuncBarChart(props, dateSelect);
   }
->>>>>>> 1014ce3498a27d21971e9134ce2d4018e3e18273
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
@@ -289,14 +280,7 @@ function Dashboard(props) {
               <h4 className={classes.cardTitle}>Total Throttles</h4>
             </CardBody>
             <CardFooter chart>
-<<<<<<< HEAD
-              <div className={classes.stats}>
-                <AccessTime /> Last Fetched{" "}
-                {moment(props.lastMetricFetchTime).fromNow()}
-              </div>
-=======
               <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
->>>>>>> 1014ce3498a27d21971e9134ce2d4018e3e18273
             </CardFooter>
           </Card>
         </GridItem>
@@ -305,15 +289,9 @@ function Dashboard(props) {
           <Card chart>
             <CardHeader color="info">
               <ChartistGraph
-<<<<<<< HEAD
                 className="ct-chart"
-                data={invocationBarChartFunc(props, dateSelect).invocationData}
-                type="Bar"
-=======
-                className='ct-chart'
                 data={props.invocationsAllData.data}
-                type='Bar'
->>>>>>> 1014ce3498a27d21971e9134ce2d4018e3e18273
+                type="Bar"
                 options={props.invocationsAllData.options}
                 responsiveOptions={props.invocationsAllData.responsiveOptions}
                 listener={props.invocationsAllData.animation}
@@ -323,14 +301,7 @@ function Dashboard(props) {
               <h4 className={classes.cardTitle}>Total Invocations</h4>
             </CardBody>
             <CardFooter chart>
-<<<<<<< HEAD
-              <div className={classes.stats}>
-                <AccessTime /> Last Fetched{" "}
-                {moment(props.lastMetricFetchTime).fromNow()}
-              </div>
-=======
               <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
->>>>>>> 1014ce3498a27d21971e9134ce2d4018e3e18273
             </CardFooter>
           </Card>
         </GridItem>
@@ -352,14 +323,7 @@ function Dashboard(props) {
               <p className={classes.cardCategory}>Errors</p>
             </CardBody>
             <CardFooter chart>
-<<<<<<< HEAD
-              <div className={classes.stats}>
-                <AccessTime /> Last Fetched{" "}
-                {moment(props.lastMetricFetchTime).fromNow()}
-              </div>
-=======
               <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
->>>>>>> 1014ce3498a27d21971e9134ce2d4018e3e18273
             </CardFooter>
           </Card>
         </GridItem>
