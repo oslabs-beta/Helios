@@ -1,7 +1,7 @@
 import React from 'react';
 // @material-ui/core components
 import { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 // core components
 import GridItem from '../../components/Grid/GridItem.js';
@@ -20,6 +20,15 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Typography from '@material-ui/core/Typography';
+import Input from '@material-ui/core/Input';
+import {
+  primaryColor,
+  dangerColor,
+  successColor,
+  grayColor,
+  defaultFont,
+  infoColor,
+} from '../../assets/jss/material-dashboard-react';
 
 const styles = {
   cardCategoryWhite: {
@@ -41,7 +50,48 @@ const styles = {
   cardTitle: {
     textAlign: 'left',
   },
+  root: {
+    '& label.Mui-focused': {
+      color: 'blue',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: 'blue',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'red',
+      },
+      '&:hover fieldset': {
+        borderColor: 'yellow',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: 'blue',
+      },
+    },
+  },
 };
+
+const CssTextField = withStyles({
+  root: {
+    '& label.Mui-focused': {
+      color: infoColor[0],
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: infoColor[0],
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'red',
+      },
+      '&:hover fieldset': {
+        borderColor: 'yellow',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: infoColor[0],
+      },
+    },
+  },
+})(TextField);
 
 const useStyles = makeStyles(styles);
 
@@ -49,26 +99,19 @@ const mapStateToProps = (state) => ({
   userInfo: state.main,
 });
 
-const handleUpdateArn = () => {
-  const reqParams = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: props.userInfo.email, newArn: updatedArn }),
-  };
-  displayUpdateProfile(false);
-};
-
 function UserProfile(props) {
-  const [updateProfile, displayUpdateProfile] = useState(false);
+  const [updateProfile, displayUpdateProfile] = useState(true);
   const [updatedArn, updateArn] = useState(props.userInfo.arn);
   const classes = useStyles();
 
   const handleUpdateArn = () => {
+    console.log('is this updated: ', updatedArn);
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: props.userInfo.email, newArn: updatedArn }),
     };
+    console.log(reqParams);
     fetch('/user/updateArn', reqParams)
       .then((res) => res.json())
       .then((response) => {
@@ -126,23 +169,20 @@ function UserProfile(props) {
                     </CardHeader>
                     <CardBody>
                       <GridItem xs={12} sm={12} md={6}>
-                        <CustomInput
-                          labelText='Old Email'
+                        <CssTextField
+                          label='Old Email'
                           id='old-email'
                           autoComplete='email'
-                          formControlProps={{
-                            fullWidth: true,
-                          }}
+                          fullWidth
                         />
                       </GridItem>
+                      <br />
                       <GridItem xs={12} sm={12} md={6}>
-                        <CustomInput
-                          labelText='New Email'
+                        <CssTextField
+                          label='New Email'
                           id='new-email'
                           autoComplete='email'
-                          formControlProps={{
-                            fullWidth: true,
-                          }}
+                          fullWidth
                         />
                       </GridItem>
                     </CardBody>
@@ -200,13 +240,13 @@ function UserProfile(props) {
                         </Typography>
                       </GridItem>
                       <GridItem xs={12} sm={12} md={6}>
-                        <CustomInput
-                          labelText='New ARN'
+                        <CssTextField
+                          className={classes.margin}
                           id='new-arn'
-                          formControlProps={{
-                            fullWidth: true,
-                          }}
+                          label='New ARN'
+                          fullWidth
                           onChange={(e) => {
+                            console.log(e.target.value);
                             updateArn(e.target.value);
                           }}
                         />
@@ -228,34 +268,30 @@ function UserProfile(props) {
                     </CardHeader>
                     <CardBody>
                       <GridItem xs={12} sm={12} md={6}>
-                        <CustomInput
-                          labelText='Old Password'
+                        <CssTextField
+                          label='Old Password'
                           type='password'
                           id='old-password'
                           autoComplete='password'
-                          formControlProps={{
-                            fullWidth: true,
-                          }}
+                          fullWidth
                         />
                       </GridItem>
+                      <br />
                       <GridItem xs={12} sm={12} md={6}>
-                        <CustomInput
-                          labelText='New Password'
+                        <CssTextField
+                          label='New Password'
                           id='new-password'
                           type='password'
-                          formControlProps={{
-                            fullWidth: true,
-                          }}
+                          fullWidth
                         />
                       </GridItem>
+                      <br />
                       <GridItem xs={12} sm={12} md={6}>
-                        <CustomInput
-                          labelText='Confirm New Password'
+                        <CssTextField
+                          label='Confirm New Password'
                           id='confirm-new-password'
                           type='password'
-                          formControlProps={{
-                            fullWidth: true,
-                          }}
+                          fullWidth
                         />
                       </GridItem>
                     </CardBody>
