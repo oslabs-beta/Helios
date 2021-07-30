@@ -38,6 +38,7 @@
     "@material-ui/data-grid": "^4.0.0-alpha.34",
     "@material-ui/icons": "^4.11.2",
     "aws-sdk": "^2.943.0",
+    "babel-loader": "^8.2.2",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
