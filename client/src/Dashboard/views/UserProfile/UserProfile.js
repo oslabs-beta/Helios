@@ -1,9 +1,11 @@
 import React from 'react';
 // @material-ui/core components
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 // core components
+import Dexie from 'dexie';
+import db from '../../../indexedDB/mainIdb';
 import GridItem from '../../components/Grid/GridItem.js';
 import GridContainer from '../../components/Grid/GridContainer.js';
 import CustomInput from '../../components/CustomInput/CustomInput.js';
@@ -21,6 +23,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Typography from '@material-ui/core/Typography';
 import Input from '@material-ui/core/Input';
+import SnackbarContent from '../../components/Snackbar/SnackbarContent.js';
+import Snackbar from '../../components/Snackbar/Snackbar.js';
+import AddAlert from '@material-ui/icons/AddAlert';
+import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import getUserInfoArrayIDB from '../../../indexedDB/getUserInfo.js';
+import updateArnIDB from '../../../indexedDB/updateArnIDB';
+import updateUserInfoIDB from '../../../indexedDB/updateUserInfoIDB';
+import { useLiveQuery } from 'dexie-react-hooks';
 import {
   primaryColor,
   dangerColor,
@@ -101,63 +111,224 @@ const mapStateToProps = (state) => ({
 
 function UserProfile(props) {
   const [updateProfile, displayUpdateProfile] = useState(true);
-  const [updatedArn, updateArn] = useState(props.userInfo.arn);
+  const [origArn, displayArn] = useState('');
+  const [dbName, addDbName] = useState('');
+  const [dbEmail, addDbEmail] = useState('');
+  const [updatedArn, updateArn] = useState('');
+  const [updatedEmail, updateEmail] = useState('');
+  const [originalEmail, updateOriginalEmail] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmedNewPassword, setConfirmedNewPassword] = useState('');
   const classes = useStyles();
+  const [successNotification, setSuccessNotification] = useState(false);
+  const [failureNotification, setFailureNotification] = useState(false);
+  const [passwordFailNotification, setPasswordFailNotification] =
+    useState(false);
+  const arnArray = useLiveQuery(getArnArrayIDB);
+  const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
 
-  const handleUpdateArn = () => {
-    console.log('is this updated: ', updatedArn);
+  useEffect(() => {
+    if (arnArray && arnArray[0]) {
+      displayArn(arnArray[0].arn);
+    }
+  }, [arnArray]);
+
+  useEffect(() => {
+    if (userInfoArray && userInfoArray[0]) {
+      addDbName(userInfoArray[0].firstName);
+      addDbEmail(userInfoArray[0].email);
+    }
+  }, [userInfoArray]);
+
+  const handleUpdateEmail = () => {
+    if (updatedEmail.trim() === '') {
+      showNotification('failure');
+      return;
+    }
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: props.userInfo.email, newArn: updatedArn }),
+      body: JSON.stringify({
+        accountEmail: dbEmail,
+        originalEmail: originalEmail,
+        newEmail: updatedEmail,
+      }),
     };
-    console.log(reqParams);
+
+    fetch('/user/updateEmail', reqParams)
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+        if (response.status) {
+          showNotification('success');
+          updateUserInfoIDB({
+            firstName: dbName,
+            email: response.newEmail,
+          }).catch((error) => {
+            console.error('error while updating user info', error);
+          });
+        } else {
+          showNotification('failure');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    updateEmail('');
+    updateOriginalEmail('');
+  };
+
+  const handleUpdateArn = () => {
+    if (updatedArn.trim() === '') {
+      showNotification('failure');
+      return;
+    }
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: dbEmail, newArn: updatedArn }),
+    };
+
     fetch('/user/updateArn', reqParams)
       .then((res) => res.json())
       .then((response) => {
         console.log(response);
+        if (response.status) {
+          showNotification('success');
+          updateArnIDB({ arn: updatedArn }).catch((error) => {
+            console.error('error while updating arn', error);
+          });
+        } else {
+          showNotification('failure');
+        }
       })
       .catch((err) =>
         console.log('Error in updating arn on User Profile: ', err)
       );
-    displayUpdateProfile(false);
+    updateArn('');
   };
 
+  const handleUpdatePassword = () => {
+    if (newPassword.trim() === '' || oldPassword.trim() === '') {
+      showNotification('failure');
+      return;
+    }
+    if (newPassword !== confirmedNewPassword) {
+      showNotification('passwordFail');
+      return;
+    }
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: dbEmail, oldPassword, newPassword }),
+    };
+
+    fetch('/user/updatePassword', reqParams)
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response);
+        if (response.status) {
+          showNotification('success');
+        } else {
+          showNotification('failure');
+        }
+      })
+      .catch((err) => {
+        console.log('Error in updating password on User Profile: ', err);
+        showNotification('passwordFail');
+      });
+
+    setOldPassword('');
+    setNewPassword('');
+    setConfirmedNewPassword('');
+  };
+
+  const showNotification = (place) => {
+    switch (place) {
+      case 'failure':
+        if (!failureNotification) {
+          setFailureNotification(true);
+          setTimeout(function () {
+            setFailureNotification(false);
+          }, 6000);
+        }
+        break;
+      case 'success':
+        if (!successNotification) {
+          setSuccessNotification(true);
+          setTimeout(function () {
+            setSuccessNotification(false);
+          }, 6000);
+        }
+        break;
+      case 'passwordFail':
+        if (!passwordFailNotification) {
+          setPasswordFailNotification(true);
+          setTimeout(function () {
+            setPasswordFailNotification(false);
+          }, 6000);
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
   return (
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
             <CardAvatar profile>
-              <img src={logo} alt='...' />
+              <img src={logo} alt='Helios' />
             </CardAvatar>
             <CardBody profile>
               <h4 className={classes.cardTitle}>
                 <big>Your Name: </big>
                 <br />
-                {props.userInfo.firstName}
+                {dbName}
               </h4>
               <h5 className={classes.cardTitle}>
                 <big>Your Email: </big>
                 <br />
-                {props.userInfo.email}
+                {dbEmail}
               </h5>
               <h5 className={classes.cardTitle}>
                 <big>AWS Helios Delegation Role: </big>
                 <br />
-                {props.userInfo.arn}
+                {origArn}
               </h5>
-              <Button
-                color='info'
-                onClick={() => {
-                  displayUpdateProfile(true);
-                }}
-              >
-                Update Profile
-              </Button>
             </CardBody>
           </Card>
         </GridItem>
+        <Snackbar
+          place='tc'
+          color='success'
+          icon={AddAlert}
+          message='You have successfully updated your profile.'
+          open={successNotification}
+          closeNotification={() => setSuccessNotification(false)}
+          close
+        />
+        <Snackbar
+          place='tc'
+          color='danger'
+          icon={AddAlert}
+          message='Uh oh, something went wrong! Please try again!'
+          open={failureNotification}
+          closeNotification={() => setFailureNotification(false)}
+          close
+        />
+        <Snackbar
+          place='tc'
+          color='danger'
+          icon={AddAlert}
+          message='Please make sure your passwords match and try again.'
+          open={passwordFailNotification}
+          closeNotification={() => setPasswordFailNotification(false)}
+          close
+        />
         {updateProfile && (
           <GridItem xs={12} sm={12} md={8}>
             <Card>
@@ -174,6 +345,10 @@ function UserProfile(props) {
                           id='old-email'
                           autoComplete='email'
                           fullWidth
+                          value={originalEmail}
+                          onChange={(e) => {
+                            updateOriginalEmail(e.target.value);
+                          }}
                         />
                       </GridItem>
                       <br />
@@ -183,16 +358,15 @@ function UserProfile(props) {
                           id='new-email'
                           autoComplete='email'
                           fullWidth
+                          value={updatedEmail}
+                          onChange={(e) => {
+                            updateEmail(e.target.value);
+                          }}
                         />
                       </GridItem>
                     </CardBody>
                     <CardFooter>
-                      <Button
-                        color='success'
-                        onClick={() => {
-                          displayUpdateProfile(false);
-                        }}
-                      >
+                      <Button color='success' onClick={handleUpdateEmail}>
                         Update Email
                       </Button>
                     </CardFooter>
@@ -245,8 +419,8 @@ function UserProfile(props) {
                           id='new-arn'
                           label='New ARN'
                           fullWidth
+                          value={updatedArn}
                           onChange={(e) => {
-                            console.log(e.target.value);
                             updateArn(e.target.value);
                           }}
                         />
@@ -274,6 +448,10 @@ function UserProfile(props) {
                           id='old-password'
                           autoComplete='password'
                           fullWidth
+                          value={oldPassword}
+                          onChange={(e) => {
+                            setOldPassword(e.target.value);
+                          }}
                         />
                       </GridItem>
                       <br />
@@ -283,6 +461,10 @@ function UserProfile(props) {
                           id='new-password'
                           type='password'
                           fullWidth
+                          value={newPassword}
+                          onChange={(e) => {
+                            setNewPassword(e.target.value);
+                          }}
                         />
                       </GridItem>
                       <br />
@@ -292,32 +474,21 @@ function UserProfile(props) {
                           id='confirm-new-password'
                           type='password'
                           fullWidth
+                          value={confirmedNewPassword}
+                          onChange={(e) => {
+                            setConfirmedNewPassword(e.target.value);
+                          }}
                         />
                       </GridItem>
                     </CardBody>
                     <CardFooter>
-                      <Button
-                        color='success'
-                        onClick={() => {
-                          displayUpdateProfile(false);
-                        }}
-                      >
+                      <Button color='success' onClick={handleUpdatePassword}>
                         Change Password
                       </Button>
                     </CardFooter>
                   </Card>
                 </GridContainer>
               </CardBody>
-              <CardFooter>
-                <Button
-                  color='danger'
-                  onClick={() => {
-                    displayUpdateProfile(false);
-                  }}
-                >
-                  Close
-                </Button>
-              </CardFooter>
             </Card>
           </GridItem>
         )}

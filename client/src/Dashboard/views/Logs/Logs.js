@@ -66,6 +66,10 @@ function Logs(props) {
     return i;
   });
 
+  const logsShown = props.aws.functionLogs.map((logObj) => {
+    return logObj.name;
+  });
+
   const mappedMsgs = props.aws.functionLogs.map((logObj, i) => {
     return (
       <CustomTabs
@@ -182,9 +186,8 @@ function Logs(props) {
                 tabIcon: Cloud,
                 tabContent: (
                   <LambdaList
-                    checkedIndexes={[]}
-                    tasksIndexes={indexArr}
-                    tasks={props.aws.functions}
+                    logsShown={logsShown}
+                    functions={props.aws.functions}
                     credentials={props.credentials}
                     addFunctionLogs={props.addFunctionLogs}
                     removeFunctionLogs={props.removeFunctionLogs}

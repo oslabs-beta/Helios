@@ -117,6 +117,10 @@ function APIGateway(props) {
       );
   }, []);
 
+  const apiMetricsShown = props.api.apiMetrics.map((api) => {
+    return api.name;
+  });
+
   const mappedMetrics = props.api.apiMetrics.map((apiName, i) => {
     return (
       <CustomTabs
@@ -282,6 +286,7 @@ function APIGateway(props) {
             <CardBody>
               <APIList
                 apiList={props.api.apiKeys}
+                apiMetricsShown={apiMetricsShown}
                 timePeriod={dateSelect}
                 credentials={props.credentials}
                 addApiMetrics={props.addApiMetrics}
