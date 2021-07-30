@@ -78,7 +78,7 @@ const initialState = {
     animation: {},
     total: 0,
   },
-  errorsAllData: {
+  errorsByFuncData: {
     data: {
       series: [{ name: '', data: [] }],
     },
@@ -87,7 +87,7 @@ const initialState = {
     animation: {},
     total: 0,
   },
-  throttlesAllData: {
+  throttlesByFuncData: {
     data: {
       series: [{ name: '', data: [] }],
     },
@@ -188,12 +188,14 @@ const awsReducerByFunc = (state = initialState, action) => {
 
       series_data = action.payload.series.map((metricData) => {
         let name = metricData.name;
+        let total = metricData.total;
 
         let data = metricData.data.map((xydata) => {
           return { x: new Date(xydata.x), y: xydata.y };
         });
         return {
           name: name,
+          total: total,
           data: data,
         };
       });
@@ -256,163 +258,196 @@ const awsReducerByFunc = (state = initialState, action) => {
       };
 
       //console.log("Invocation Data from Reducer: ",errorsAllData )
-      renderByFunc = false
+      
 
-      return { ...state, invocationsByFuncData, getInvocations, renderByFunc };
+      return { ...state, invocationsByFuncData, getInvocations };
     }
-    // case types.ADD_ERRORS_BYFUNCDATA: {
-    //   let series_data;
 
-    //   let errorsAllData;
-    //   let graphOptions, graphResponsiveOptions, graphtAnimation;
-    //   let graphPeriod, graphUnits;
-    //   let startTime, endTime;
-    //   let ticks = [];
-    //   let labelFormat;
-    //   let getErrors;
-    //   let total = 0;
-    //   console.log('Inside Add Erros All Data');
+    case types.ADD_ERRORS_BYFUNCDATA: {
+      let series_data;
+      let errorsByFuncData;
+      let graphOptions, graphResponsiveOptions, graphtAnimation;
+      let graphPeriod, graphUnits;
+      let startTime, endTime;
+      let ticks = [];
+      let labelFormat;
+      let getErrors;
+    
+    
+      console.log('Inside Add Errors All Data');
+    
+      getErrors = false
+    
+      series_data = action.payload.series.map((metricData) => {
+        let name = metricData.name;
+        let total = metricData.total;
+    
+        let data = metricData.data.map((xydata) => {
+          return { x: new Date(xydata.x), y: xydata.y };
+        });
+        return {
+          name: name,
+          total: total,
+          data: data,
+        };
+      });
+    
+      graphOptions = { ...state.graphDefaultOptions };
+      graphResponsiveOptions = [...state.graphDefaultResponsiveOptions];
+      graphtAnimation = { ...state.graphtDefaultAnimation };
+    
+      graphOptions.high = Math.max(
+        Math.round(action.payload.options.metricMaxValueAllFunc / 100) * 100,
+        100
+      );
+    
+      graphPeriod = action.payload.options.graphPeriod;
+      graphUnits = action.payload.options.graphUnits;
+      startTime = new Date(action.payload.options.startTime);
+      endTime = new Date(action.payload.options.endTime);
+    
+      ticks = generateTicks(startTime, graphPeriod, graphUnits);
+    
+      graphOptions.axisX.ticks = ticks;
+      console.log(ticks);
+    
+      if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
+      else graphOptions.axisX.type = Chartist.FixedScaleAxis;
+    
+      //add dummy data for the chart to show up
+      series_data.push({
+        name: 'dummy',
+        data: [
+          { x: moment(startTime).subtract(5, 'minutes'), y: null },
+          { x: moment(endTime).add(5, 'minutes'), y: null },
+        ],
+      });
+    
+      graphOptions.axisX.labelInterpolationFnc = (value) => {
+        if (graphUnits === 'days') labelFormat = 'MMM Do';
+        if (graphUnits === 'hours') labelFormat = 'LT';
+        if (graphUnits === 'minutes') labelFormat = 'LT';
+    
+        return moment(value).format(labelFormat);
+      };
+    
+      // plugins = [
+      //     Chartist.plugins.legend({
+      //         clickable: false
+      //     })
+      // ];
+      graphOptions.legendNames = action.payload.options.funcNames
+    
+      errorsByFuncData = {
+        data: {
+          series: series_data,
+        },
+        options: graphOptions,
+        responsiveOptions: graphResponsiveOptions,
+        animation: graphtAnimation,
+        // plugins:plugins
+        
+      };
+    
+      //console.log("Error Data from Reducer: ",errorsAllData )
+      
+    
+      return { ...state, errorsByFuncData, getErrors };
+    }
 
-    //   // let getErrors;
-    //   // let errorsAllData;
+    case types.ADD_THROTTLES_BYFUNCDATA: {
+      let series_data;
+      let throttlesByFuncData;
+      let graphOptions, graphResponsiveOptions, graphtAnimation;
+      let graphPeriod, graphUnits;
+      let startTime, endTime;
+      let ticks = [];
+      let labelFormat;
+      let getThrottles;
+    
+    
+      console.log('Inside Add Throttles All Data');
+    
+      getThrottles = false
+    
+      series_data = action.payload.series.map((metricData) => {
+        let name = metricData.name;
+        let total = metricData.total;
+    
+        let data = metricData.data.map((xydata) => {
+          return { x: new Date(xydata.x), y: xydata.y };
+        });
+        return {
+          name: name,
+          total: total,
+          data: data,
+        };
+      });
+    
+      graphOptions = { ...state.graphDefaultOptions };
+      graphResponsiveOptions = [...state.graphDefaultResponsiveOptions];
+      graphtAnimation = { ...state.graphtDefaultAnimation };
+    
+      graphOptions.high = Math.max(
+        Math.round(action.payload.options.metricMaxValueAllFunc / 100) * 100,
+        100
+      );
+    
+      graphPeriod = action.payload.options.graphPeriod;
+      graphUnits = action.payload.options.graphUnits;
+      startTime = new Date(action.payload.options.startTime);
+      endTime = new Date(action.payload.options.endTime);
+    
+      ticks = generateTicks(startTime, graphPeriod, graphUnits);
+    
+      graphOptions.axisX.ticks = ticks;
+      console.log(ticks);
+    
+      if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
+      else graphOptions.axisX.type = Chartist.FixedScaleAxis;
+    
+      //add dummy data for the chart to show up
+      series_data.push({
+        name: 'dummy',
+        data: [
+          { x: moment(startTime).subtract(5, 'minutes'), y: null },
+          { x: moment(endTime).add(5, 'minutes'), y: null },
+        ],
+      });
+    
+      graphOptions.axisX.labelInterpolationFnc = (value) => {
+        if (graphUnits === 'days') labelFormat = 'MMM Do';
+        if (graphUnits === 'hours') labelFormat = 'LT';
+        if (graphUnits === 'minutes') labelFormat = 'LT';
+    
+        return moment(value).format(labelFormat);
+      };
+    
+      // plugins = [
+      //     Chartist.plugins.legend({
+      //         clickable: false
+      //     })
+      // ];
+      graphOptions.legendNames = action.payload.options.funcNames
+    
+      throttlesByFuncData = {
+        data: {
+          series: series_data,
+        },
+        options: graphOptions,
+        responsiveOptions: graphResponsiveOptions,
+        animation: graphtAnimation,
+        // plugins:plugins
+        
+      };
+    
+      //console.log("Throttle Data from Reducer: ",throttlesAllData )
+      renderByFunc = false
+    
+      return { ...state, throttlesByFuncData, getThrottles, renderByFunc };
+    }
 
-    //   getErrors = !state.getErrors;
-    //   series_data = action.payload.data.map((xydata) => {
-    //     return { x: new Date(xydata.x), y: xydata.y };
-    //   });
-    //   graphOptions = { ...state.graphDefaultOptions };
-    //   graphResponsiveOptions = [...state.graphDefaultResponsiveOptions];
-    //   graphtAnimation = { ...state.graphtDefaultAnimation };
 
-    //   graphOptions.high = Math.max(
-    //     Math.round(action.payload.options.metricMaxValue / 100) * 100,
-    //     100
-    //   );
-
-    //   graphPeriod = action.payload.options.graphPeriod;
-    //   graphUnits = action.payload.options.graphUnits;
-    //   startTime = new Date(action.payload.options.startTime);
-    //   endTime = new Date(action.payload.options.endTime);
-
-    //   ticks = generateTicks(startTime, graphPeriod, graphUnits);
-
-    //   graphOptions.axisX.ticks = ticks;
-    //   console.log(ticks);
-
-    //   if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
-    //   else graphOptions.axisX.type = Chartist.FixedScaleAxis;
-
-    //   //add dummy data for the chart to show up
-    //   series_data.unshift({
-    //     x: moment(startTime).subtract(5, 'minutes'),
-    //     y: null,
-    //   });
-    //   series_data.push({ x: moment(endTime).add(5, 'minutes'), y: null });
-
-    //   graphOptions.axisX.labelInterpolationFnc = (value) => {
-    //     if (graphUnits === 'days') labelFormat = 'MMM Do';
-    //     if (graphUnits === 'hours') labelFormat = 'LT';
-    //     if (graphUnits === 'minutes') labelFormat = 'LT';
-
-    //     return moment(value).format(labelFormat);
-    //   };
-
-    //   action.payload.data.forEach((dataPt) => {
-    //     total += dataPt.y;
-    //   });
-
-    //   errorsAllData = {
-    //     data: {
-    //       series: [{ name: action.payload.title, data: series_data }],
-    //     },
-    //     options: graphOptions,
-    //     responsiveOptions: graphResponsiveOptions,
-    //     animation: graphtAnimation,
-    //     total,
-    //   };
-
-    //   console.log('Error Data from reducer: ', errorsAllData);
-
-    //   return { ...state, errorsAllData, getErrors };
-    // }
-
-    // case types.ADD_THROTTLES_BYFUNCDATA: {
-    //   let series_data;
-
-    //   let throttlesAllData;
-    //   let graphOptions, graphResponsiveOptions, graphtAnimation;
-    //   let graphPeriod, graphUnits;
-    //   let startTime, endTime;
-    //   let ticks = [];
-    //   let labelFormat;
-    //   let getThrottles;
-    //   let total = 0;
-
-    //   console.log('Inside Add Throttles All Data');
-
-    //   // let getThrottles;
-    //   // let throttlesAllData;
-
-    //   getThrottles = !state.getThrottles;
-    //   series_data = action.payload.data.map((xydata) => {
-    //     return { x: new Date(xydata.x), y: xydata.y };
-    //   });
-    //   graphOptions = { ...state.graphDefaultOptions };
-    //   graphResponsiveOptions = [...state.graphDefaultResponsiveOptions];
-    //   graphtAnimation = { ...state.graphtDefaultAnimation };
-
-    //   graphOptions.high = Math.max(
-    //     Math.round(action.payload.options.metricMaxValue / 100) * 100,
-    //     100
-    //   );
-
-    //   graphPeriod = action.payload.options.graphPeriod;
-    //   graphUnits = action.payload.options.graphUnits;
-    //   startTime = new Date(action.payload.options.startTime);
-    //   endTime = new Date(action.payload.options.endTime);
-
-    //   ticks = generateTicks(startTime, graphPeriod, graphUnits);
-
-    //   graphOptions.axisX.ticks = ticks;
-    //   console.log(ticks);
-
-    //   if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
-    //   else graphOptions.axisX.type = Chartist.FixedScaleAxis;
-
-    //   //add dummy data for the chart to show up
-    //   series_data.unshift({
-    //     x: moment(startTime).subtract(5, 'minutes'),
-    //     y: null,
-    //   });
-    //   series_data.push({ x: moment(endTime).add(5, 'minutes'), y: null });
-
-    //   graphOptions.axisX.labelInterpolationFnc = (value) => {
-    //     if (graphUnits === 'days') labelFormat = 'MMM Do';
-    //     if (graphUnits === 'hours') labelFormat = 'LT';
-    //     if (graphUnits === 'minutes') labelFormat = 'LT';
-
-    //     return moment(value).format(labelFormat);
-    //   };
-
-    //   action.payload.data.forEach((dataPt) => {
-    //     total += dataPt.y;
-    //   });
-
-    //   throttlesAllData = {
-    //     data: {
-    //       series: [{ name: action.payload.title, data: series_data }],
-    //     },
-    //     options: graphOptions,
-    //     responsiveOptions: graphResponsiveOptions,
-    //     animation: graphtAnimation,
-    //     total,
-    //   };
-
-    //   console.log('Throttle Data from reducer: ', throttlesAllData);
-    //   renderByFunc = false;
-
-    //   return { ...state, throttlesAllData, getThrottles, renderByFunc };
-    // }
 
     default: {
       return { ...state };

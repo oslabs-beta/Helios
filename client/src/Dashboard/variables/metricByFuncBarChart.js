@@ -16,7 +16,9 @@ const metricByFuncBarChart = (props, timePeriod) => {
       body: JSON.stringify({ 
         credentials: props.credentials,
         timePeriod: timePeriod,
-        funcNames: props.aws.functions  }),
+        funcNames: props.aws.functions,
+        // funcNames: funcNameArray
+        }),
     };
 
 //Invocations
@@ -32,27 +34,32 @@ const metricByFuncBarChart = (props, timePeriod) => {
       })
       .catch((err) => console.log(err));
 
+
+
+
 //Errors
 //********************************************************* */
-//     fetch('/aws/getMetricsAllfunc/Errors', reqParams)
-//       .then((res) => res.json())
-//       .then((errorData) => {
+    fetch('/aws/getMetricsByFunc/Errors', reqParams)
+      .then((res) => res.json())
+      .then((errorData) => {
 
-//         props.addErrorsByFuncData(errorData);
+        console.log("Invocations Data By Func from Server: ", errorData)
+
+        props.addErrorsByFuncData(errorData);
         
-//         console.log("Printing from Inside Errors Bar Chart: ", props.errorsByFuncData)
+        console.log("Printing from Inside Errors Bar Chart: ", props.errorsByFuncData)
 
-//       })
-//       .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
 
 // //Throttles
 // //********************************************************* */
 
-//       fetch('/aws/getMetricsAllfunc/Throttles', reqParams)
-//       .then((res) => res.json())
-//       .then((throttleData) => {
+      fetch('/aws/getMetricsByFunc/Throttles', reqParams)
+      .then((res) => res.json())
+      .then((throttleData) => {
 
-//         props.addThrottlesByFuncData(throttleData);
+        props.addThrottlesByFuncData(throttleData);
 
 // //COME BACK HERE to check on this
 
@@ -60,8 +67,8 @@ const metricByFuncBarChart = (props, timePeriod) => {
 
 //         console.log("Printing from Inside Throttles Bar Chart: ", props.throttlesByFuncData)
 
-//       })
-//       .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
 
 
 };

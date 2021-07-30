@@ -135,11 +135,13 @@ const getMetricsByFunc = async (req, res, next) => {
         })
 
         let maxValue = Math.max(0,Math.max(...values))
+        let total = values.reduce((accum,curr) => accum + curr,0)
 
         return { 
           name: metricName,
           data: metricData,
-          maxVaue: maxValue
+          maxVaue: maxValue,
+          total: total,
         }
 
 

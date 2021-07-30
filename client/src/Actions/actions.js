@@ -74,6 +74,17 @@ export const addInvocationsByFuncData = (invocationsByFuncData) => {
   return { type: types.ADD_INVOCATIONS_BYFUNCDATA, payload: invocationsByFuncData };
 };
 
+
+export const addErrorsByFuncData  = (errorsByFuncData) => {
+  console.log('inside add Error By Func action: ', errorsByFuncData);
+  return { type: types.ADD_ERRORS_BYFUNCDATA, payload: errorsByFuncData };
+};
+
+export const addThrottlesByFuncData = (throttlesByFuncData) => {
+  console.log('inside add Throttle By Func action: ', throttlesByFuncData);
+  return { type: types.ADD_THROTTLES_BYFUNCDATA, payload: throttlesByFuncData };
+};
+
 export const updateFetchTimeByFunc = () => {
   console.log('inside update Fetch Time By Func action: ');
   return { type: types.UPDATE_FETCH_TIME_BYFUNC };
