@@ -1,8 +1,8 @@
-import db from "./mainIdb";
+import db from './mainIdb';
 
 async function updateArnIDB({ arn }) {
   await db.arnRegistry.clear().catch((error) => {
-    console.error("error deleting existing arn from storage", error);
+    console.error('error deleting existing arn from storage', error);
     throw error;
   });
 

@@ -12,7 +12,7 @@ const getFunctions = async (req, res, next) => {
   console.log(req.body.credentials);
 
   const lambdaClient = new LambdaClient({
-    region: REGION,
+    region: req.body.region,
     credentials: req.body.credentials,
   });
 

@@ -1,5 +1,4 @@
 const moment = require('moment');
-const { REGION } = require('../Credentials/libs/stsClient.js');
 const {
   CloudWatchLogsClient,
   FilterLogEventsCommand,
@@ -53,7 +52,8 @@ const updateLogs = async (req, res, next) => {
       functionName,
       StartTime,
       req.body.credentials,
-      req.body.newTimePeriod
+      req.body.newTimePeriod,
+      req.body.region
     );
     updatedArr.push(newLogObj);
   }
@@ -63,9 +63,15 @@ const updateLogs = async (req, res, next) => {
 
 module.exports = updateLogs;
 
-const loopFunc = async (functionName, StartTime, credentials, timePeriod) => {
+const loopFunc = async (
+  functionName,
+  StartTime,
+  credentials,
+  timePeriod,
+  region
+) => {
   const cwLogsClient = new CloudWatchLogsClient({
-    region: REGION,
+    region,
     credentials: credentials,
   });
   async function helperFunc(nextToken, data = []) {

@@ -1,31 +1,38 @@
-import React from "react";
-import { useHistory, Link } from "react-router-dom";
-import { connect } from "react-redux";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import updateArnIDB from "../indexedDB/updateArnIDB";
-// import Link from '@material-ui/core/Link';
+import React from 'react';
+import { useState } from 'react';
+import { useHistory, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import updateArnIDB from '../indexedDB/updateArnIDB';
+import updateRegionIDB from '../indexedDB/updateRegionIDB';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import EditLocation from '@material-ui/icons/EditLocation';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import * as actions from '../Actions/actions';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import { grayColor } from '../Dashboard/assets/jss/material-dashboard-react';
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <a href="https://github.com/oslabs-beta/Helios" target="_blank">
+    <Typography variant='body2' color='textSecondary' align='center'>
+      {'Copyright © '}
+      <a href='https://github.com/oslabs-beta/Helios' target='_blank'>
         Helios
       </a>
-      {" " + new Date().getFullYear()}
-      {"."}
+      {' ' + new Date().getFullYear()}
+      {'.'}
     </Typography>
   );
 }
@@ -33,20 +40,20 @@ function Copyright() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   openIcon: { height: '15px' },
   logoImg: {
-    width: "300px",
+    width: '410px',
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -54,6 +61,39 @@ const useStyles = makeStyles((theme) => ({
   },
   awsLink: {
     color: 'inherit',
+  },
+  regionSortBy: {
+    color: grayColor[0],
+    marginBottom: '20px',
+    display: 'inline-flex',
+    fontSize: '16px',
+    lineHeight: '22px',
+    '& svg': {
+      top: '4px',
+      width: '20px',
+      height: '20px',
+      position: 'relative',
+      marginRight: '3px',
+      marginLeft: '3px',
+    },
+    '& .fab,& .fas,& .far,& .fal,& .material-icons': {
+      top: '4px',
+      fontSize: '18px',
+      position: 'relative',
+      marginRight: '3px',
+      marginLeft: '3px',
+    },
+  },
+  regionRange: {
+    width: '410px',
+    height: '20px',
+    fontSize: '16px',
+  },
+
+  regionSpec: {
+    width: '410px',
+    fontSize: '16px',
+    color: grayColor[0],
   },
 }));
 
@@ -63,57 +103,55 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  addArn: (userInfo) => dispatch(actions.addArn(userInfo)),
+  addAwsAccount: (userInfo) => dispatch(actions.addAwsAccount(userInfo)),
 });
 
 function Register(props) {
   const classes = useStyles();
   const history = useHistory();
-  console.log(props.userEmail);
+  const [regionSelect, setRegion] = useState('us-east-2');
+  const [arn, setArn] = useState('');
 
-  let arn = "";
   let email = props.userEmail;
 
   const handleRegisterBtn = () => {
-    console.log(props.main);
     const reqParams = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, arn }),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, arn, regionSelect }),
     };
 
-    fetch("/user/register", reqParams)
+    fetch('/user/register', reqParams)
       .then((data) => {
-        console.log("Registered");
-        props.addArn(arn);
+        console.log('Registered');
+        console.log(regionSelect);
+        props.addAwsAccount({ arn, region: regionSelect });
         updateArnIDB({ arn }).catch((error) => {
-          console.error("error while updating arn", error);
+          console.error('error while updating arn', error);
         });
-        history.push("/admin");
-
-        // TO DO SAVE ARN IN IDB
+        updateRegionIDB({ region: regionSelect }).catch((error) => {
+          console.error('error while updating region', error);
+        });
+        history.push('/admin');
       })
       .catch((err) => console.log(err));
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        {/* <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar> */}
         <img
-          alt="Helios Logo"
-          src="../Dashboard/assets/img/helios-black-logo-t.png"
+          alt='Helios Logo'
+          src='../Dashboard/assets/img/helios-black-logo-t.png'
           className={classes.logoImg}
         />
-        <Typography component="h1" variant="h5">
+        <Typography component='h1' variant='h5'>
           Connect your AWS account
           <br />
         </Typography>
         <br />
-        <Typography variant="body1">
+        <Typography variant='body1'>
           It's quick and easy to connect your AWS account to Helios! Just follow
           the below steps and we'll get you all set up!
           <ol>
@@ -140,23 +178,116 @@ function Register(props) {
         </Typography>
 
         <TextField
-          variant="outlined"
-          margin="normal"
+          variant='outlined'
+          margin='normal'
           required
           fullWidth
-          id="arn"
-          label="ARN"
-          name="arn"
+          id='arn'
+          label='ARN'
+          name='arn'
           autoFocus
           onChange={(e) => {
-            arn = e.target.value;
+            setArn(e.target.value);
           }}
         />
+        <br />
+        <div className={classes.regionSortBy}>
+          <FormControl className={classes.regionRange}>
+            <InputLabel
+              htmlFor='region-change-select'
+              className={classes.regionSpec}
+            >
+              {' '}
+              <EditLocation /> Set Default Region (You'll be able to update this
+              later.)
+            </InputLabel>
+            <br />
+            <Select
+              id='region-change-select'
+              value={regionSelect}
+              className={classes.regionSpec}
+              onChange={(e) => {
+                setRegion(e.target.value);
+              }}
+            >
+              <MenuItem value='us-east-2' className={classes.regionSpec}>
+                US East (Ohio) — us-east-2
+              </MenuItem>
+              <MenuItem value='us-east-1' className={classes.regionSpec}>
+                US East (N. Virginia) — us-east-1
+              </MenuItem>
+              <MenuItem value='us-west-1' className={classes.regionSpec}>
+                US West (N. California) — us-west-1
+              </MenuItem>
+              <MenuItem value='us-west-2' className={classes.regionSpec}>
+                US West (Oregon) — us-west-1
+              </MenuItem>
+              <MenuItem value='af-south-1' className={classes.regionSpec}>
+                Africa (Cape Town) — af-south-1
+              </MenuItem>
+              <MenuItem value='ap-east-1' className={classes.regionSpec}>
+                Asia Pacific (Hong Kong) — ap-east-1
+              </MenuItem>
+              <MenuItem value='ap-south-1' className={classes.regionSpec}>
+                Asia Pacific (Mumbai) — ap-south-1
+              </MenuItem>
+              <MenuItem value='ap-northeast-3' className={classes.regionSpec}>
+                Asia Pacific (Osaka) — ap-northeast-3
+              </MenuItem>
+              <MenuItem value='ap-northeast-2' className={classes.regionSpec}>
+                Asia Pacific (Seoul) — ap-northeast-2
+              </MenuItem>
+              <MenuItem value='ap-southeast-1' className={classes.regionSpec}>
+                Asia Pacific (Singapore) — ap-southeast-1
+              </MenuItem>
+              <MenuItem value='ap-southeast-2' className={classes.regionSpec}>
+                Asia Pacific (Sydney) — ap-southeast-2
+              </MenuItem>
+              <MenuItem value='ap-northeast-1' className={classes.regionSpec}>
+                Asia Pacific (Tokyo) — ap-northeast-1
+              </MenuItem>
+              <MenuItem value='ca-central-1' className={classes.regionSpec}>
+                Canada (Central) — ca-central-1
+              </MenuItem>
+              <MenuItem value='eu-central-1' className={classes.regionSpec}>
+                Europe (Frankfurt) — eu-central-1
+              </MenuItem>
+              <MenuItem value='eu-west-1' className={classes.regionSpec}>
+                Europe (Ireland) — eu-west-1
+              </MenuItem>
+              <MenuItem value='eu-west-2' className={classes.regionSpec}>
+                Europe (London) — eu-west-2
+              </MenuItem>
+              <MenuItem value='eu-south-1' className={classes.regionSpec}>
+                Europe (Milan) — eu-south-1
+              </MenuItem>
+              <MenuItem value='eu-west-3' className={classes.regionSpec}>
+                Europe (Paris) — eu-west-3
+              </MenuItem>
+              <MenuItem value='eu-north-1' className={classes.regionSpec}>
+                Europe (Stockholm) — eu-north-1
+              </MenuItem>
+              <MenuItem value='me-south-1' className={classes.regionSpec}>
+                Middle East (Bahrain) — me-south-1
+              </MenuItem>
+              <MenuItem value='sa-east-1' className={classes.regionSpec}>
+                South America (São Paulo) — sa-east-1
+              </MenuItem>
+              <MenuItem value='us-gov-east-1' className={classes.regionSpec}>
+                AWS GovCloud (US-East) — us-gov-east-1
+              </MenuItem>
+              <MenuItem value='us-gov-west-1' className={classes.regionSpec}>
+                AWS GovCloud (US-West) — us-gov-west-1
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+        <br />
         <Button
-          type="submit"
+          type='submit'
           fullWidth
-          variant="contained"
-          color="primary"
+          variant='contained'
+          color='primary'
           className={classes.submit}
           onClick={handleRegisterBtn}
         >

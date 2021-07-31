@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function APIList(props) {
   const classes = useStyles();
-  const [checked, setChecked] = useState([]);
+  const [checked, setChecked] = useState([...props.apiMetricsShown]);
   const [apiOpened, setApiOpen] = useState([]);
   const [resourceOpened, setResourceOpen] = useState([]);
   const { promiseInProgress } = usePromiseTracker();
@@ -94,6 +94,7 @@ export default function APIList(props) {
           credentials: props.credentials,
           timePeriod: props.timePeriod,
           api: name,
+          region: props.region,
         }),
       };
       trackPromise(fetch('/aws/getApiMetrics', reqParams))

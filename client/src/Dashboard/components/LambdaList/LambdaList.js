@@ -27,36 +27,40 @@ const useStyles = makeStyles(styles);
 
 export default function LambdaList(props) {
   const classes = useStyles();
-  const [checked, setChecked] = useState([...props.checkedIndexes]);
+  const [checked, setChecked] = useState([...props.logsShown]);
   const { promiseInProgress } = usePromiseTracker();
 
-  const handleToggle = (value) => {
-    const currentIndex = checked.indexOf(value);
+  const handleToggle = (funcName) => {
+    console.log('funcName: ', funcName);
+    const currentIndex = checked.indexOf(funcName);
     const newChecked = [...checked];
     if (currentIndex === -1) {
-      newChecked.push(value);
+      newChecked.push(funcName);
       const reqParams = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          function: props.tasks[value],
+          function: funcName,
           credentials: props.credentials,
+          region: props.region,
           timePeriod: props.timePeriod,
         }),
       };
       trackPromise(fetch('/aws/getLogs', reqParams))
         .then((res) => res.json())
         .then((logs) => {
-          console.log(logs);
-          props.addFunctionLogs(logs);
+          console.log('logs response: ', logs);
+          if (logs && !logs.err) {
+            props.addFunctionLogs(logs);
+          }
         });
     } else {
       newChecked.splice(currentIndex, 1);
-      props.removeFunctionLogs(props.tasks[value]);
+      props.removeFunctionLogs(funcName);
     }
     setChecked(newChecked);
   };
-  const { tasksIndexes, tasks, rtlActive } = props;
+  const { rtlActive } = props;
   const tableCellClasses = classnames(classes.tableCell, {
     [classes.tableCellRTL]: rtlActive,
   });
@@ -75,13 +79,13 @@ export default function LambdaList(props) {
       ) : null}
       <Table className={classes.table}>
         <TableBody>
-          {tasksIndexes.map((value) => (
-            <TableRow key={value} className={classes.tableRow}>
+          {props.functions.map((funcName, i) => (
+            <TableRow key={i} className={classes.tableRow}>
               <TableCell className={tableCellClasses}>
                 <Checkbox
-                  checked={checked.indexOf(value) !== -1}
+                  checked={checked.indexOf(funcName) !== -1}
                   tabIndex={-1}
-                  onClick={() => handleToggle(value)}
+                  onClick={() => handleToggle(funcName)}
                   checkedIcon={<Check className={classes.checkedIcon} />}
                   icon={<Check className={classes.uncheckedIcon} />}
                   classes={{
@@ -90,7 +94,7 @@ export default function LambdaList(props) {
                   }}
                 />
               </TableCell>
-              <TableCell className={tableCellClasses}>{tasks[value]}</TableCell>
+              <TableCell className={tableCellClasses}>{funcName}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -100,8 +104,7 @@ export default function LambdaList(props) {
 }
 
 LambdaList.propTypes = {
-  tasksIndexes: PropTypes.arrayOf(PropTypes.number),
-  tasks: PropTypes.arrayOf(PropTypes.node),
+  // tasksIndexes: PropTypes.arrayOf(PropTypes.number),
+  // tasks: PropTypes.arrayOf(PropTypes.node),
   rtlActive: PropTypes.bool,
-  checkedIndexes: PropTypes.array,
 };
