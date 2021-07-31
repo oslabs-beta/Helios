@@ -2,7 +2,7 @@
 // Lambda Metrics All Function Totals
 // #######################################
 
-const metricByFuncBarChart = (props, timePeriod) => {
+const metricByFuncBarChart = (props, timePeriod, region) => {
 
   console.log("AWS Get Invocations By Func: ", props.awsByFunc.getInvocations);
   console.log("AWS Render By Func: ",props.awsByFunc.render )
@@ -17,6 +17,7 @@ const metricByFuncBarChart = (props, timePeriod) => {
         credentials: props.credentials,
         timePeriod: timePeriod,
         funcNames: props.aws.functions,
+        region: region,
         // funcNames: funcNameArray
         }),
     };

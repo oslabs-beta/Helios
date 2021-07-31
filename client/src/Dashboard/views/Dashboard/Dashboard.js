@@ -38,12 +38,10 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-// import invocationBarChartFunc from "../../variables/invocationBarChart.js";
-//import errorBarChartFunc from '../../variables/errorBarChart.js';
 import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
 import metricByFuncBarChart from '../../variables/metricByFuncBarChart.js';
 import FetchTime from '../../components/FetchTime/FetchTime.js';
-import DataTable from '../Tables/LambdaMetrics.js';
+import DataTable from '../TableList/LambdaMetrics.js';
 import LambdaChartByFunc from './ChartByFunction/ChartsByFunction';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
@@ -95,42 +93,13 @@ const mapDispatchToProps = (dispatch) => ({
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
 });
 
-const menuItemMaker = (value, className) => (
-  <MenuItem value={value} className={className} />
-);
-
-const getDataByFunc = (metricData, funcName) => {
-  console.log('Original Data: ', metricData);
-
-  let data = JSON.parse(JSON.stringify({ ...metricData }));
-  let series_data = [...metricData.series];
-
-  series_data = series_data.filter(
-    (plotData) =>
-      (plotData.name.search(funcName) > 0) | (plotData.name === 'dummy')
-  );
-
-  // if (metricName === 'invocations') data = {...props.invocationsByFuncData.data}
-  // if (metricName === 'throttles') data = {...props.throttlesByFuncData.data}
-  // if (metricName === 'errors') data = {...props.errorsByFuncData.data}
-  // data.series = data.series.filter((plotData) => (plotData.name.search(funcName)> 0 | plotData.name === 'dummy' ))
-
-  console.log('Function Data: ', data);
-
-  // return data;
-  return { series: series_data };
-};
-
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
-  // const [totalInvocations, setInvocationTotal] = useState(0);
 
   const arnArray = useLiveQuery(getArnArrayIDB);
   const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
   const regionArray = useLiveQuery(getRegionIDB);
-
-  // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
   const [dateSelect, setDateRange] = useState('7d');
   const [funcSelect, setFuncName] = useState('None');
@@ -186,21 +155,16 @@ function Dashboard(props) {
   if (
     props.awsByFunc.renderByFunc &&
     props.credentials &&
-    props.aws.functions.length
+    props.aws.functions.length &&
+    props.region
   ) {
-    metricByFuncBarChart(props, dateSelect);
+    metricByFuncBarChart(props, dateSelect, props.region);
   }
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
     props.updateRender();
-    if (funcSelect !== 'None') props.updateRenderByFunc();
-  };
-
-  const handleFuncChange = (e) => {
-    setFuncName(e.target.value);
-    console.log('Selected Function: ', e.target.value);
-    if (!funcSelect !== 'None') props.updateRenderByFunc();
+    props.updateRenderByFunc();
   };
 
   let timePeriod;
@@ -316,24 +280,6 @@ function Dashboard(props) {
             </CardFooter>
           </Card>
         </GridItem>
-
-        {/* <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color='warning' stats icon>
-              <CardIcon color='warning'>
-                <Accessibility />
-              </CardIcon>
-              <p className={classes.cardCategory}>Followers</p>
-              <h3 className={classes.cardTitle}>+245</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <Update />
-                Just Updated
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>*/}
       </GridContainer>
 
       <GridContainer>
@@ -430,50 +376,6 @@ function Dashboard(props) {
         funcList={props.aws.functions}
         dateSelect={dateSelect}
       />
-
-      {/* <GridContainer>
-        <GridItem xs={12} sm={12} md={6}>
-          <CustomTabs
-            title='Tasks:'
-            headerColor='primary'
-            tabs={[
-              {
-                tabName: 'Bugs',
-                tabIcon: BugReport,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[0, 3]}
-                    tasksIndexes={[0, 1, 2, 3]}
-                    tasks={bugs}
-                  />
-                ),
-              },
-              {
-                tabName: 'Website',
-                tabIcon: Code,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[0]}
-                    tasksIndexes={[0, 1]}
-                    tasks={website}
-                  />
-                ),
-              },
-              {
-                tabName: 'Server',
-                tabIcon: Cloud,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[1]}
-                    tasksIndexes={[0, 1, 2]}
-                    tasks={server}
-                  />
-                ),
-              },
-            ]}
-          />
-        </GridItem>
-          </GridContainer> */}
     </div>
   );
 }
