@@ -38,11 +38,11 @@ export const addLambda = (reqParams) => {
   };
 };
 
-export const addLambdaStarted = () => {
+const addLambdaStarted = () => {
   return { type: types.ADD_LAMBDA_STARTED };
 };
 
-export const addLambdaSuccess = (functions) => {
+const addLambdaSuccess = (functions) => {
   return { type: types.ADD_LAMBDA, payload: functions };
 };
 
