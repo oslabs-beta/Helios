@@ -163,7 +163,6 @@ const awsReducer = (state = initialState, action) => {
 
     case types.ADD_LAMBDA: {
       functions = action.payload;
-      //render = !state.render;
       return { ...state, functions };
     }
     case types.ADD_FUNCTION_LOGS: {
