@@ -3,7 +3,6 @@ export const ADD_AWS_ACCOUNT = 'ADD_AWS_ACCOUNT';
 export const ADD_LOGIN_INFO = 'ADD_LOGIN_INFO';
 export const ADD_CREDENTIALS = 'ADD_CREDENTIALS';
 
-
 //###############################################
 //AWS Reducer All Functions
 //###############################################
@@ -36,3 +35,5 @@ export const ADD_REGION = 'ADD_REGION';
 export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_USER_DETAILS_AFTER_PROFILE_UPDATE =
   'UPDATE_USER_DETAILS_AFTER_PROFILE_UPDATE';
+export const UPDATE_NAME = 'UPDATE_NAME';
+export const UPDATE_ARN = 'UPDATE_ARN';

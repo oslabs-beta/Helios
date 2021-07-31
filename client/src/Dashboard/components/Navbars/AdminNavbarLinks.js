@@ -23,6 +23,7 @@ import EditLocation from '@material-ui/icons/EditLocation';
 import CustomInput from '../../components/CustomInput/CustomInput.js';
 import Button from '../../components/CustomButtons/Button.js';
 import { handleLogout } from '../../../Actions/actions';
+import clearIDB from '../../../indexedDB/clearIDB';
 import { regions } from '../../variables/regions.js';
 import styles from '../../assets/jss/material-dashboard-react/components/headerLinksStyle.js';
 
@@ -38,18 +39,9 @@ const mapStateToProps = (state) => ({
 
 function AdminNavbarLinks(props) {
   const classes = useStyles();
-  const [openNotification, setOpenNotification] = React.useState(null);
+
   const [openProfile, setOpenProfile] = React.useState(null);
-  const handleClickNotification = (event) => {
-    if (openNotification && openNotification.contains(event.target)) {
-      setOpenNotification(null);
-    } else {
-      setOpenNotification(event.currentTarget);
-    }
-  };
-  const handleCloseNotification = () => {
-    setOpenNotification(null);
-  };
+
   const handleClickProfile = (event) => {
     if (openProfile && openProfile.contains(event.target)) {
       setOpenProfile(null);
@@ -68,11 +60,14 @@ function AdminNavbarLinks(props) {
   const handleLogoutAndChange = () => {
     setOpenProfile(null);
     props.handleLogout();
+    clearIDB();
     history.push('/');
   };
   const history = useHistory();
   return (
     <div>
+      {/* Display current region selected and navigate to the User Profile page if clicked
+      where they can update the region */}
       <Link to='/admin/user'>
         <div className={classes.searchWrapper}>
           Region: {regions[props.region]}
@@ -87,6 +82,8 @@ function AdminNavbarLinks(props) {
           </Button>
         </div>
       </Link>
+
+      {/* Button to navigate back to the main dashboard page */}
       <Link to='/admin/dashboard'>
         <Button
           color={window.innerWidth > 959 ? 'transparent' : 'white'}
@@ -102,6 +99,7 @@ function AdminNavbarLinks(props) {
         </Button>
       </Link>
 
+      {/* The profile button on NavBar which opens up to give the option to navigate to User Profile page and/or logout */}
       <div className={classes.manager}>
         <Button
           color={window.innerWidth > 959 ? 'transparent' : 'white'}

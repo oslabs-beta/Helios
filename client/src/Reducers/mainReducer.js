@@ -82,6 +82,22 @@ const mainReducer = (state = initialState, action) => {
       };
     }
 
+    case types.UPDATE_ARN: {
+      arn = action.payload;
+      return {
+        ...state,
+        arn,
+      };
+    }
+
+    case types.UPDATE_NAME: {
+      firstName = action.payload;
+      return {
+        ...state,
+        firstName,
+      };
+    }
+
     case types.UPDATE_USER_DETAILS_AFTER_PROFILE_UPDATE: {
       email = action.payload.email;
       firstName = action.payload.firstName;

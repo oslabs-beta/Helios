@@ -3,6 +3,7 @@ import moment from 'moment';
 import Chartist from 'chartist';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 
+// helper function to generate the X-Axis
 const generateTicks = (startTime, metricTimeRange, metricTimeUnits) => {
   const ticks = [];
 
@@ -58,29 +59,37 @@ const generateTicks = (startTime, metricTimeRange, metricTimeUnits) => {
   }
 };
 
+//////////////////// Initial State for Reducer ////////////////////
 const initialState = {
   apiKeys: [],
   apiMetrics: [],
+  render: true,
 };
+
+/////////////////////////////////////////////////////////////////
 
 const apiReducer = (state = initialState, action) => {
   let apiKeys;
-
+  let render;
   switch (action.type) {
+    // add list of APIs to state
     case types.ADD_API_GATEWAYS: {
       apiKeys = action.payload;
+      render = false;
       return {
         ...state,
         apiKeys,
+        render,
       };
     }
 
+    // once an API is checked and metrics are fetched, add to apiMetrics array for display
     case types.ADD_API_METRIC_CHARTS: {
       let apiMetrics = state.apiMetrics.slice(0);
       let newMetricObj = {
         name: action.payload.name,
       };
-      // loop through action.payload.metrics
+      // loop through action.payload.metrics as the four metrics exist as an array on the api object
       for (let i = 0; i < action.payload.metrics.length; i += 1) {
         let series_data;
         let graphOptions, graphResponsiveOptions, graphAnimation;
@@ -89,13 +98,12 @@ const apiReducer = (state = initialState, action) => {
         let ticks = [];
         let labelFormat;
         let total = 0;
-        let delays = 80,
-          durations = 500;
         let delays2 = 80,
           durations2 = 500;
 
         let currMetric = action.payload.metrics[i];
 
+        // map the data to make the x,y coordinates
         series_data = currMetric.data.map((xydata) => {
           total += xydata.y;
           return { x: new Date(xydata.x), y: xydata.y };
@@ -153,6 +161,7 @@ const apiReducer = (state = initialState, action) => {
         startTime = new Date(currMetric.options.startTime);
         endTime = new Date(currMetric.options.endTime);
 
+        // user helper function to create X-Axis
         ticks = generateTicks(startTime, graphPeriod, graphUnits);
 
         graphOptions.axisX.ticks = ticks;
@@ -181,6 +190,8 @@ const apiReducer = (state = initialState, action) => {
           total,
         };
       }
+      // push new metric object onto apiMetrics array
+      // APIGateway.js loops through apiMetrics and displays each card which then holds each chart
       apiMetrics.push(newMetricObj);
       return {
         ...state,
@@ -188,6 +199,7 @@ const apiReducer = (state = initialState, action) => {
       };
     }
 
+    // after an API is unchecked, remove from array
     case types.REMOVE_API_METRIC_CHARTS: {
       let apiMetrics = state.apiMetrics.slice(0);
 
@@ -202,6 +214,7 @@ const apiReducer = (state = initialState, action) => {
       };
     }
 
+    // if time period is updated, loop through and update each currently displayed chart
     case types.UPDATE_API_METRIC_CHARTS: {
       let apiMetrics = [];
 

@@ -40,7 +40,6 @@ export const removeFunctionLogs = (functionName) => {
   return { type: types.REMOVE_FUNCTION_LOGS, payload: functionName };
 };
 
-
 export const addInvocationsAlldata = (invocationsAllData) => {
   console.log('inside add Invocation action: ', invocationsAllData);
   return { type: types.ADD_INVOCATIONS_ALLDATA, payload: invocationsAllData };
@@ -74,11 +73,13 @@ export const updateFunctionLogs = (updatedLogs) => {
 //###############################################
 export const addInvocationsByFuncData = (invocationsByFuncData) => {
   console.log('inside add Invocation By Func action: ', invocationsByFuncData);
-  return { type: types.ADD_INVOCATIONS_BYFUNCDATA, payload: invocationsByFuncData };
+  return {
+    type: types.ADD_INVOCATIONS_BYFUNCDATA,
+    payload: invocationsByFuncData,
+  };
 };
 
-
-export const addErrorsByFuncData  = (errorsByFuncData) => {
+export const addErrorsByFuncData = (errorsByFuncData) => {
   console.log('inside add Error By Func action: ', errorsByFuncData);
   return { type: types.ADD_ERRORS_BYFUNCDATA, payload: errorsByFuncData };
 };
@@ -96,7 +97,7 @@ export const updateFetchTimeByFunc = () => {
 export const updateRenderByFunc = () => {
   console.log('inside update Render By Func action: ');
   return { type: types.UPDATE_RENDER_BYFUNC };
-}
+};
 export const handleLogout = () => {
   return { type: types.HANDLE_LOGOUT };
 };
@@ -127,4 +128,12 @@ export const updateUserDetailsAfterProfileUpdate = (userDetails) => {
     type: types.UPDATE_USER_DETAILS_AFTER_PROFILE_UPDATE,
     payload: userDetails,
   };
+};
+
+export const updateFirstName = (firstName) => {
+  return { type: types.UPDATE_NAME, payload: firstName };
+};
+
+export const updateArn = (arn) => {
+  return { type: types.UPDATE_ARN, payload: arn };
 };

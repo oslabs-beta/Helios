@@ -5,19 +5,11 @@ import ChartistGraph from 'react-chartist';
 import { connect } from 'react-redux';
 // @material-ui/core
 import { makeStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
+
 // @material-ui/icons
-import Store from '@material-ui/icons/Store';
-import Warning from '@material-ui/icons/Warning';
+
 import DateRange from '@material-ui/icons/DateRange';
-import LocalOffer from '@material-ui/icons/LocalOffer';
-import Update from '@material-ui/icons/Update';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import AccessTime from '@material-ui/icons/AccessTime';
-import Accessibility from '@material-ui/icons/Accessibility';
-import BugReport from '@material-ui/icons/BugReport';
-import Code from '@material-ui/icons/Code';
-import Cloud from '@material-ui/icons/Cloud';
+
 // core components
 import GridItem from '../../components/Grid/GridItem.js';
 import GridContainer from '../../components/Grid/GridContainer.js';
@@ -52,7 +44,10 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
 import { latencyChart } from '../../variables/apiCharts';
-
+import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import getUserInfoArrayIDB from '../../../indexedDB/getUserInfo.js';
+import getRegionIDB from '../../../indexedDB/getRegionIDB';
+import { useLiveQuery } from 'dexie-react-hooks';
 const useStyles = makeStyles(styles);
 
 const mapStateToProps = (state) => ({
@@ -70,12 +65,68 @@ const mapDispatchToProps = (dispatch) => ({
   removeApiMetrics: (apiName) => dispatch(actions.removeApiMetrics(apiName)),
   updateApiMetrics: (updatedList) =>
     dispatch(actions.updateApiMetrics(updatedList)),
+  updateRender: () => dispatch(actions.updateRender()),
+  updateFirstName: (name) => dispatch(actions.updateFirstName(name)),
+  updateArn: (arn) => dispatch(actions.updateArn(arn)),
+  addRegion: (region) => dispatch(actions.addRegion(region)),
+  addCredentials: (credentials) =>
+    dispatch(actions.addCredentials(credentials)),
+  updateEmail: (newEmail) => dispatch(actions.updateEmail(newEmail)),
 });
 
 function APIGateway(props) {
   const classes = useStyles();
   const [dateSelect, setDateRange] = useState('1hr');
+  const arnArray = useLiveQuery(getArnArrayIDB);
+  const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
+  const regionArray = useLiveQuery(getRegionIDB);
 
+  // after refresh, fetches user region from IndexedDB and updates state
+  useEffect(() => {
+    if (regionArray && regionArray[0]) {
+      props.addRegion(regionArray[0].region);
+    }
+  }, [regionArray]);
+
+  // after refresh, credentials disappear and have to be refetched based off the arn
+  // grabs user arn from IndexedDB and then gets new credentials and updates state
+  // with both arn and new credentials
+  useEffect(() => {
+    if (!props.credentials) {
+      if (arnArray && arnArray[0]) {
+        props.updateArn(arnArray[0].arn);
+        const reqParams = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            arn: arnArray[0].arn,
+          }),
+        };
+
+        fetch('/aws/getCreds', reqParams)
+          .then((res) => res.json())
+          .then((credentialsData) => {
+            console.log('logging from useEffect fetch: ', credentialsData);
+            if (!credentialsData.err) {
+              props.addCredentials(credentialsData);
+            }
+          })
+          .catch((err) =>
+            console.log('Error inside initial get credentials fetch: ', err)
+          );
+      }
+    }
+  }, [arnArray]);
+
+  // after a refresh this fetches the user info from IndexedDB and then updates state again
+  useEffect(() => {
+    if (userInfoArray && userInfoArray[0]) {
+      props.updateEmail(userInfoArray[0].email);
+      props.updateFirstName(userInfoArray[0].firstName);
+    }
+  }, [userInfoArray]);
+
+  // if time period is adjusted, this updates the metrics for the currently displayed apis
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
     if (props.api.apiMetrics) {
@@ -101,8 +152,11 @@ function APIGateway(props) {
     }
   };
 
-  useEffect(() => {
-    const reqParams = {
+  // if props has been updated, this refetches the APIs that exists on the account to be displayed
+  // props.addApiGateways sets props.api.render to false so it doesn't run continously
+  // only runs again after a refresh
+  if (props.region && props.credentials && props.api.render) {
+    const apiGatewayReqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -110,7 +164,7 @@ function APIGateway(props) {
         region: props.region,
       }),
     };
-    fetch('/aws/apiGateway', reqParams)
+    fetch('/aws/apiGateway', apiGatewayReqParams)
       .then((res) => res.json())
       .then((apiData) => {
         props.addApiGateways(apiData);
@@ -118,12 +172,17 @@ function APIGateway(props) {
       .catch((err) =>
         console.log('Error inside API Gateway useEffect fetch: ', err)
       );
-  }, []);
+  }
 
+  // creates an array of which apis are currently checked
+  // when a user navigates away from this page and then back, this ensures the original
+  // checked apis remain checked and persist
   const apiMetricsShown = props.api.apiMetrics.map((api) => {
     return api.name;
   });
 
+  // loops through the checked apis and creates the four charts for them in separate tabs
+  // on their own card so users can see multiple api metrics at the same time
   const mappedMetrics = props.api.apiMetrics.map((apiName, i) => {
     return (
       <CustomTabs
@@ -245,6 +304,7 @@ function APIGateway(props) {
 
   return (
     <div className={classes.logGrid}>
+      {/* Time Period dropdown bar */}
       <div className={classes.sortBy}>
         <FormControl className={classes.timeRange}>
           <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
@@ -280,6 +340,8 @@ function APIGateway(props) {
         </FormControl>
       </div>
       <br />
+
+      {/* List of existing APIs on user's AWS account */}
       <GridContainer>
         <GridItem xs={4} sm={4} md={4}>
           <Card>
@@ -287,6 +349,7 @@ function APIGateway(props) {
               <h4 className={classes.cardTitleWhite}>Rest APIs</h4>
             </CardHeader>
             <CardBody>
+              {/* sends to APIList to organize the list */}
               <APIList
                 apiList={props.api.apiKeys}
                 apiMetricsShown={apiMetricsShown}
@@ -299,6 +362,9 @@ function APIGateway(props) {
             </CardBody>
           </Card>
         </GridItem>
+
+        {/* Our mapped metric cards (each API will have their own card and then four tabs
+        containing each of the API's metric charts) */}
         <GridItem xs={8} sm={8} md={8}>
           {mappedMetrics}
         </GridItem>
