@@ -58,3 +58,5 @@ export default function DataTable(props) {
 
 
   })
+
+}
