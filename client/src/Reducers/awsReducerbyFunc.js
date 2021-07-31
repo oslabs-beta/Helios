@@ -1,8 +1,8 @@
 import * as types from '../Constants/actionTypes';
 import moment from 'moment';
 import Chartist from 'chartist';
-require ('chartist-plugin-legend')
-require('chartist-plugin-tooltips')
+//require ('chartist-plugin-legend')
+//require('chartist-plugin-tooltips')
 //require('chartist-plugin-legend')
 // ##############################
 // // // variables used to create animation on charts
@@ -32,7 +32,7 @@ const initialState = {
       left: 0,
     },
     plugins: [
-      Chartist.plugins.legend(),
+     // Chartist.plugins.legend(),
      // Chartist.plugins.tooltip({appendToBody: false}),
   ],
     scaleMinSpace: 15,

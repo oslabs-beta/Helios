@@ -150,7 +150,6 @@ const awsReducer = (state = initialState, action) => {
   let functionLogs;
   let lastMetricFetchTime;
 
-
   switch (action.type) {
     case types.UPDATE_RENDER: {
       render = true;
@@ -410,9 +409,13 @@ const awsReducer = (state = initialState, action) => {
 
       return { ...state, throttlesAllData, getThrottles, render };
     }
+    case types.HANDLE_LOGOUT: {
+      return {
+        ...initialState,
+      };
+    }
 
     default: {
-
       return { ...state };
     }
   }

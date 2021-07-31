@@ -14,12 +14,10 @@ const getMetricsAllFunc = async (req, res, next) => {
     credentials: req.body.credentials,
   });
 
-//initialize the variables for creating the inputs for AWS request
+  //initialize the variables for creating the inputs for AWS request
   let graphPeriod, graphUnits, graphMetricName, graphMetricStat;
 
-  graphMetricName = req.params.metricName
-
-
+  graphMetricName = req.params.metricName;
 
   if (req.body.timePeriod === '30min') {
     [graphPeriod, graphUnits] = [30, 'minutes'];
@@ -35,8 +33,8 @@ const getMetricsAllFunc = async (req, res, next) => {
     [graphPeriod, graphUnits] = [30, 'days'];
   }
 
-  if (!req.body.metricStat) graphMetricStat = 'Sum'
-  else graphMetricStat = req.body.metricStat
+  if (!req.body.metricStat) graphMetricStat = 'Sum';
+  else graphMetricStat = req.body.metricStat;
 
   //Metrics for All Functions (combined)
 
@@ -45,6 +43,13 @@ const getMetricsAllFunc = async (req, res, next) => {
     graphUnits,
     graphMetricName,
     graphMetricStat
+  );
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------------------'
+  );
+  console.log(graphMetricName);
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------------------'
   );
   console.log('the input params: ', metricAllFuncInputParams);
   console.log(typeof metricAllFuncInputParams.StartTime);

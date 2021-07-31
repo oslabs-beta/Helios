@@ -39,6 +39,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import styles from '../../assets/jss/material-dashboard-react/views/logsStyle.js';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from 'react-promise-tracker';
+
 const useStyles = makeStyles(styles);
 
 const mapStateToProps = (state) => ({
@@ -108,6 +111,7 @@ function Logs(props) {
   });
 
   const [dateSelect, setDateRange] = useState('1hr');
+  const { promiseInProgress } = usePromiseTracker();
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
@@ -121,7 +125,7 @@ function Logs(props) {
           credentials: props.credentials,
         }),
       };
-      fetch('/aws/updateLogs', reqParams)
+      trackPromise(fetch('/aws/updateLogs', reqParams))
         .then((res) => res.json())
         .then((updatedLogs) => {
           props.updateFunctionLogs(updatedLogs);
@@ -185,6 +189,7 @@ function Logs(props) {
                     addFunctionLogs={props.addFunctionLogs}
                     removeFunctionLogs={props.removeFunctionLogs}
                     timePeriod={dateSelect}
+                    updatePromise={promiseInProgress}
                   />
                 ),
               },

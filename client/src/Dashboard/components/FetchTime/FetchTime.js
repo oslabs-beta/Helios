@@ -7,11 +7,8 @@ import moment from 'moment';
 
 const useStyles = makeStyles(styles);
 
-
-
 export default function FetchTime(props) {
-
-    const classes = useStyles();
+  const classes = useStyles();
 
     const [fetchTime, setFetchTime] = useState(moment(props.lastMetricFetchTime).fromNow())
     useEffect(() => {
@@ -28,10 +25,9 @@ export default function FetchTime(props) {
     
       }, [props.lastMetricFetchTime]);    
 
-    return (
-        <div className={classes.stats}>
-        <AccessTime /> Last Fetched{' '}
-        {fetchTime}
-      </div>
-    );
-  }
+  return (
+    <div className={classes.stats}>
+      <AccessTime /> Last fetched {fetchTime}
+    </div>
+  );
+}

@@ -93,4 +93,24 @@ export const updateFetchTimeByFunc = () => {
 export const updateRenderByFunc = () => {
   console.log('inside update Render By Func action: ');
   return { type: types.UPDATE_RENDER_BYFUNC };
+}
+export const handleLogout = () => {
+  return { type: types.HANDLE_LOGOUT };
+};
+
+export const addApiGateways = (apiData) => {
+  return { type: types.ADD_API_GATEWAYS, payload: apiData };
+};
+
+export const addApiMetrics = (apiMetrics) => {
+  return { type: types.ADD_API_METRIC_CHARTS, payload: apiMetrics };
+};
+
+export const removeApiMetrics = (apiName) => {
+  return { type: types.REMOVE_API_METRIC_CHARTS, payload: apiName };
+};
+
+export const updateApiMetrics = (updatedApiMetrics) => {
+  console.log(updatedApiMetrics);
+  return { type: types.UPDATE_API_METRIC_CHARTS, payload: updatedApiMetrics };
 };

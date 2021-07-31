@@ -35,24 +35,11 @@ export default function LambdaList(props) {
     const newChecked = [...checked];
     if (currentIndex === -1) {
       newChecked.push(value);
-      const reqParams = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          function: props.tasks[value],
-          credentials: props.credentials,
-          timePeriod: props.timePeriod,
-        }),
-      };
-      trackPromise(fetch('/aws/getLogs', reqParams))
-        .then((res) => res.json())
-        .then((logs) => {
-          console.log(logs);
-          props.addFunctionLogs(logs);
-        });
+      props.addFunctionMetrics(props.tasks[value])
+
     } else {
       newChecked.splice(currentIndex, 1);
-      props.removeFunctionLogs(props.tasks[value]);
+      props.removeFunctionMetrics(props.tasks[value]);
     }
     setChecked(newChecked);
   };

@@ -38,12 +38,17 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+// import invocationBarChartFunc from "../../variables/invocationBarChart.js";
+//import errorBarChartFunc from '../../variables/errorBarChart.js';
 import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
 import metricByFuncBarChart from '../../variables/metricByFuncBarChart.js';
 import FetchTime from '../../components/FetchTime/FetchTime.js';
 import DataTable from '../Tables/LambdaMetrics.js';
+import LambdaChartByFunc from './ChartByFunction/ChartsByFunction';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
+import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 const useStyles = makeStyles(styles);
 
@@ -59,8 +64,7 @@ const mapStateToProps = (state) => ({
   invocationsByFuncData: state.awsByFunc.invocationsByFuncData,
   errorsByFuncData: state.awsByFunc.errorsByFuncData,
   throttlesByFuncData: state.awsByFunc.throttlesByFuncData,
-
-}); 
+});
 
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
@@ -77,10 +81,10 @@ const mapDispatchToProps = (dispatch) => ({
 
   addInvocationsByFuncData: (invocationsByFuncData) =>
     dispatch(actions.addInvocationsByFuncData(invocationsByFuncData)),
-    addErrorsByFuncData: (errorsByFuncData) =>
+  addErrorsByFuncData: (errorsByFuncData) =>
     dispatch(actions.addErrorsByFuncData(errorsByFuncData)),
-    addThrottlesByFuncData: (throttlesByFuncData) =>
-    dispatch(actions.addThrottlesByFuncData(throttlesByFuncData)),    
+  addThrottlesByFuncData: (throttlesByFuncData) =>
+    dispatch(actions.addThrottlesByFuncData(throttlesByFuncData)),
   updateRenderByFunc: () => dispatch(actions.updateRenderByFunc()),
   updateFetchTimeByFunc: () => dispatch(actions.updateFetchTimeByFunc()),
 });
@@ -114,29 +118,40 @@ const getDataByFunc = (metricData, funcName) => {
 function Dashboard(props) {
   const classes = useStyles();
   console.log('logging from dashboard component (parent): ', props.credentials);
+  // const [totalInvocations, setInvocationTotal] = useState(0);
+
+  const arnArray = useLiveQuery(getArnArrayIDB);
+
+  // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
   const [dateSelect, setDateRange] = useState('7d');
   const [funcSelect, setFuncName] = useState('None');
 
   useEffect(() => {
-    console.log('ARN: ', props.arn);
     if (!props.credentials) {
-      const reqParams = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ arn: props.arn }),
-      };
-      fetch('/aws/getCreds', reqParams)
-        .then((res) => res.json())
-        .then((credentialsData) => {
-          console.log('logging from useEffect fetch: ', credentialsData);
-          props.addCredentials(credentialsData);
-        })
-        .catch((err) =>
-          console.log('Error inside initial get credentials fetch: ', err)
-        );
+      // check before accessing arnArray, because
+      // it can be undefined if IDB is not yet ready
+      if (arnArray && arnArray[0]) {
+        const reqParams = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ arn: arnArray[0].arn }),
+        };
+
+        fetch('/aws/getCreds', reqParams)
+          .then((res) => res.json())
+          .then((credentialsData) => {
+            console.log('logging from useEffect fetch: ', credentialsData);
+            props.addCredentials(credentialsData);
+          })
+          .catch((err) =>
+            console.log('Error inside initial get credentials fetch: ', err)
+          );
+      }
     }
-  }, []);
+
+    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
+  }, [arnArray]);
 
   //fetch total metrics
   if (props.aws.render && props.credentials) {
@@ -146,7 +161,8 @@ function Dashboard(props) {
   //fetch by Func metrics
   if (
     props.awsByFunc.renderByFunc &&
-    props.credentials && props.aws.functions.length
+    props.credentials &&
+    props.aws.functions.length
   ) {
     metricByFuncBarChart(props, dateSelect);
   }
@@ -363,18 +379,19 @@ function Dashboard(props) {
         </GridItem>
 
         <GridItem xs={12} sm={12} md={6}>
-        <Card chart>
-            <CardHeader color="gray">
+          <Card chart>
+            <CardHeader color="primary">
+              <h4 className={classes.cardTitleWhite}>
+                Metric Totals by Lambda Function
+              </h4>
+            </CardHeader>
+            <CardBody>
               <DataTable
                 funcNames={props.aws.functions}
                 invocations={props.invocationsByFuncData.data}
                 errors={props.errorsByFuncData.data}
                 throttles={props.throttlesByFuncData.data}
               />
-            </CardHeader>
-            <CardBody>
-              <h4 className={classes.cardTitle}>Total Metrics</h4>
-              <p className={classes.cardCategory}>Metrics</p>
             </CardBody>
             <CardFooter chart>
               <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
@@ -382,60 +399,20 @@ function Dashboard(props) {
           </Card>
         </GridItem>
 
-        <FormControl className={classes.timeRange}>
-          <InputLabel htmlFor="function-select" className={classes.dateSpec}>
-            {' '}
-            <DateRange /> Select a Lambda Function
-          </InputLabel>
-          <br />
-          <Select
-            id="function-select"
-            value={funcSelect}
-            className={classes.dateSpec}
-            onChange={handleFuncChange}
-          >
-            <MenuItem value="None" className={classes.dateSpec}>
-              {' '}
-              None{' '}
-            </MenuItem>
 
-            {props.aws.functions.map((func) => (
-              <MenuItem value={func} className={classes.dateSpec}>
-                {' '}
-                {func}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <GridItem xs={12} sm={12} md={6}>
-          <Card chart>
-            <CardHeader color="info">
-              <ChartistGraph
-                className="ct-chart"
-                data={getDataByFunc(
-                  props.invocationsByFuncData.data,
-                  funcSelect
-                )}
-                // data = {props.invocationsByFuncData.data}
-                type="Bar"
-                options={props.invocationsByFuncData.options}
-                responsiveOptions={
-                  props.invocationsByFuncData.responsiveOptions
-                }
-                listener={props.invocationsByFuncData.animation}
-                // plugins={props.invocationsByFuncData.plugins}
-              />
-            </CardHeader>
-            <CardBody>
-              <h4 className={classes.cardTitle}>Invocations By Function</h4>
-            </CardBody>
-            <CardFooter chart>
-              <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
-            </CardFooter>
-          </Card>
-        </GridItem>
       </GridContainer>
+
+
+        <LambdaChartByFunc
+        invocationsByFuncData = {props.invocationsByFuncData}
+        errorsByFuncData = {props.errorsByFuncData}
+        throttlesByFuncData = {props.throttlesByFuncData}
+        funcList = {props.aws.functions}
+        dateSelect = {dateSelect}
+        
+        />
+
+
 
       {/* <GridContainer>
         <GridItem xs={12} sm={12} md={6}>

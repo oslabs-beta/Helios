@@ -8,11 +8,13 @@ const getMetricsAllFunc = require('../controllers/aws/Metrics/getMetricsAllFunc'
 const getMetricsByFunc = require('../controllers/aws/Metrics/getMetricsByFunc');
 const getLogs = require('../controllers/aws/Logs/getLogs');
 const updateLogs = require('../controllers/aws/Logs/updateLogs');
+const getAPIData = require('../controllers/aws/APIGateway/getAPI');
+const getApiMetrics = require('../controllers/aws/APIGateway/getAPIMetrics');
+const updateApiMetrics = require('../controllers/aws/APIGateway/updateAPIMetrics');
 //AWS Root User Credentials
 
 router.route('/getCreds').post(getCredentials, (req, res) => {
   console.log('you hit get Creds');
-  console.log(req.body);
   res.status(200).json(res.locals.credentials);
 });
 
@@ -47,7 +49,6 @@ router.route('/getLogs').post(getLogs, (req, res) => {
 //Updating Lambda Function Logs
 router.route('/updateLogs').post(updateLogs, (req, res) => {
   console.log('Returning updated Lambda Function Logs');
-  console.log(res.locals.updatedLogs);
   res.status(200).json(res.locals.updatedLogs);
 });
 
@@ -58,5 +59,17 @@ router
     console.log('Returning Lambda Functions Invocations By Function:');
     res.status(200).json(res.locals.metricByFuncData);
   });
+//API Gateway data
+router.route('/apiGateway').post(getAPIData, (req, res) => {
+  res.status(200).json(res.locals.apiData);
+});
+
+router.route('/getApiMetrics').post(getApiMetrics, (req, res) => {
+  res.status(200).json(res.locals.apiMetrics);
+});
+
+router.route('/updateApiMetrics').post(updateApiMetrics, (req, res) => {
+  res.status(200).json(res.locals.apiMetrics);
+});
 
 module.exports = router;
