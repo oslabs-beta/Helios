@@ -1,5 +1,5 @@
 // import { stsClient, REGION } from '../libs/stsClient.js';
-const { stsClient, REGION } = require('./libs/stsClient.js');
+const { stsClient } = require('./libs/stsClient.js');
 const AWSUtilFunc = require('../Metrics/utils/AWSUtilFunc.js');
 
 const { AssumeRoleCommand } = require('@aws-sdk/client-sts');
@@ -14,14 +14,17 @@ const {
   GetMetricDataCommand,
 } = require('@aws-sdk/client-cloudwatch');
 
-// const roleParams = {
-//   RoleArn: 'arn:aws:iam::142167254676:role/HeliosDelegationRole',
-//   RoleSessionName: 'testingSessionWork',
-// };
-
 //Async Function to Assume role of the Client and pull metrics
 
 const getCredentials = async (req, res, next) => {
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------'
+  );
+  console.log('Credentials: ', req.body);
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------'
+  );
+
   const roleParams = {
     RoleArn: req.body.arn,
     RoleSessionName: 'HeliosSession',

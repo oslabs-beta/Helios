@@ -48,6 +48,7 @@ import LambdaChartByFunc from './ChartByFunction/ChartsByFunction';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import getRegionIDB from '../../../indexedDB/getRegionIDB';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 const useStyles = makeStyles(styles);
@@ -55,6 +56,7 @@ const useStyles = makeStyles(styles);
 const mapStateToProps = (state) => ({
   arn: state.main.arn,
   credentials: state.main.credentials,
+  region: state.main.region,
   aws: state.aws,
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
@@ -69,7 +71,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
-
+  addRegion: (region) => dispatch(actions.addRegion(region)),
   addInvocationsAlldata: (invocationsAllData) =>
     dispatch(actions.addInvocationsAlldata(invocationsAllData)),
   addErrorsAlldata: (errorsAllData) =>
@@ -122,10 +124,24 @@ function Dashboard(props) {
 
   const arnArray = useLiveQuery(getArnArrayIDB);
 
+  const regionArray = useLiveQuery(getRegionIDB);
+
   // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
   const [dateSelect, setDateRange] = useState('7d');
   const [funcSelect, setFuncName] = useState('None');
+
+  useEffect(() => {
+    if (regionArray && regionArray[0]) {
+      props.addRegion(regionArray[0].region);
+      console.log(
+        'REGION AFTER USE EFFECT: ',
+        props.region,
+        props.aws.render,
+        props.credentials
+      );
+    }
+  }, [regionArray]);
 
   useEffect(() => {
     if (!props.credentials) {
@@ -135,27 +151,29 @@ function Dashboard(props) {
         const reqParams = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ arn: arnArray[0].arn }),
+          body: JSON.stringify({
+            arn: arnArray[0].arn,
+          }),
         };
 
         fetch('/aws/getCreds', reqParams)
           .then((res) => res.json())
           .then((credentialsData) => {
             console.log('logging from useEffect fetch: ', credentialsData);
-            props.addCredentials(credentialsData);
+            if (!credentialsData.err) {
+              props.addCredentials(credentialsData);
+            }
           })
           .catch((err) =>
             console.log('Error inside initial get credentials fetch: ', err)
           );
       }
     }
-
-    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
   }, [arnArray]);
 
-  //fetch total metrics
-  if (props.aws.render && props.credentials) {
-    metricAllFuncBarChart(props, dateSelect);
+  if (props.aws.render && props.credentials && props.region) {
+    console.log('PROPS.REGION: ', props.region);
+    metricAllFuncBarChart(props, dateSelect, props.region);
   }
 
   //fetch by Func metrics
@@ -169,7 +187,6 @@ function Dashboard(props) {
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
-    console.log(e.target.value);
     props.updateRender();
     if (funcSelect !== 'None') props.updateRenderByFunc();
   };
@@ -456,29 +473,7 @@ function Dashboard(props) {
             ]}
           />
         </GridItem>
-        <GridItem xs={12} sm={12} md={6}>
-          <Card>
-            <CardHeader color='warning'>
-              <h4 className={classes.cardTitleWhite}>Employees Stats</h4>
-              <p className={classes.cardCategoryWhite}>
-                New employees on 15th September, 2016
-              </p>
-            </CardHeader>
-            <CardBody>
-              <Table
-                tableHeaderColor='warning'
-                tableHead={['ID', 'Name', 'Salary', 'Country']}
-                tableData={[
-                  ['1', 'Dakota Rice', '$36,738', 'Niger'],
-                  ['2', 'Minerva Hooper', '$23,789', 'Curaçao'],
-                  ['3', 'Sage Rodriguez', '$56,142', 'Netherlands'],
-                  ['4', 'Philip Chaney', '$38,735', 'Korea, South'],
-                ]}
-              />
-            </CardBody>
-          </Card>
-        </GridItem>
-      </GridContainer> */}
+          </GridContainer> */}
     </div>
   );
 }

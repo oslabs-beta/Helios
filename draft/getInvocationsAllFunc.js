@@ -10,7 +10,7 @@ const {
 
 const getInvocationsAllFunc = async (req, res, next) => {
   const cwClient = new CloudWatchClient({
-    region: REGION,
+    region: req.body.region,
     credentials: req.body.credentials,
   });
 

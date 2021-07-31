@@ -64,6 +64,7 @@
     "n-readlines": "^1.0.1",
     "node-fetch": "^2.6.1",
     "node-sass": "^6.0.1",
+    "nodemailer": "^6.6.3",
     "nodemon": "^2.0.11",
     "perfect-scrollbar": "^1.5.1",
     "prop-types": "^15.7.2",
