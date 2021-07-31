@@ -1,53 +1,53 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React from "react";
+import { useEffect, useState } from "react";
 // react plugin for creating charts
-import ChartistGraph from 'react-chartist';
-import { connect } from 'react-redux';
+import ChartistGraph from "react-chartist";
+import { connect } from "react-redux";
 // @material-ui/core
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 
 // @material-ui/icons
 
-import DateRange from '@material-ui/icons/DateRange';
+import DateRange from "@material-ui/icons/DateRange";
 
 // core components
-import GridItem from '../../components/Grid/GridItem.js';
-import GridContainer from '../../components/Grid/GridContainer.js';
-import LogTable from '../../components/Table/LogTable.js';
-import APIList from '../../components/APIList/APIList.js';
-import CustomTabs from '../../components/CustomTabs/CustomTabs.js';
-import Danger from '../../components/Typography/Danger.js';
-import LogCard from '../../components/Card/LogCard.js';
-import CardHeader from '../../components/Card/CardHeader.js';
-import CardIcon from '../../components/Card/CardIcon.js';
-import CardBody from '../../components/Card/CardBody.js';
-import CardFooter from '../../components/Card/CardFooter.js';
-import Card from '../../components/Card/Card.js';
-import Select from '@material-ui/core/Select';
-import IconButton from '@material-ui/core/IconButton';
-import * as actions from '../../../Actions/actions';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import styles from '../../assets/jss/material-dashboard-react/views/apiStyle.js';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
-import { latencyChart } from '../../variables/apiCharts';
-import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
-import getUserInfoArrayIDB from '../../../indexedDB/getUserInfo.js';
-import getRegionIDB from '../../../indexedDB/getRegionIDB';
-import { useLiveQuery } from 'dexie-react-hooks';
+import GridItem from "../../components/Grid/GridItem.js";
+import GridContainer from "../../components/Grid/GridContainer.js";
+import LogTable from "../../components/Table/LogTable.js";
+import APIList from "../../components/APIList/APIList.js";
+import CustomTabs from "../../components/CustomTabs/CustomTabs.js";
+import Danger from "../../components/Typography/Danger.js";
+import LogCard from "../../components/Card/LogCard.js";
+import CardHeader from "../../components/Card/CardHeader.js";
+import CardIcon from "../../components/Card/CardIcon.js";
+import CardBody from "../../components/Card/CardBody.js";
+import CardFooter from "../../components/Card/CardFooter.js";
+import Card from "../../components/Card/Card.js";
+import Select from "@material-ui/core/Select";
+import IconButton from "@material-ui/core/IconButton";
+import * as actions from "../../../Actions/actions";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import styles from "../../assets/jss/material-dashboard-react/views/apiStyle.js";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import ListSubheader from "@material-ui/core/ListSubheader";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Collapse from "@material-ui/core/Collapse";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import DraftsIcon from "@material-ui/icons/Drafts";
+import SendIcon from "@material-ui/icons/Send";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import StarBorder from "@material-ui/icons/StarBorder";
+import { latencyChart } from "../../variables/apiCharts";
+import getArnArrayIDB from "../../../indexedDB/getArnArrayIDB.js";
+import getUserInfoArrayIDB from "../../../indexedDB/getUserInfo.js";
+import getRegionIDB from "../../../indexedDB/getRegionIDB";
+import { useLiveQuery } from "dexie-react-hooks";
 const useStyles = makeStyles(styles);
 
 const mapStateToProps = (state) => ({
@@ -76,7 +76,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 function APIGateway(props) {
   const classes = useStyles();
-  const [dateSelect, setDateRange] = useState('1hr');
+  const [dateSelect, setDateRange] = useState("1hr");
   const arnArray = useLiveQuery(getArnArrayIDB);
   const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
   const regionArray = useLiveQuery(getRegionIDB);
@@ -96,23 +96,23 @@ function APIGateway(props) {
       if (arnArray && arnArray[0]) {
         props.updateArn(arnArray[0].arn);
         const reqParams = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             arn: arnArray[0].arn,
           }),
         };
 
-        fetch('/aws/getCreds', reqParams)
+        fetch("/aws/getCreds", reqParams)
           .then((res) => res.json())
           .then((credentialsData) => {
-            console.log('logging from useEffect fetch: ', credentialsData);
+            console.log("logging from useEffect fetch: ", credentialsData);
             if (!credentialsData.err) {
               props.addCredentials(credentialsData);
             }
           })
           .catch((err) =>
-            console.log('Error inside initial get credentials fetch: ', err)
+            console.log("Error inside initial get credentials fetch: ", err)
           );
       }
     }
@@ -131,8 +131,8 @@ function APIGateway(props) {
     setDateRange(e.target.value);
     if (props.api.apiMetrics) {
       const reqParams = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           apiList: props.api.apiMetrics,
           newTimePeriod: e.target.value,
@@ -140,14 +140,14 @@ function APIGateway(props) {
           region: props.region,
         }),
       };
-      fetch('/aws/updateApiMetrics', reqParams)
+      fetch("/aws/updateApiMetrics", reqParams)
         .then((res) => res.json())
         .then((updatedApiMetrics) => {
           console.log(updatedApiMetrics);
           props.updateApiMetrics(updatedApiMetrics);
         })
         .catch((err) =>
-          console.log('Error in refreshing update API Metrics: ', err)
+          console.log("Error in refreshing update API Metrics: ", err)
         );
     }
   };
@@ -157,20 +157,20 @@ function APIGateway(props) {
   // only runs again after a refresh
   if (props.region && props.credentials && props.api.render) {
     const apiGatewayReqParams = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         credentials: props.credentials,
         region: props.region,
       }),
     };
-    fetch('/aws/apiGateway', apiGatewayReqParams)
+    fetch("/aws/apiGateway", apiGatewayReqParams)
       .then((res) => res.json())
       .then((apiData) => {
         props.addApiGateways(apiData);
       })
       .catch((err) =>
-        console.log('Error inside API Gateway useEffect fetch: ', err)
+        console.log("Error inside API Gateway useEffect fetch: ", err)
       );
   }
 
@@ -187,17 +187,17 @@ function APIGateway(props) {
     return (
       <CustomTabs
         key={i}
-        headerColor='info'
+        headerColor="info"
         tabs={[
           {
-            tabName: 'Latency',
+            tabName: "Latency",
             tabContent: (
               <Card chart>
-                <CardHeader color='success'>
+                <CardHeader color="success">
                   <ChartistGraph
-                    className='ct-chart'
+                    className="ct-chart"
                     data={apiName.Latency.data}
-                    type='Bar'
+                    type="Bar"
                     options={apiName.Latency.options}
                     responsiveOptions={apiName.Latency.responsiveOptions}
                     listener={apiName.Latency.animation}
@@ -218,14 +218,14 @@ function APIGateway(props) {
             ),
           },
           {
-            tabName: 'Count',
+            tabName: "Count",
             tabContent: (
               <Card chart>
-                <CardHeader color='success'>
+                <CardHeader color="success">
                   <ChartistGraph
-                    className='ct-chart'
+                    className="ct-chart"
                     data={apiName.Count.data}
-                    type='Bar'
+                    type="Bar"
                     options={apiName.Count.options}
                     responsiveOptions={apiName.Count.responsiveOptions}
                     listener={apiName.Count.animation}
@@ -246,17 +246,17 @@ function APIGateway(props) {
             ),
           },
           {
-            tabName: '5XX',
+            tabName: "5XX",
             tabContent: (
               <Card chart>
-                <CardHeader color='success'>
+                <CardHeader color="success">
                   <ChartistGraph
-                    className='ct-chart'
-                    data={apiName['5XX'].data}
-                    type='Bar'
-                    options={apiName['5XX'].options}
-                    responsiveOptions={apiName['5XX'].responsiveOptions}
-                    listener={apiName['5XX'].animation}
+                    className="ct-chart"
+                    data={apiName["5XX"].data}
+                    type="Bar"
+                    options={apiName["5XX"].options}
+                    responsiveOptions={apiName["5XX"].responsiveOptions}
+                    listener={apiName["5XX"].animation}
                   />
                 </CardHeader>
                 <CardBody>
@@ -265,24 +265,24 @@ function APIGateway(props) {
                 <CardFooter chart>
                   <h5 className={classes.cardTitle}>
                     <big>Total: </big>
-                    {apiName['5XX'].total}
+                    {apiName["5XX"].total}
                   </h5>
                 </CardFooter>
               </Card>
             ),
           },
           {
-            tabName: '4XX',
+            tabName: "4XX",
             tabContent: (
               <Card chart>
-                <CardHeader color='success'>
+                <CardHeader color="success">
                   <ChartistGraph
-                    className='ct-chart'
-                    data={apiName['4XX'].data}
-                    type='Bar'
-                    options={apiName['4XX'].options}
-                    responsiveOptions={apiName['4XX'].responsiveOptions}
-                    listener={apiName['4XX'].animation}
+                    className="ct-chart"
+                    data={apiName["4XX"].data}
+                    type="Bar"
+                    options={apiName["4XX"].options}
+                    responsiveOptions={apiName["4XX"].responsiveOptions}
+                    listener={apiName["4XX"].animation}
                   />
                 </CardHeader>
                 <CardBody>
@@ -291,7 +291,7 @@ function APIGateway(props) {
                 <CardFooter chart>
                   <h5 className={classes.cardTitle}>
                     <big>Total: </big>
-                    {apiName['4XX'].total}
+                    {apiName["4XX"].total}
                   </h5>
                 </CardFooter>
               </Card>
@@ -307,33 +307,33 @@ function APIGateway(props) {
       {/* Time Period dropdown bar */}
       <div className={classes.sortBy}>
         <FormControl className={classes.timeRange}>
-          <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
-            {' '}
+          <InputLabel htmlFor="date-change-select" className={classes.dateSpec}>
+            {" "}
             <DateRange /> Time Period
           </InputLabel>
           <br />
           <Select
-            id='date-change-select'
+            id="date-change-select"
             value={dateSelect}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >
-            <MenuItem value='30min' className={classes.dateSpec}>
+            <MenuItem value="30min" className={classes.dateSpec}>
               Last 30 Minutes
             </MenuItem>
-            <MenuItem value='1hr' className={classes.dateSpec}>
+            <MenuItem value="1hr" className={classes.dateSpec}>
               Last Hour
             </MenuItem>
-            <MenuItem value='24hr' className={classes.dateSpec}>
+            <MenuItem value="24hr" className={classes.dateSpec}>
               Last 24 Hours
             </MenuItem>
-            <MenuItem value='7d' className={classes.dateSpec}>
+            <MenuItem value="7d" className={classes.dateSpec}>
               Last 7 Days
             </MenuItem>
-            <MenuItem value='14d' className={classes.dateSpec}>
+            <MenuItem value="14d" className={classes.dateSpec}>
               Last 14 Days
             </MenuItem>
-            <MenuItem value='30d' className={classes.dateSpec}>
+            <MenuItem value="30d" className={classes.dateSpec}>
               Last 30 Days
             </MenuItem>
           </Select>
@@ -345,7 +345,7 @@ function APIGateway(props) {
       <GridContainer>
         <GridItem xs={4} sm={4} md={4}>
           <Card>
-            <CardHeader color='info'>
+            <CardHeader color="info">
               <h4 className={classes.cardTitleWhite}>Rest APIs</h4>
             </CardHeader>
             <CardBody>
