@@ -4,6 +4,7 @@ const initialState = {
   email: '',
   firstName: '',
   arn: '',
+  region: '',
   credentials: null,
 };
 
@@ -12,6 +13,7 @@ const mainReducer = (state = initialState, action) => {
   let firstName;
   let arn;
   let credentials;
+  let region;
 
   switch (action.type) {
     case types.ADD_USER_INFO: {
@@ -24,11 +26,21 @@ const mainReducer = (state = initialState, action) => {
       };
     }
 
-    case types.ADD_ARN: {
-      arn = action.payload;
+    case types.ADD_AWS_ACCOUNT: {
+      arn = action.payload.arn;
+      region = action.payload.region;
       return {
         ...state,
         arn,
+        region,
+      };
+    }
+
+    case types.ADD_REGION: {
+      region = action.payload;
+      return {
+        ...state,
+        region,
       };
     }
 
@@ -36,10 +48,12 @@ const mainReducer = (state = initialState, action) => {
       email = action.payload.email;
       firstName = action.payload.firstName;
       arn = action.payload.arn;
+      region = action.payload.region;
       return {
         email,
         firstName,
         arn,
+        region,
       };
     }
 

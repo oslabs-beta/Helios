@@ -5,9 +5,12 @@ export const addUserInfo = (userInfo) => {
   return { type: types.ADD_USER_INFO, payload: userInfo };
 };
 
-export const addArn = (arn) => {
-  console.log('Addding ARN: ', arn);
-  return { type: types.ADD_ARN, payload: arn };
+export const addAwsAccount = (awsDetails) => {
+  return { type: types.ADD_AWS_ACCOUNT, payload: awsDetails };
+};
+
+export const addRegion = (region) => {
+  return { type: types.ADD_REGION, payload: region };
 };
 
 export const addLoginInfo = (userInfo) => {

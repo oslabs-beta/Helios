@@ -19,6 +19,7 @@ import Container from '@material-ui/core/Container';
 import * as actions from '../Actions/actions';
 import updateUserInfoIDB from '../indexedDB/updateUserInfoIDB';
 import updateArnIDB from '../indexedDB/updateArnIDB';
+import updateRegionIDB from '../indexedDB/updateRegionIDB';
 
 function Copyright() {
   return (
@@ -81,7 +82,7 @@ function SignIn(props) {
           console.log('after login: ', confirmation);
           props.addLoginInfo(confirmation.userInfo);
 
-          const { firstName, email, arn } = confirmation.userInfo;
+          const { firstName, email, arn, region } = confirmation.userInfo;
 
           updateArnIDB({ arn }).catch((error) => {
             console.error('error while updating login arn', error);
@@ -89,6 +90,10 @@ function SignIn(props) {
 
           updateUserInfoIDB({ firstName, email }).catch((error) => {
             console.error('error while updating login user info', error);
+          });
+
+          updateRegionIDB({ region }).catch((error) => {
+            console.error('error while updating region info', error);
           });
           history.push('/admin');
           console.log(confirmation.userInfo, confirmation.confirmed);
@@ -150,10 +155,6 @@ function SignIn(props) {
           onChange={(e) => {
             setPassword(e.target.value);
           }}
-        />
-        <FormControlLabel
-          control={<Checkbox value='remember' color='primary' />}
-          label='Remember me'
         />
         <Button
           type='submit'

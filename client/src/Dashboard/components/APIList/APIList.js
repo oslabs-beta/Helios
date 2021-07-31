@@ -94,6 +94,7 @@ export default function APIList(props) {
           credentials: props.credentials,
           timePeriod: props.timePeriod,
           api: name,
+          region: props.region,
         }),
       };
       trackPromise(fetch('/aws/getApiMetrics', reqParams))

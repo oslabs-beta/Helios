@@ -69,6 +69,7 @@ userController.verifyUser = async (req, res, next) => {
           email: user.email,
           firstName: user.firstName,
           arn: user.arn,
+          region: user.region,
         },
       };
       return next();
@@ -90,7 +91,7 @@ userController.addArn = async (req, res, next) => {
   try {
     const user = await User.findOneAndUpdate(
       { email: req.body.email },
-      { arn: req.body.arn },
+      { arn: req.body.arn, region: req.body.regionSelect },
       { new: true }
     );
     return next();
@@ -99,6 +100,31 @@ userController.addArn = async (req, res, next) => {
       console.log(err);
       return next(err);
     }
+  }
+};
+
+userController.updateRegion = async (req, res, next) => {
+  const confirmation = {};
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { email: req.body.email },
+      { region: req.body.newRegion },
+      { new: true }
+    );
+    if (updatedUser) {
+      console.log('Updated user with new region: ', updatedUser);
+      confirmation.status = true;
+      confirmation.region = updatedUser.region;
+      res.locals.confirmation = confirmation;
+      return next();
+    } else {
+      confirmation.status = false;
+      res.locals.confirmation = confirmation;
+      return next();
+    }
+  } catch (err) {
+    if (err) console.log(err);
+    return next(err);
   }
 };
 

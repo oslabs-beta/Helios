@@ -55,6 +55,7 @@ import FetchTime from '../../components/FetchTime/FetchTime.js';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import getRegionIDB from '../../../indexedDB/getRegionIDB';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 const useStyles = makeStyles(styles);
@@ -62,6 +63,7 @@ const useStyles = makeStyles(styles);
 const mapStateToProps = (state) => ({
   arn: state.main.arn,
   credentials: state.main.credentials,
+  region: state.main.region,
   aws: state.aws,
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
@@ -71,7 +73,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
-
+  addRegion: (region) => dispatch(actions.addRegion(region)),
   addInvocationsAlldata: (invocationsAllData) =>
     dispatch(actions.addInvocationsAlldata(invocationsAllData)),
   addErrorsAlldata: (errorsAllData) =>
@@ -89,9 +91,23 @@ function Dashboard(props) {
 
   const arnArray = useLiveQuery(getArnArrayIDB);
 
+  const regionArray = useLiveQuery(getRegionIDB);
+
   // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
   const [dateSelect, setDateRange] = useState('7d');
+
+  useEffect(() => {
+    if (regionArray && regionArray[0]) {
+      props.addRegion(regionArray[0].region);
+      console.log(
+        'REGION AFTER USE EFFECT: ',
+        props.region,
+        props.aws.render,
+        props.credentials
+      );
+    }
+  }, [regionArray]);
 
   useEffect(() => {
     if (!props.credentials) {
@@ -101,7 +117,9 @@ function Dashboard(props) {
         const reqParams = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ arn: arnArray[0].arn }),
+          body: JSON.stringify({
+            arn: arnArray[0].arn,
+          }),
         };
 
         fetch('/aws/getCreds', reqParams)
@@ -117,17 +135,15 @@ function Dashboard(props) {
           );
       }
     }
-
-    // setInterval(function() {setLastFetched(moment(props.lastMetricFetchTime).fromNow())}, 60000)
   }, [arnArray]);
 
-  if (props.aws.render && props.credentials) {
-    metricAllFuncBarChart(props, dateSelect);
+  if (props.aws.render && props.credentials && props.region) {
+    console.log('PROPS.REGION: ', props.region);
+    metricAllFuncBarChart(props, dateSelect, props.region);
   }
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
-    console.log(e.target.value);
     props.updateRender();
   };
 

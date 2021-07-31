@@ -24,6 +24,7 @@ const userSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   arn: { type: String },
+  region: { type: String, default: 'us-east-2', required: true },
 });
 
 // hash the password before it's saved in database

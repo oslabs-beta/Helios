@@ -20,6 +20,7 @@ router.route('/getCreds').post(getCredentials, (req, res) => {
 //Returing Lambda Functions List
 router.route('/getLambdaFunctions').post(getFunctions, (req, res) => {
   console.log('Returning Lambda Functions:');
+  console.log(req.body);
   res.status(200).json(res.locals.functions);
 });
 
@@ -28,6 +29,7 @@ router
   .route('/getMetricsAllfunc/:metricName')
   .post(getMetricsAllFunc, (req, res) => {
     console.log('Returning Lambda Functions Invocations:');
+    console.log(req.body);
     res.status(200).json(res.locals.metricAllFuncData);
   });
 
@@ -42,6 +44,7 @@ router
 //Returing Lambda Functions Logs
 router.route('/getLogs').post(getLogs, (req, res) => {
   console.log('Returning Lambda Functions Logs');
+
   res.status(200).json(res.locals.functionLogs);
 });
 

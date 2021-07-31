@@ -10,7 +10,7 @@ const getLogs = async (req, res, next) => {
   const logGroupName = '/aws/lambda/' + req.body.function;
 
   const cwLogsClient = new CloudWatchLogsClient({
-    region: REGION,
+    region: req.body.region,
     credentials: req.body.credentials,
   });
 
@@ -67,6 +67,10 @@ const getLogs = async (req, res, next) => {
         filterPattern: '- START - END - REPORT',
       })
     );
+    if (!logEvents) {
+      res.locals.functionLogs = false;
+      return next();
+    }
     const shortenedEvents = [];
     if (logEvents.nextToken) {
       const helperFuncResults = await helperFunc(logEvents.nextToken);

@@ -42,14 +42,17 @@ export default function LambdaList(props) {
         body: JSON.stringify({
           function: funcName,
           credentials: props.credentials,
+          region: props.region,
           timePeriod: props.timePeriod,
         }),
       };
       trackPromise(fetch('/aws/getLogs', reqParams))
         .then((res) => res.json())
         .then((logs) => {
-          console.log(logs);
-          props.addFunctionLogs(logs);
+          console.log('logs response: ', logs);
+          if (logs && !logs.err) {
+            props.addFunctionLogs(logs);
+          }
         });
     } else {
       newChecked.splice(currentIndex, 1);

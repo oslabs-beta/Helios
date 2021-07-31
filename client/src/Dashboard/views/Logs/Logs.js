@@ -47,6 +47,7 @@ const useStyles = makeStyles(styles);
 const mapStateToProps = (state) => ({
   arn: state.main.arn,
   credentials: state.main.credentials,
+  region: state.main.region,
   aws: state.aws,
 });
 
@@ -62,9 +63,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 function Logs(props) {
   const classes = useStyles();
-  const indexArr = props.aws.functions.map((el, i) => {
-    return i;
-  });
 
   const logsShown = props.aws.functionLogs.map((logObj) => {
     return logObj.name;
@@ -127,6 +125,7 @@ function Logs(props) {
           logs: props.aws.functionLogs,
           newTimePeriod: e.target.value,
           credentials: props.credentials,
+          region: props.region,
         }),
       };
       trackPromise(fetch('/aws/updateLogs', reqParams))
@@ -189,6 +188,7 @@ function Logs(props) {
                     logsShown={logsShown}
                     functions={props.aws.functions}
                     credentials={props.credentials}
+                    region={props.region}
                     addFunctionLogs={props.addFunctionLogs}
                     removeFunctionLogs={props.removeFunctionLogs}
                     timePeriod={dateSelect}

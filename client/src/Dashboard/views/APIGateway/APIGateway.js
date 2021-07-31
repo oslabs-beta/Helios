@@ -58,6 +58,7 @@ const useStyles = makeStyles(styles);
 const mapStateToProps = (state) => ({
   arn: state.main.arn,
   credentials: state.main.credentials,
+  region: state.main.region,
   aws: state.aws,
   api: state.api,
 });
@@ -85,6 +86,7 @@ function APIGateway(props) {
           apiList: props.api.apiMetrics,
           newTimePeriod: e.target.value,
           credentials: props.credentials,
+          region: props.region,
         }),
       };
       fetch('/aws/updateApiMetrics', reqParams)
@@ -105,6 +107,7 @@ function APIGateway(props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         credentials: props.credentials,
+        region: props.region,
       }),
     };
     fetch('/aws/apiGateway', reqParams)
@@ -289,6 +292,7 @@ function APIGateway(props) {
                 apiMetricsShown={apiMetricsShown}
                 timePeriod={dateSelect}
                 credentials={props.credentials}
+                region={props.region}
                 addApiMetrics={props.addApiMetrics}
                 removeApiMetrics={props.removeApiMetrics}
               />
