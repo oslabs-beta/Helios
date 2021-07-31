@@ -10,7 +10,7 @@ const {
 
 const getMetricsByFunc = async (req, res, next) => {
   const cwClient = new CloudWatchClient({
-    region: REGION,
+    region: req.body.region,
     credentials: req.body.credentials,
   });
 
@@ -40,7 +40,7 @@ const getMetricsByFunc = async (req, res, next) => {
   if (!req.body.metricStat) graphMetricStat = 'Sum'
   else graphMetricStat = req.body.metricStat
 
-  //Metrics for All Functions (combined)
+  //Metrics for By Lambda Function
 
   const metricByFuncInputParams = AWSUtilFunc.prepCwMetricQueryLambdaByFunc(
     graphPeriod,
