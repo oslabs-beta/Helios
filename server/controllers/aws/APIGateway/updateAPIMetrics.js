@@ -29,7 +29,8 @@ const updateApiMetrics = async (req, res, next) => {
       currApi,
       graphPeriod,
       graphUnits,
-      req.body.credentials
+      req.body.credentials,
+      req.body.region
     );
     updatedApiMetrics.push(newMetricObj);
   }
@@ -39,9 +40,15 @@ const updateApiMetrics = async (req, res, next) => {
 
 module.exports = updateApiMetrics;
 
-const loopFunc = async (currApi, graphPeriod, graphUnits, credentials) => {
+const loopFunc = async (
+  currApi,
+  graphPeriod,
+  graphUnits,
+  credentials,
+  region
+) => {
   const cwClient = new CloudWatchClient({
-    region: REGION,
+    region,
     credentials: credentials,
   });
 

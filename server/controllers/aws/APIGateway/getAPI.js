@@ -1,4 +1,3 @@
-const { REGION } = require('../Credentials/libs/stsClient.js');
 const {
   APIGatewayClient,
   GetRestApisCommand,
@@ -9,7 +8,7 @@ const {
 
 const getAPIData = async (req, res, next) => {
   const client = new APIGatewayClient({
-    region: REGION,
+    region: req.body.region,
     credentials: req.body.credentials,
   });
   const apiData = [];
