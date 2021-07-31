@@ -1,49 +1,49 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React from 'react';
+import { useEffect, useState } from 'react';
 // react plugin for creating charts
-import ChartistGraph from "react-chartist";
-import { connect } from "react-redux";
+import ChartistGraph from 'react-chartist';
+import { connect } from 'react-redux';
 // @material-ui/core
-import { makeStyles } from "@material-ui/core/styles";
-import Icon from "@material-ui/core/Icon";
+import { makeStyles } from '@material-ui/core/styles';
+import Icon from '@material-ui/core/Icon';
 // @material-ui/icons
-import Store from "@material-ui/icons/Store";
-import Warning from "@material-ui/icons/Warning";
-import DateRange from "@material-ui/icons/DateRange";
-import LocalOffer from "@material-ui/icons/LocalOffer";
-import Update from "@material-ui/icons/Update";
-import ArrowUpward from "@material-ui/icons/ArrowUpward";
-import AccessTime from "@material-ui/icons/AccessTime";
-import Accessibility from "@material-ui/icons/Accessibility";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
+import Store from '@material-ui/icons/Store';
+import Warning from '@material-ui/icons/Warning';
+import DateRange from '@material-ui/icons/DateRange';
+import LocalOffer from '@material-ui/icons/LocalOffer';
+import Update from '@material-ui/icons/Update';
+import ArrowUpward from '@material-ui/icons/ArrowUpward';
+import AccessTime from '@material-ui/icons/AccessTime';
+import Accessibility from '@material-ui/icons/Accessibility';
+import BugReport from '@material-ui/icons/BugReport';
+import Code from '@material-ui/icons/Code';
+import Cloud from '@material-ui/icons/Cloud';
 // core components
-import GridItem from "../../components/Grid/GridItem.js";
-import GridContainer from "../../components/Grid/GridContainer.js";
-import LogTable from "../../components/Table/LogTable.js";
-import LambdaList from "../../components/LambdaList/LambdaList.js";
-import CustomTabs from "../../components/CustomTabs/CustomTabs.js";
-import Danger from "../../components/Typography/Danger.js";
-import LogCard from "../../components/Card/LogCard.js";
-import CardHeader from "../../components/Card/CardHeader.js";
-import CardIcon from "../../components/Card/CardIcon.js";
-import CardBody from "../../components/Card/CardBody.js";
-import CardFooter from "../../components/Card/CardFooter.js";
+import GridItem from '../../components/Grid/GridItem.js';
+import GridContainer from '../../components/Grid/GridContainer.js';
+import LogTable from '../../components/Table/LogTable.js';
+import LambdaList from '../../components/LambdaList/LambdaList.js';
+import CustomTabs from '../../components/CustomTabs/CustomTabs.js';
+import Danger from '../../components/Typography/Danger.js';
+import LogCard from '../../components/Card/LogCard.js';
+import CardHeader from '../../components/Card/CardHeader.js';
+import CardIcon from '../../components/Card/CardIcon.js';
+import CardBody from '../../components/Card/CardBody.js';
+import CardFooter from '../../components/Card/CardFooter.js';
 
-import Select from "@material-ui/core/Select";
-import IconButton from "@material-ui/core/IconButton";
-import * as actions from "../../../Actions/actions";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import styles from "../../assets/jss/material-dashboard-react/views/logsStyle.js";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import { trackPromise } from "react-promise-tracker";
-import { usePromiseTracker } from "react-promise-tracker";
-import { useLiveQuery } from "dexie-react-hooks";
-import getArnArrayIDB from "../../../indexedDB/getArnArrayIDB.js";
-import getRegionIDB from "../../../indexedDB/getRegionIDB.js";
+import Select from '@material-ui/core/Select';
+import IconButton from '@material-ui/core/IconButton';
+import * as actions from '../../../Actions/actions';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import styles from '../../assets/jss/material-dashboard-react/views/logsStyle.js';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from 'react-promise-tracker';
+import { useLiveQuery } from 'dexie-react-hooks';
+import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import getRegionIDB from '../../../indexedDB/getRegionIDB.js';
 
 const useStyles = makeStyles(styles);
 
@@ -87,47 +87,45 @@ function Logs(props) {
       if (arnArray && arnArray[0]) {
         props.updateArn(arnArray[0].arn);
         const reqParams = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             arn: arnArray[0].arn,
           }),
         };
 
-        fetch("/aws/getCreds", reqParams)
+        fetch('/aws/getCreds', reqParams)
           .then((res) => res.json())
           .then((credentialsData) => {
-            console.log("logging from useEffect fetch: ", credentialsData);
+            console.log('logging from useEffect fetch: ', credentialsData);
             if (!credentialsData.err) {
               props.addCredentials(credentialsData);
             }
           })
           .catch((err) =>
-            console.log("Error inside initial get credentials fetch: ", err)
+            console.log('Error inside initial get credentials fetch: ', err)
           );
       }
     }
   }, [arnArray]);
 
   // if credential and region exist and refetch
-  if (props.credentials && props.region) {
+  if (
+    props.credentials &&
+    props.region &&
+    props.aws.logsRender &&
+    !props.aws.logsLoading
+  ) {
     const reqParams = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         credentials: props.credentials,
         // timePeriod: timePeriod,
         region: props.region,
       }),
     };
-    console.log("REQUEST PARAMS: ", reqParams);
-    console.log("Props Render before Fetch:", props.aws.render);
-    fetch("/aws/getLambdaFunctions", reqParams)
-      .then((res) => res.json())
-      .then((functions) => {
-        props.addLambda(functions);
-      })
-      .catch((err) => console.log(err));
+    props.addLambda(reqParams);
   }
 
   const logsShown = props.aws.functionLogs.map((logObj) => {
@@ -138,38 +136,38 @@ function Logs(props) {
     return (
       <CustomTabs
         key={i}
-        headerColor="warning"
+        headerColor='warning'
         title={logObj.name}
         tabs={[
           {
-            tabName: "Logs",
+            tabName: 'Logs',
             tabIcon: Cloud,
             tabContent: (
               <LogTable
-                tableHeaderColor="warning"
+                tableHeaderColor='warning'
                 tableHead={[
-                  "Last 5 Characters of Log Stream Name",
-                  "Date",
-                  "Message",
+                  'Last 5 Characters of Log Stream Name',
+                  'Date',
+                  'Message',
                 ]}
                 tableData={logObj.streams}
-                status="logs"
+                status='logs'
               />
             ),
           },
           {
-            tabName: "Errors",
+            tabName: 'Errors',
             tabIcon: Warning,
             tabContent: (
               <LogTable
-                tableHeaderColor="danger"
+                tableHeaderColor='danger'
                 tableHead={[
-                  "Last 5 Characters of Log Stream Name",
-                  "Date",
-                  "Message",
+                  'Last 5 Characters of Log Stream Name',
+                  'Date',
+                  'Message',
                 ]}
                 tableData={logObj.errors}
-                status="errors"
+                status='errors'
               />
             ),
           },
@@ -178,15 +176,15 @@ function Logs(props) {
     );
   });
 
-  const [dateSelect, setDateRange] = useState("1hr");
+  const [dateSelect, setDateRange] = useState('1hr');
   const { promiseInProgress } = usePromiseTracker();
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
     if (props.aws.functionLogs) {
       const reqParams = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           logs: props.aws.functionLogs,
           newTimePeriod: e.target.value,
@@ -194,12 +192,12 @@ function Logs(props) {
           region: props.region,
         }),
       };
-      trackPromise(fetch("/aws/updateLogs", reqParams))
+      trackPromise(fetch('/aws/updateLogs', reqParams))
         .then((res) => res.json())
         .then((updatedLogs) => {
           props.updateFunctionLogs(updatedLogs);
         })
-        .catch((err) => console.log("Error in refreshing updateLogs: ", err));
+        .catch((err) => console.log('Error in refreshing updateLogs: ', err));
     }
   };
 
@@ -207,33 +205,33 @@ function Logs(props) {
     <div className={classes.logGrid}>
       <div className={classes.sortBy}>
         <FormControl className={classes.timeRange}>
-          <InputLabel htmlFor="date-change-select" className={classes.dateSpec}>
-            {" "}
+          <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
+            {' '}
             <DateRange /> Time Period
           </InputLabel>
           <br />
           <Select
-            id="date-change-select"
+            id='date-change-select'
             value={dateSelect}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >
-            <MenuItem value="30min" className={classes.dateSpec}>
+            <MenuItem value='30min' className={classes.dateSpec}>
               Last 30 Minutes
             </MenuItem>
-            <MenuItem value="1hr" className={classes.dateSpec}>
+            <MenuItem value='1hr' className={classes.dateSpec}>
               Last Hour
             </MenuItem>
-            <MenuItem value="24hr" className={classes.dateSpec}>
+            <MenuItem value='24hr' className={classes.dateSpec}>
               Last 24 Hours
             </MenuItem>
-            <MenuItem value="7d" className={classes.dateSpec}>
+            <MenuItem value='7d' className={classes.dateSpec}>
               Last 7 Days
             </MenuItem>
-            <MenuItem value="14d" className={classes.dateSpec}>
+            <MenuItem value='14d' className={classes.dateSpec}>
               Last 14 Days
             </MenuItem>
-            <MenuItem value="30d" className={classes.dateSpec}>
+            <MenuItem value='30d' className={classes.dateSpec}>
               Last 30 Days
             </MenuItem>
           </Select>
@@ -244,10 +242,10 @@ function Logs(props) {
         <GridItem xs={4} sm={4} md={4}>
           <CustomTabs
             // title='Lambda Functions:'
-            headerColor="info"
+            headerColor='info'
             tabs={[
               {
-                tabName: "Lambda Functions",
+                tabName: 'Lambda Functions',
                 tabIcon: Cloud,
                 tabContent: (
                   <LambdaList

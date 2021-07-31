@@ -64,6 +64,7 @@ const initialState = {
   apiKeys: [],
   apiMetrics: [],
   render: true,
+  loading: false,
 };
 
 /////////////////////////////////////////////////////////////////
@@ -71,16 +72,33 @@ const initialState = {
 const apiReducer = (state = initialState, action) => {
   let apiKeys;
   let render;
+  let loading;
   switch (action.type) {
     // add list of APIs to state
     case types.ADD_API_GATEWAYS: {
       apiKeys = action.payload;
       render = false;
+      loading = false;
       return {
         ...state,
         apiKeys,
         render,
+        loading,
       };
+    }
+
+    case types.ADD_API_GATEWAYS_STARTED: {
+      loading = true;
+      return {
+        ...state,
+        loading,
+      };
+    }
+
+    case types.UPDATE_API_RENDER: {
+      render = true;
+      let apiMetrics = [];
+      return { ...state, apiMetrics, render };
     }
 
     // once an API is checked and metrics are fetched, add to apiMetrics array for display

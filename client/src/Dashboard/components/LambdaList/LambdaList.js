@@ -27,13 +27,18 @@ const useStyles = makeStyles(styles);
 
 export default function LambdaList(props) {
   const classes = useStyles();
+
+  // checked holds the current Lambda Functions checked
   const [checked, setChecked] = useState([...props.logsShown]);
+
+  // When a fetch is in progress, creates a loading icon
   const { promiseInProgress } = usePromiseTracker();
 
+  // when a Lambda Function is clicked
   const handleToggle = (funcName) => {
-    console.log('funcName: ', funcName);
     const currentIndex = checked.indexOf(funcName);
     const newChecked = [...checked];
+    // if function isn't already clicked, add it and fetch the logs from AWS
     if (currentIndex === -1) {
       newChecked.push(funcName);
       const reqParams = {
@@ -46,18 +51,22 @@ export default function LambdaList(props) {
           timePeriod: props.timePeriod,
         }),
       };
+
+      // track this promise and unti it's fulfilled, trackPromise shows a loading icon
       trackPromise(fetch('/aws/getLogs', reqParams))
         .then((res) => res.json())
         .then((logs) => {
-          console.log('logs response: ', logs);
+          // if we get logs back add to state
           if (logs && !logs.err) {
             props.addFunctionLogs(logs);
           }
         });
+      // if the function already existed on the checked array, then we want to remove it to signal the uncheck
     } else {
       newChecked.splice(currentIndex, 1);
       props.removeFunctionLogs(funcName);
     }
+    // update the checked array with new contents
     setChecked(newChecked);
   };
   const { rtlActive } = props;
@@ -102,9 +111,3 @@ export default function LambdaList(props) {
     </div>
   );
 }
-
-LambdaList.propTypes = {
-  // tasksIndexes: PropTypes.arrayOf(PropTypes.number),
-  // tasks: PropTypes.arrayOf(PropTypes.node),
-  rtlActive: PropTypes.bool,
-};
