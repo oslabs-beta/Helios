@@ -37,21 +37,14 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import moment from 'moment';
-
-import { bugs, website, server } from '../../variables/general.js';
-
-import {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart,
-  invocationsChart,
-} from '../../variables/charts.js';
 
 // import invocationBarChartFunc from "../../variables/invocationBarChart.js";
-import errorBarChartFunc from '../../variables/errorBarChart.js';
+//import errorBarChartFunc from '../../variables/errorBarChart.js';
 import metricAllFuncBarChart from '../../variables/metricAllFuncBarChart.js';
+import metricByFuncBarChart from '../../variables/metricByFuncBarChart.js';
 import FetchTime from '../../components/FetchTime/FetchTime.js';
+import DataTable from '../Tables/LambdaMetrics.js';
+import LambdaChartByFunc from './ChartByFunction/ChartsByFunction';
 
 import styles from '../../assets/jss/material-dashboard-react/views/dashboardStyle.js';
 import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
@@ -68,6 +61,11 @@ const mapStateToProps = (state) => ({
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
   throttlesAllData: state.aws.throttlesAllData,
+
+  awsByFunc: state.awsByFunc,
+  invocationsByFuncData: state.awsByFunc.invocationsByFuncData,
+  errorsByFuncData: state.awsByFunc.errorsByFuncData,
+  throttlesByFuncData: state.awsByFunc.throttlesByFuncData,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -82,7 +80,42 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(actions.addThrottlesAlldata(throttlesAllData)),
   updateRender: () => dispatch(actions.updateRender()),
   updateFetchTime: () => dispatch(actions.updateFetchTime()),
+
+  addInvocationsByFuncData: (invocationsByFuncData) =>
+    dispatch(actions.addInvocationsByFuncData(invocationsByFuncData)),
+  addErrorsByFuncData: (errorsByFuncData) =>
+    dispatch(actions.addErrorsByFuncData(errorsByFuncData)),
+  addThrottlesByFuncData: (throttlesByFuncData) =>
+    dispatch(actions.addThrottlesByFuncData(throttlesByFuncData)),
+  updateRenderByFunc: () => dispatch(actions.updateRenderByFunc()),
+  updateFetchTimeByFunc: () => dispatch(actions.updateFetchTimeByFunc()),
 });
+
+const menuItemMaker = (value, className) => (
+  <MenuItem value={value} className={className} />
+);
+
+const getDataByFunc = (metricData, funcName) => {
+  console.log('Original Data: ', metricData);
+
+  let data = JSON.parse(JSON.stringify({ ...metricData }));
+  let series_data = [...metricData.series];
+
+  series_data = series_data.filter(
+    (plotData) =>
+      (plotData.name.search(funcName) > 0) | (plotData.name === 'dummy')
+  );
+
+  // if (metricName === 'invocations') data = {...props.invocationsByFuncData.data}
+  // if (metricName === 'throttles') data = {...props.throttlesByFuncData.data}
+  // if (metricName === 'errors') data = {...props.errorsByFuncData.data}
+  // data.series = data.series.filter((plotData) => (plotData.name.search(funcName)> 0 | plotData.name === 'dummy' ))
+
+  console.log('Function Data: ', data);
+
+  // return data;
+  return { series: series_data };
+};
 
 function Dashboard(props) {
   const classes = useStyles();
@@ -96,6 +129,7 @@ function Dashboard(props) {
   // const [lastFetched, setLastFetched] = React.useState(moment(props.lastMetricFetchTime).fromNow());
 
   const [dateSelect, setDateRange] = useState('7d');
+  const [funcSelect, setFuncName] = useState('None');
 
   useEffect(() => {
     if (regionArray && regionArray[0]) {
@@ -142,9 +176,25 @@ function Dashboard(props) {
     metricAllFuncBarChart(props, dateSelect, props.region);
   }
 
+  //fetch by Func metrics
+  if (
+    props.awsByFunc.renderByFunc &&
+    props.credentials &&
+    props.aws.functions.length
+  ) {
+    metricByFuncBarChart(props, dateSelect);
+  }
+
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
     props.updateRender();
+    if (funcSelect !== 'None') props.updateRenderByFunc();
+  };
+
+  const handleFuncChange = (e) => {
+    setFuncName(e.target.value);
+    console.log('Selected Function: ', e.target.value);
+    if (!funcSelect !== 'None') props.updateRenderByFunc();
   };
 
   let timePeriod;
@@ -169,33 +219,33 @@ function Dashboard(props) {
     <div>
       <div className={classes.sortBy}>
         <FormControl className={classes.timeRange}>
-          <InputLabel htmlFor='date-change-select' className={classes.dateSpec}>
+          <InputLabel htmlFor="date-change-select" className={classes.dateSpec}>
             {' '}
             <DateRange /> Time Period
           </InputLabel>
           <br />
           <Select
-            id='date-change-select'
+            id="date-change-select"
             value={dateSelect}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >
-            <MenuItem value='30min' className={classes.dateSpec}>
+            <MenuItem value="30min" className={classes.dateSpec}>
               Last 30 Minutes
             </MenuItem>
-            <MenuItem value='1hr' className={classes.dateSpec}>
+            <MenuItem value="1hr" className={classes.dateSpec}>
               Last Hour
             </MenuItem>
-            <MenuItem value='24hr' className={classes.dateSpec}>
+            <MenuItem value="24hr" className={classes.dateSpec}>
               Last 24 Hours
             </MenuItem>
-            <MenuItem value='7d' className={classes.dateSpec}>
+            <MenuItem value="7d" className={classes.dateSpec}>
               Last 7 Days
             </MenuItem>
-            <MenuItem value='14d' className={classes.dateSpec}>
+            <MenuItem value="14d" className={classes.dateSpec}>
               Last 14 Days
             </MenuItem>
-            <MenuItem value='30d' className={classes.dateSpec}>
+            <MenuItem value="30d" className={classes.dateSpec}>
               Last 30 Days
             </MenuItem>
           </Select>
@@ -205,8 +255,8 @@ function Dashboard(props) {
       <GridContainer>
         <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='success' stats icon>
-              <CardIcon color='success'>
+            <CardHeader color="success" stats icon>
+              <CardIcon color="success">
                 <Speed />
               </CardIcon>
               <p className={classes.cardCategory}>Total Throttles</p>
@@ -225,8 +275,8 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='info' stats icon>
-              <CardIcon color='info'>
+            <CardHeader color="info" stats icon>
+              <CardIcon color="info">
                 <Cloud />
               </CardIcon>
               <p className={classes.cardCategory}>Total Invocations</p>
@@ -245,8 +295,8 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={6} md={4}>
           <Card>
-            <CardHeader color='danger' stats icon>
-              <CardIcon color='danger'>
+            <CardHeader color="danger" stats icon>
+              <CardIcon color="danger">
                 <Icon>info_outline</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Total Errors</p>
@@ -283,11 +333,11 @@ function Dashboard(props) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='success'>
+            <CardHeader color="success">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={props.throttlesAllData.data}
-                type='Bar'
+                type="Bar"
                 options={props.throttlesAllData.options}
                 responsiveOptions={props.throttlesAllData.responsiveOptions}
                 listener={props.throttlesAllData.animation}
@@ -304,11 +354,11 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='info'>
+            <CardHeader color="info">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={props.invocationsAllData.data}
-                type='Bar'
+                type="Bar"
                 options={props.invocationsAllData.options}
                 responsiveOptions={props.invocationsAllData.responsiveOptions}
                 listener={props.invocationsAllData.animation}
@@ -325,11 +375,11 @@ function Dashboard(props) {
 
         <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color='danger'>
+            <CardHeader color="danger">
               <ChartistGraph
-                className='ct-chart'
+                className="ct-chart"
                 data={props.errorsAllData.data}
-                type='Bar'
+                type="Bar"
                 options={props.errorsAllData.options}
                 responsiveOptions={props.errorsAllData.responsiveOptions}
                 listener={props.errorsAllData.animation}
@@ -344,31 +394,44 @@ function Dashboard(props) {
             </CardFooter>
           </Card>
         </GridItem>
+
         <GridItem xs={12} sm={12} md={6}>
-          <Card>
-            <CardHeader color='warning'>
-              <h4 className={classes.cardTitleWhite}>Employees Stats</h4>
-              <p className={classes.cardCategoryWhite}>
-                New employees on 15th September, 2016
-              </p>
+          <Card chart>
+            <CardHeader color="primary">
+              <h4 className={classes.cardTitleWhite}>
+                Metric Totals by Lambda Function
+              </h4>
             </CardHeader>
             <CardBody>
-              <Table
-                tableHeaderColor='warning'
-                tableHead={['ID', 'Name', 'Salary', 'Country']}
-                tableData={[
-                  ['1', 'Dakota Rice', '$36,738', 'Niger'],
-                  ['2', 'Minerva Hooper', '$23,789', 'Curaçao'],
-                  ['3', 'Sage Rodriguez', '$56,142', 'Netherlands'],
-                  ['4', 'Philip Chaney', '$38,735', 'Korea, South'],
-                ]}
+              <DataTable
+                funcNames={props.aws.functions}
+                invocations={props.invocationsByFuncData.data}
+                errors={props.errorsByFuncData.data}
+                throttles={props.throttlesByFuncData.data}
               />
             </CardBody>
+            <CardFooter chart>
+              <FetchTime lastMetricFetchTime={props.aws.lastMetricFetchTime} />
+            </CardFooter>
           </Card>
         </GridItem>
+
+
       </GridContainer>
 
-      <GridContainer>
+
+        <LambdaChartByFunc
+        invocationsByFuncData = {props.invocationsByFuncData}
+        errorsByFuncData = {props.errorsByFuncData}
+        throttlesByFuncData = {props.throttlesByFuncData}
+        funcList = {props.aws.functions}
+        dateSelect = {dateSelect}
+        
+        />
+
+
+
+      {/* <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
           <CustomTabs
             title='Tasks:'
@@ -410,7 +473,7 @@ function Dashboard(props) {
             ]}
           />
         </GridItem>
-      </GridContainer>
+          </GridContainer> */}
     </div>
   );
 }

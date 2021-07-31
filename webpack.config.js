@@ -22,7 +22,10 @@ module.exports = {
         },
       },
       {
-        test: /\.[sac]ss$/i,
+        // test: /\.s[ac]ss$ || \.css$/i,
+        test:/\.(scss|css|sass)$/i,
+        // include: [path.resolve(__dirname, 'client')],
+        // exclude: [path.resolve(__dirname, 'node_modules')],        
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {

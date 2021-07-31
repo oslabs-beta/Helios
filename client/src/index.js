@@ -6,6 +6,7 @@ import store from "./store.js";
 import "./indexedDB/mainIdb";
 
 import './Dashboard/assets/css/material-dashboard-react.css';
+import './Dashboard/assets/scss/chart_legend.scss';
 import { Spinner } from './Dashboard/variables/spinner';
 //import 'assets/css/material-dashboard-react.scss';
 

@@ -23,7 +23,7 @@ export default function CardHeader(props) {
     [classes.cardHeaderIcon]: icon,
     [className]: className !== undefined,
   });
-  return (
+  return ( 
     <div className={cardHeaderClasses} {...rest}>
       {children}
     </div>

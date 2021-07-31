@@ -10,15 +10,20 @@ const useStyles = makeStyles(styles);
 export default function FetchTime(props) {
   const classes = useStyles();
 
-  const [fetchTime, setFetchTime] = useState('');
-  useEffect(() => {
-    const interval = setInterval(() => {
-      //setTemp(temp => temp + 1)
-      setFetchTime(moment(props.lastMetricFetchTime).fromNow());
-    }, 1000);
+    const [fetchTime, setFetchTime] = useState(moment(props.lastMetricFetchTime).fromNow())
+    useEffect(() => {
+    
+        const interval = setInterval(() => {
 
-    return () => clearInterval(interval);
-  }, []);
+          setFetchTime(moment(props.lastMetricFetchTime).fromNow())
+    
+        }, 1000)
+    
+        return () => clearInterval(interval);
+    
+    
+    
+      }, [props.lastMetricFetchTime]);    
 
   return (
     <div className={classes.stats}>

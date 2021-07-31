@@ -49,8 +49,18 @@ const getMetricsByFunc = async (req, res, next) => {
     graphMetricStat,
     funcNames
   );
-  console.log('the input params: ', metricByFuncInputParams);
+
+
+  console.log("GraphPeriod: ", graphPeriod);
+  console.log("GraphUnits: ", graphUnits);
+  console.log("GraphMetric Name: ", graphMetricName);
+  console.log("Graph Metric Stat: ", graphMetricStat);
+  console.log("FuncNames: ", funcNames);
+
+
+  console.log('Request by Individual Lambda Function the input params: ', metricByFuncInputParams);
   console.log(typeof metricByFuncInputParams.StartTime);
+  console.log('Request by Individual Lambda Function the input params - MetricStat: ', metricByFuncInputParams.MetricDataQueries[0].MetricStat);
   try {
     const metricByFuncResult = await cwClient.send(
       new GetMetricDataCommand(metricByFuncInputParams)
@@ -124,20 +134,22 @@ const getMetricsByFunc = async (req, res, next) => {
         };
         })
 
-        let maxValue = Math.max(0,values)
+        let maxValue = Math.max(0,Math.max(...values))
+        let total = values.reduce((accum,curr) => accum + curr,0)
 
         return { 
           name: metricName,
           data: metricData,
-          maxVaue: maxValue
+          maxVaue: maxValue,
+          total: total,
         }
 
 
 
       })
 
-    const metricMaxValueAllFunc = metricData.reduce((maxValue,currval) => {
-      return Math.max(maxValue, currval)
+    const metricMaxValueAllFunc = metricByFuncData.reduce((maxValue,dataByFunc) => {
+      return Math.max(maxValue, dataByFunc.maxVaue)
     },0)
 
     res.locals.metricByFuncData = {
@@ -149,12 +161,13 @@ const getMetricsByFunc = async (req, res, next) => {
         graphPeriod,
         graphUnits,
         metricMaxValueAllFunc,
+        funcNames: funcNames
       },
     };
     console.log(res.locals.metricByFuncData);
     return next();
   } catch (err) {
-    console.log('Error in CW getMetricsData All Functions', err);
+    console.log('Error in CW getMetricsData By Functions', err);
   }
 };
 
