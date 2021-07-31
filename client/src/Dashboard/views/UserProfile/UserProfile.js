@@ -149,6 +149,12 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   addRegion: (region) => dispatch(actions.addRegion(region)),
+  addCredentials: (credentials) =>
+    dispatch(actions.addCredentials(credentials)),
+  updateEmail: (newEmail) => dispatch(actions.updateEmail(newEmail)),
+  updateUserDetailsAfterProfileUpdate: (userDetails) =>
+    dispatch(actions.updateUserDetailsAfterProfileUpdate(userDetails)),
+  updateRender: () => dispatch(actions.updateRender()),
 });
 
 function UserProfile(props) {
@@ -190,8 +196,35 @@ function UserProfile(props) {
     if (userInfoArray && userInfoArray[0]) {
       addDbName(userInfoArray[0].firstName);
       addDbEmail(userInfoArray[0].email);
+      props.updateEmail(userInfoArray[0].email);
     }
   }, [userInfoArray]);
+
+  const handleUpdateCreds = (arn) => {
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        arn: arn,
+      }),
+    };
+    fetch('/aws/getCreds', reqParams)
+      .then((res) => res.json())
+      .then((credentialsData) => {
+        if (!credentialsData.err) {
+          props.addCredentials(credentialsData);
+          props.updateUserDetailsAfterProfileUpdate({
+            email: dbEmail,
+            firstName: dbName,
+            arn,
+          });
+          props.updateRender();
+        }
+      })
+      .catch((err) =>
+        console.log('Error inside initial get credentials fetch: ', err)
+      );
+  };
 
   const handleUpdateRegion = () => {
     if (newRegion.trim() === '') {
@@ -220,6 +253,7 @@ function UserProfile(props) {
           showNotification('failure');
         }
       });
+    handleUpdateCreds(origArn);
   };
 
   const handleUpdateEmail = () => {
@@ -249,6 +283,7 @@ function UserProfile(props) {
           }).catch((error) => {
             console.error('error while updating user info', error);
           });
+          props.updateEmail(response.newEmail);
         } else {
           showNotification('failure');
         }
@@ -287,6 +322,7 @@ function UserProfile(props) {
       .catch((err) =>
         console.log('Error in updating arn on User Profile: ', err)
       );
+    handleUpdateCreds(updatedArn);
     updateArn('');
   };
 

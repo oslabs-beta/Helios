@@ -83,3 +83,14 @@ export const updateApiMetrics = (updatedApiMetrics) => {
   console.log(updatedApiMetrics);
   return { type: types.UPDATE_API_METRIC_CHARTS, payload: updatedApiMetrics };
 };
+
+export const updateEmail = (updatedEmail) => {
+  return { type: types.UPDATE_EMAIL, payload: updatedEmail };
+};
+
+export const updateUserDetailsAfterProfileUpdate = (userDetails) => {
+  return {
+    type: types.UPDATE_USER_DETAILS_AFTER_PROFILE_UPDATE,
+    payload: userDetails,
+  };
+};
