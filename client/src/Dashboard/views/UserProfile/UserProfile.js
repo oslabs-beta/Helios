@@ -119,6 +119,7 @@ const useStyles = makeStyles(styles);
 
 const mapStateToProps = (state) => ({
   userInfo: state.main,
+  logsRender: state.aws.logsRender,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -131,6 +132,8 @@ const mapDispatchToProps = (dispatch) => ({
   updateRender: () => dispatch(actions.updateRender()),
   updateFirstName: (name) => dispatch(actions.updateFirstName(name)),
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
+  updateLogsRender: () => dispatch(actions.updateLogsRender()),
+  updateApiRender: () => dispatch(actions.updateApiRender()),
 });
 
 function UserProfile(props) {
@@ -215,6 +218,8 @@ function UserProfile(props) {
             arn,
           });
           props.updateRender();
+          props.updateLogsRender();
+          props.updateApiRender();
         }
       })
       .catch((err) =>

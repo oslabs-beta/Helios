@@ -12,6 +12,8 @@ const delays2 = 80,
 
 const initialState = {
   functions: [],
+  logsRender: true,
+  logsLoading: false,
   render: true,
   lastMetricFetchTime: new Date(),
   getInvocations: true,
@@ -149,11 +151,19 @@ const awsReducer = (state = initialState, action) => {
   let render;
   let functionLogs;
   let lastMetricFetchTime;
+  let logsRender;
+  let logsLoading;
 
   switch (action.type) {
     case types.UPDATE_RENDER: {
       render = true;
       return { ...state, render };
+    }
+
+    case types.UPDATE_LOGS_RENDER: {
+      logsRender = true;
+      functionLogs = [];
+      return { ...state, logsRender, functionLogs };
     }
 
     case types.UPDATE_FETCH_TIME: {
@@ -163,7 +173,14 @@ const awsReducer = (state = initialState, action) => {
 
     case types.ADD_LAMBDA: {
       functions = action.payload;
-      return { ...state, functions };
+      logsRender = false;
+      logsLoading = false;
+      return { ...state, functions, logsRender, logsLoading };
+    }
+
+    case types.ADD_LAMBDA_STARTED: {
+      logsLoading = true;
+      return { ...state, logsLoading };
     }
     case types.ADD_FUNCTION_LOGS: {
       functionLogs = state.functionLogs.slice(0);

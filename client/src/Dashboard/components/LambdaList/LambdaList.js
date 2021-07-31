@@ -69,9 +69,10 @@ export default function LambdaList(props) {
     // update the checked array with new contents
     setChecked(newChecked);
   };
-  // const tableCellClasses = classnames(classes.tableCell, {
-  //   [classes.tableCellRTL]: rtlActive,
-  // });
+  const { rtlActive } = props;
+  const tableCellClasses = classnames(classes.tableCell, {
+    [classes.tableCellRTL]: rtlActive,
+  });
   return (
     <div>
       {promiseInProgress || props.updatePromise ? (

@@ -26,13 +26,27 @@ export const addCredentials = (credentials) => {
 //AWS Reducer All Functions
 //###############################################
 
-export const addLambda = (functions) => {
-  console.log('inside add Lambda action: ', functions);
+export const addLambda = (reqParams) => {
+  return (dispatch) => {
+    dispatch(addLambdaStarted());
+    fetch('/aws/getLambdaFunctions', reqParams)
+      .then((res) => res.json())
+      .then((functions) => {
+        dispatch(addLambdaSuccess(functions));
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
+export const addLambdaStarted = () => {
+  return { type: types.ADD_LAMBDA_STARTED };
+};
+
+export const addLambdaSuccess = (functions) => {
   return { type: types.ADD_LAMBDA, payload: functions };
 };
 
 export const addFunctionLogs = (logObj) => {
-  console.log('inside add function logs action: ', logObj);
   return { type: types.ADD_FUNCTION_LOGS, payload: logObj };
 };
 
@@ -41,7 +55,6 @@ export const removeFunctionLogs = (functionName) => {
 };
 
 export const addInvocationsAlldata = (invocationsAllData) => {
-  console.log('inside add Invocation action: ', invocationsAllData);
   return { type: types.ADD_INVOCATIONS_ALLDATA, payload: invocationsAllData };
 };
 export const addErrorsAlldata = (errorsAllData) => {
@@ -102,7 +115,27 @@ export const handleLogout = () => {
   return { type: types.HANDLE_LOGOUT };
 };
 
-export const addApiGateways = (apiData) => {
+export const addApiGateways = (reqParams) => {
+  console.log('REq params: ', reqParams);
+  return (dispatch) => {
+    dispatch(addApiGatewaysStarted());
+    fetch('/aws/apiGateway', reqParams)
+      .then((res) => res.json())
+      .then((apiData) => {
+        console.log('Api data inside action: ', apiData);
+        dispatch(addApiGatewaysSuccess(apiData));
+      })
+      .catch((err) =>
+        console.log('Error inside API Gateway useEffect fetch: ', err)
+      );
+  };
+};
+
+const addApiGatewaysStarted = () => {
+  return { type: types.ADD_API_GATEWAYS_STARTED };
+};
+
+const addApiGatewaysSuccess = (apiData) => {
   return { type: types.ADD_API_GATEWAYS, payload: apiData };
 };
 
@@ -136,4 +169,12 @@ export const updateFirstName = (firstName) => {
 
 export const updateArn = (arn) => {
   return { type: types.UPDATE_ARN, payload: arn };
+};
+
+export const updateLogsRender = () => {
+  return { type: types.UPDATE_LOGS_RENDER };
+};
+
+export const updateApiRender = () => {
+  return { type: types.UPDATE_API_RENDER };
 };
