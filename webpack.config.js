@@ -18,14 +18,18 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
+            plugins: [
+              '@babel/plugin-transform-runtime',
+              '@babel/transform-async-to-generator',
+            ],
           },
         },
       },
       {
         // test: /\.s[ac]ss$ || \.css$/i,
-        test:/\.(scss|css|sass)$/i,
+        test: /\.(scss|css|sass)$/i,
         // include: [path.resolve(__dirname, 'client')],
-        // exclude: [path.resolve(__dirname, 'node_modules')],        
+        // exclude: [path.resolve(__dirname, 'node_modules')],
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {

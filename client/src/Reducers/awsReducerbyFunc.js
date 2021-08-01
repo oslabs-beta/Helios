@@ -32,11 +32,11 @@ const initialState = {
       left: 0,
     },
     plugins: [
-     // Chartist.plugins.legend(),
-     // Chartist.plugins.tooltip({appendToBody: false}),
-  ],
+      // Chartist.plugins.legend(),
+      // Chartist.plugins.tooltip({appendToBody: false}),
+    ],
     scaleMinSpace: 15,
-    legendNames:[],
+    legendNames: [],
   },
   graphDefaultResponsiveOptions: [
     [
@@ -72,7 +72,6 @@ const initialState = {
       //labels:[],
     },
     options: {},
-    
 
     responsiveOptions: [],
     animation: {},
@@ -166,6 +165,12 @@ const awsReducerByFunc = (state = initialState, action) => {
       return { ...state, renderByFunc };
     }
 
+    case types.HANDLE_LOGOUT: {
+      return {
+        ...initialState,
+      };
+    }
+
     case types.UPDATE_FETCH_TIME_BYFUNC: {
       lastMetricFetchTime = new Date();
       return { ...state, lastMetricFetchTime };
@@ -181,10 +186,9 @@ const awsReducerByFunc = (state = initialState, action) => {
       let labelFormat;
       let getInvocations;
 
-
       console.log('Inside Add Invocations All Data');
 
-      getInvocations = false
+      getInvocations = false;
 
       series_data = action.payload.series.map((metricData) => {
         let name = metricData.name;
@@ -244,7 +248,7 @@ const awsReducerByFunc = (state = initialState, action) => {
       //         clickable: false
       //     })
       // ];
-      graphOptions.legendNames = action.payload.options.funcNames
+      graphOptions.legendNames = action.payload.options.funcNames;
 
       invocationsByFuncData = {
         data: {
@@ -254,11 +258,9 @@ const awsReducerByFunc = (state = initialState, action) => {
         responsiveOptions: graphResponsiveOptions,
         animation: graphtAnimation,
         // plugins:plugins
-        
       };
 
       //console.log("Invocation Data from Reducer: ",errorsAllData )
-      
 
       return { ...state, invocationsByFuncData, getInvocations };
     }
@@ -272,16 +274,15 @@ const awsReducerByFunc = (state = initialState, action) => {
       let ticks = [];
       let labelFormat;
       let getErrors;
-    
-    
+
       console.log('Inside Add Errors All Data');
-    
-      getErrors = false
-    
+
+      getErrors = false;
+
       series_data = action.payload.series.map((metricData) => {
         let name = metricData.name;
         let total = metricData.total;
-    
+
         let data = metricData.data.map((xydata) => {
           return { x: new Date(xydata.x), y: xydata.y };
         });
@@ -291,29 +292,29 @@ const awsReducerByFunc = (state = initialState, action) => {
           data: data,
         };
       });
-    
+
       graphOptions = { ...state.graphDefaultOptions };
       graphResponsiveOptions = [...state.graphDefaultResponsiveOptions];
       graphtAnimation = { ...state.graphtDefaultAnimation };
-    
+
       graphOptions.high = Math.max(
         Math.round(action.payload.options.metricMaxValueAllFunc / 100) * 100,
         100
       );
-    
+
       graphPeriod = action.payload.options.graphPeriod;
       graphUnits = action.payload.options.graphUnits;
       startTime = new Date(action.payload.options.startTime);
       endTime = new Date(action.payload.options.endTime);
-    
+
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
-    
+
       graphOptions.axisX.ticks = ticks;
       console.log(ticks);
-    
+
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
-    
+
       //add dummy data for the chart to show up
       series_data.push({
         name: 'dummy',
@@ -322,22 +323,22 @@ const awsReducerByFunc = (state = initialState, action) => {
           { x: moment(endTime).add(5, 'minutes'), y: null },
         ],
       });
-    
+
       graphOptions.axisX.labelInterpolationFnc = (value) => {
         if (graphUnits === 'days') labelFormat = 'MMM Do';
         if (graphUnits === 'hours') labelFormat = 'LT';
         if (graphUnits === 'minutes') labelFormat = 'LT';
-    
+
         return moment(value).format(labelFormat);
       };
-    
+
       // plugins = [
       //     Chartist.plugins.legend({
       //         clickable: false
       //     })
       // ];
-      graphOptions.legendNames = action.payload.options.funcNames
-    
+      graphOptions.legendNames = action.payload.options.funcNames;
+
       errorsByFuncData = {
         data: {
           series: series_data,
@@ -346,12 +347,10 @@ const awsReducerByFunc = (state = initialState, action) => {
         responsiveOptions: graphResponsiveOptions,
         animation: graphtAnimation,
         // plugins:plugins
-        
       };
-    
+
       //console.log("Error Data from Reducer: ",errorsAllData )
-      
-    
+
       return { ...state, errorsByFuncData, getErrors };
     }
 
@@ -364,16 +363,15 @@ const awsReducerByFunc = (state = initialState, action) => {
       let ticks = [];
       let labelFormat;
       let getThrottles;
-    
-    
+
       console.log('Inside Add Throttles All Data');
-    
-      getThrottles = false
-    
+
+      getThrottles = false;
+
       series_data = action.payload.series.map((metricData) => {
         let name = metricData.name;
         let total = metricData.total;
-    
+
         let data = metricData.data.map((xydata) => {
           return { x: new Date(xydata.x), y: xydata.y };
         });
@@ -383,29 +381,29 @@ const awsReducerByFunc = (state = initialState, action) => {
           data: data,
         };
       });
-    
+
       graphOptions = { ...state.graphDefaultOptions };
       graphResponsiveOptions = [...state.graphDefaultResponsiveOptions];
       graphtAnimation = { ...state.graphtDefaultAnimation };
-    
+
       graphOptions.high = Math.max(
         Math.round(action.payload.options.metricMaxValueAllFunc / 100) * 100,
         100
       );
-    
+
       graphPeriod = action.payload.options.graphPeriod;
       graphUnits = action.payload.options.graphUnits;
       startTime = new Date(action.payload.options.startTime);
       endTime = new Date(action.payload.options.endTime);
-    
+
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
-    
+
       graphOptions.axisX.ticks = ticks;
       console.log(ticks);
-    
+
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
-    
+
       //add dummy data for the chart to show up
       series_data.push({
         name: 'dummy',
@@ -414,22 +412,22 @@ const awsReducerByFunc = (state = initialState, action) => {
           { x: moment(endTime).add(5, 'minutes'), y: null },
         ],
       });
-    
+
       graphOptions.axisX.labelInterpolationFnc = (value) => {
         if (graphUnits === 'days') labelFormat = 'MMM Do';
         if (graphUnits === 'hours') labelFormat = 'LT';
         if (graphUnits === 'minutes') labelFormat = 'LT';
-    
+
         return moment(value).format(labelFormat);
       };
-    
+
       // plugins = [
       //     Chartist.plugins.legend({
       //         clickable: false
       //     })
       // ];
-      graphOptions.legendNames = action.payload.options.funcNames
-    
+      graphOptions.legendNames = action.payload.options.funcNames;
+
       throttlesByFuncData = {
         data: {
           series: series_data,
@@ -438,16 +436,13 @@ const awsReducerByFunc = (state = initialState, action) => {
         responsiveOptions: graphResponsiveOptions,
         animation: graphtAnimation,
         // plugins:plugins
-        
       };
-    
+
       //console.log("Throttle Data from Reducer: ",throttlesAllData )
-      renderByFunc = false
-    
+      renderByFunc = false;
+
       return { ...state, throttlesByFuncData, getThrottles, renderByFunc };
     }
-
-
 
     default: {
       return { ...state };

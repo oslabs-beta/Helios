@@ -160,6 +160,12 @@ const awsReducer = (state = initialState, action) => {
       return { ...state, render };
     }
 
+    case types.HANDLE_LOGOUT: {
+      return {
+        ...initialState,
+      };
+    }
+
     case types.UPDATE_LOGS_RENDER: {
       logsRender = true;
       functionLogs = [];

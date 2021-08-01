@@ -70,6 +70,7 @@ const mainReducer = (state = initialState, action) => {
         email: '',
         firstName: '',
         arn: '',
+        region: '',
         credentials: null,
       };
     }

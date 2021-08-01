@@ -87,6 +87,12 @@ const apiReducer = (state = initialState, action) => {
       };
     }
 
+    case types.HANDLE_LOGOUT: {
+      return {
+        ...initialState,
+      };
+    }
+
     case types.ADD_API_GATEWAYS_STARTED: {
       loading = true;
       return {
