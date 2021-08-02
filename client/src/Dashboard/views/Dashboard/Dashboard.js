@@ -60,7 +60,7 @@ const mapStateToProps = (state) => ({
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
   throttlesAllData: state.aws.throttlesAllData,
-
+  dashboardLoading: state.aws.dashboardLoading,
   awsByFunc: state.awsByFunc,
   invocationsByFuncData: state.awsByFunc.invocationsByFuncData,
   errorsByFuncData: state.awsByFunc.errorsByFuncData,
@@ -93,11 +93,17 @@ const mapDispatchToProps = (dispatch) => ({
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
   updateDashboardTimePeriod: (timePeriod) =>
     dispatch(actions.updateDashboardTimePeriod(timePeriod)),
+  updateDashboardLoading: () => {
+    dispatch(actions.updateDashboardLoading());
+  },
+  updateByFunctionLoading: () => {
+    dispatch(actions.updateByFunctionLoading());
+  },
 });
 
 function Dashboard(props) {
   const classes = useStyles();
-  console.log('logging from dashboard component (parent): ', props.credentials);
+  // console.log('logging from dashboard component (parent): ', props.credentials);
 
   const arnArray = useLiveQuery(getArnArrayIDB);
   const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
@@ -148,20 +154,32 @@ function Dashboard(props) {
     }
   }, [arnArray]);
 
-  if (props.aws.render && props.credentials && props.region) {
-    console.log('PROPS.REGION: ', props.region);
-    metricAllFuncBarChart(props, dateSelect, props.region);
-  }
+  useEffect(() => {
+    if (
+      props.aws.render &&
+      props.credentials &&
+      props.region &&
+      !props.dashboardLoading
+    ) {
+      console.log('PROPS.REGION: ', props.region);
+      props.updateDashboardLoading();
+      metricAllFuncBarChart(props, dateSelect, props.region);
+    }
+  }, [props.credentials, props.aws.render]);
 
   //fetch by Func metrics
-  if (
-    props.awsByFunc.renderByFunc &&
-    props.credentials &&
-    props.aws.functions.length &&
-    props.region
-  ) {
-    metricByFuncBarChart(props, dateSelect, props.region);
-  }
+  useEffect(() => {
+    if (
+      props.awsByFunc.renderByFunc &&
+      props.credentials &&
+      props.aws.functions.length &&
+      props.region &&
+      !props.awsByFunc.byFuncLoading
+    ) {
+      props.updateByFunctionLoading();
+      metricByFuncBarChart(props, dateSelect, props.region);
+    }
+  }, [props.aws.functions]);
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);

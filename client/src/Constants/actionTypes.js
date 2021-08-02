@@ -7,6 +7,8 @@ export const ADD_CREDENTIALS_STARTED = 'ADD_CREDENTIALS_STARTED';
 //AWS Reducer All Functions
 //###############################################
 
+export const UPDATE_DASHBOARD_LOADING = 'UPDATE_DASHBOARD_LOADING';
+export const UPDATE_BY_FUNCTION_LOADING = 'UPDATE_BY_FUNCTION_LOADING';
 export const ADD_LAMBDA = 'ADD_LAMBDA';
 export const ADD_LAMBDA_STARTED = 'ADD_LAMBDA_STARTED';
 export const ADD_FUNCTION_LOGS = 'ADD_FUNCTION_LOGS';

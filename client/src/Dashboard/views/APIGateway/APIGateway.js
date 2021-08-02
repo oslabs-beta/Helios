@@ -25,6 +25,8 @@ import styles from '../../assets/jss/material-dashboard-react/views/apiStyle.js'
 import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
 import getUserInfoArrayIDB from '../../../indexedDB/getUserInfo.js';
 import getRegionIDB from '../../../indexedDB/getRegionIDB';
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from 'react-promise-tracker';
 // IndexedDB
 import { useLiveQuery } from 'dexie-react-hooks';
 
@@ -58,6 +60,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 function APIGateway(props) {
   const classes = useStyles();
+  const { promiseInProgress } = usePromiseTracker();
   const [dateSelect, setDateRange] = useState('1hr');
   // const arnArray = useLiveQuery(getArnArrayIDB);
   const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
@@ -111,7 +114,7 @@ function APIGateway(props) {
           region: props.region,
         }),
       };
-      fetch('/aws/updateApiMetrics', reqParams)
+      trackPromise(fetch('/aws/updateApiMetrics', reqParams))
         .then((res) => res.json())
         .then((updatedApiMetrics) => {
           props.updateApiMetrics(updatedApiMetrics);
@@ -328,6 +331,7 @@ function APIGateway(props) {
                 region={props.region}
                 addApiMetrics={props.addApiMetrics}
                 removeApiMetrics={props.removeApiMetrics}
+                updatePromise={promiseInProgress}
               />
             </CardBody>
           </Card>

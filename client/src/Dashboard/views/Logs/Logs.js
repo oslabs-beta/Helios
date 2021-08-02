@@ -43,6 +43,7 @@ import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from 'react-promise-tracker';
 import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
 import getRegionIDB from '../../../indexedDB/getRegionIDB.js';
+import getUserInfoArrayIDB from '../../../indexedDB/getUserInfo.js';
 
 const useStyles = makeStyles(styles);
 
@@ -55,6 +56,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  addUserInfo: (userInfo) => dispatch(actions.addUserInfo(userInfo)),
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
   addFunctionLogs: (logObj) => dispatch(actions.addFunctionLogs(logObj)),
@@ -78,8 +80,13 @@ function Logs(props) {
     if (!props.arn || !props.region) {
       const arnArray = await getArnArrayIDB();
       const regionArray = await getRegionIDB();
+      const userInfoArray = await getUserInfoArrayIDB();
       props.addRegion(regionArray[0].region);
       props.updateArn(arnArray[0].arn);
+      props.addUserInfo({
+        firstName: userInfoArray[0].firstName,
+        email: userInfoArray[0].email,
+      });
     }
   }, [props.arn]);
 
@@ -94,17 +101,6 @@ function Logs(props) {
         }),
       };
       props.addCredentials(reqParams);
-      // fetch('/aws/getCreds', reqParams)
-      //   .then((res) => res.json())
-      //   .then((credentialsData) => {
-      //     console.log('logging from useEffect fetch: ', credentialsData);
-      //     if (!credentialsData.err) {
-      //       props.addCredentialsSuccess(credentialsData);
-      //     }
-      //   })
-      //   .catch((err) =>
-      //     console.log('Error inside initial get credentials fetch: ', err)
-      //   );
     }
   }, [props.arn]);
 

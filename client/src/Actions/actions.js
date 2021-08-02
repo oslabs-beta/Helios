@@ -47,6 +47,13 @@ export const addCredentialsSuccess = (credentials) => {
 //AWS Reducer All Functions
 //###############################################
 
+export const updateDashboardLoading = () => {
+  return { type: types.UPDATE_DASHBOARD_LOADING };
+};
+
+export const updateByFunctionLoading = () => {
+  return { type: types.UPDATE_BY_FUNCTION_LOADING };
+};
 export const addLambda = (reqParams) => {
   return (dispatch) => {
     console.log('before started initiated');

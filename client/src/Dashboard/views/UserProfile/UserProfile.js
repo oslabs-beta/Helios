@@ -134,6 +134,7 @@ const mapDispatchToProps = (dispatch) => ({
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
   updateLogsRender: () => dispatch(actions.updateLogsRender()),
   updateApiRender: () => dispatch(actions.updateApiRender()),
+  updateRenderByFunc: () => dispatch(actions.updateRenderByFunc()),
 });
 
 function UserProfile(props) {
@@ -200,6 +201,7 @@ function UserProfile(props) {
   // after an ARN or region is updated, fetch new credentials so user data can be updated
   // on all pages
   const handleUpdateCreds = (arn) => {
+    console.log('updating creds: ', arn);
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -214,6 +216,7 @@ function UserProfile(props) {
       arn,
     });
     props.updateRender();
+    props.updateRenderByFunc();
     props.updateLogsRender();
     props.updateApiRender();
   };

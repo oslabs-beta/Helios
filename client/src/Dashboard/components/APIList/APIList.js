@@ -149,7 +149,7 @@ export default function APIList(props) {
   return (
     <div>
       {/* The loading icon that only shows when a promise is in progress */}
-      {promiseInProgress ? (
+      {promiseInProgress || props.updatePromise ? (
         <center>
           <Loader
             type='TailSpin'

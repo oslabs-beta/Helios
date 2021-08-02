@@ -14,6 +14,7 @@ const initialState = {
   functions: [],
   logsRender: true,
   logsLoading: false,
+  dashboardLoading: false,
   logPageTimePeriod: '1hr',
   dashboardTimePeriod: '7d',
   render: true,
@@ -155,6 +156,7 @@ const awsReducer = (state = initialState, action) => {
   let lastMetricFetchTime;
   let logsRender;
   let logsLoading;
+  let dashboardLoading;
   let logPageTimePeriod;
   let dashboardTimePeriod;
 
@@ -163,6 +165,12 @@ const awsReducer = (state = initialState, action) => {
       render = true;
       return { ...state, render };
     }
+
+    case types.UPDATE_DASHBOARD_LOADING: {
+      dashboardLoading = true;
+      return { ...state, dashboardLoading };
+    }
+
     // when logout is clicked, it clears state
     case types.HANDLE_LOGOUT: {
       return {
@@ -174,7 +182,17 @@ const awsReducer = (state = initialState, action) => {
     case types.UPDATE_LOGS_RENDER: {
       logsRender = true;
       functionLogs = [];
-      return { ...state, logsRender, functionLogs };
+      functions = [];
+      logPageTimePeriod = '1hr';
+      dashboardTimePeriod = '7d';
+      return {
+        ...state,
+        logsRender,
+        functions,
+        functionLogs,
+        logPageTimePeriod,
+        dashboardTimePeriod,
+      };
     }
 
     case types.UPDATE_FETCH_TIME: {
@@ -451,10 +469,16 @@ const awsReducer = (state = initialState, action) => {
         total,
       };
 
-      console.log('Throttle Data from reducer: ', throttlesAllData);
       render = false;
+      dashboardLoading = false;
 
-      return { ...state, throttlesAllData, getThrottles, render };
+      return {
+        ...state,
+        throttlesAllData,
+        getThrottles,
+        render,
+        dashboardLoading,
+      };
     }
 
     // if logout is clicked, resets state

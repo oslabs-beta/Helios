@@ -14,6 +14,7 @@ const delays2 = 80,
 
 const initialState = {
   renderByFunc: true,
+  byFuncLoading: false,
   lastMetricFetchTime: new Date(),
   getInvocations: true,
   getThrottles: true,
@@ -156,13 +157,27 @@ const awsReducerByFunc = (state = initialState, action) => {
   let plugins;
   let renderByFunc;
   let legendNames;
+  let byFuncLoading;
 
   let lastMetricFetchTime;
 
   switch (action.type) {
     case types.UPDATE_RENDER_BYFUNC: {
       renderByFunc = true;
-      return { ...state, renderByFunc };
+      let throttlesByFuncData = { ...initialState.throttlesByFuncData };
+      let errorsByFuncData = { ...initialState.errorsByFuncData };
+      let invocationsByFuncData = { ...initialState.invocationsByFuncData };
+      return {
+        ...state,
+        renderByFunc,
+        throttlesByFuncData,
+        errorsByFuncData,
+        invocationsByFuncData,
+      };
+    }
+    case types.UPDATE_BY_FUNCTION_LOADING: {
+      byFuncLoading = true;
+      return { ...state, byFuncLoading };
     }
 
     case types.HANDLE_LOGOUT: {
@@ -440,8 +455,14 @@ const awsReducerByFunc = (state = initialState, action) => {
 
       //console.log("Throttle Data from Reducer: ",throttlesAllData )
       renderByFunc = false;
-
-      return { ...state, throttlesByFuncData, getThrottles, renderByFunc };
+      byFuncLoading = false;
+      return {
+        ...state,
+        throttlesByFuncData,
+        getThrottles,
+        renderByFunc,
+        byFuncLoading,
+      };
     }
 
     default: {

@@ -107,7 +107,8 @@ const apiReducer = (state = initialState, action) => {
     case types.UPDATE_API_RENDER: {
       render = true;
       let apiMetrics = [];
-      return { ...state, apiMetrics, render };
+      timePeriod = '1hr';
+      return { ...state, apiMetrics, render, timePeriod };
     }
 
     // once an API is checked and metrics are fetched, add to apiMetrics array for display
