@@ -44,12 +44,6 @@ const updateLogs = async (req, res, next) => {
     ).valueOf();
   }
 
-  // create new CloudWatchLogsClient
-  const cwLogsClient = new CloudWatchLogsClient({
-    region,
-    credentials: credentials,
-  });
-
   const updatedArr = [];
   // loop through the function names and refetch logs for each of them using loopFunc
   for (let i = 0; i < functionsToFetch.length; i += 1) {
@@ -59,8 +53,7 @@ const updateLogs = async (req, res, next) => {
       StartTime,
       req.body.credentials,
       req.body.newTimePeriod,
-      req.body.region,
-      cwLogsClient
+      req.body.region
     );
     // push individual log object onto updatedArr to be sent back to frontend
     updatedArr.push(newLogObj);
@@ -77,9 +70,14 @@ const loopFunc = async (
   StartTime,
   credentials,
   timePeriod,
-  region,
-  cwLogsClient
+  region
 ) => {
+  // create new CloudWatchLogsClient
+  const cwLogsClient = new CloudWatchLogsClient({
+    region,
+    credentials: credentials,
+  });
+
   // if a nextToken exists (meaning there are more logs to fetch), helperFunc provides a recursive way to get all the logs
   async function helperFunc(nextToken, data = []) {
     // once we run out of nextTokens, return data
