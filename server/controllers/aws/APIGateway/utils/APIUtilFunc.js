@@ -1,5 +1,5 @@
 //The following assumes that User Inputs the time timeRange (either in min, hours, days)
-const moment = require('moment');
+
 //input time range period for aggregating the metrics
 //for e.g. if the time range selected on the front end is minutes, metrics from CloudWatch would be
 // aggregated by 1 minute (60 seconds)
@@ -52,7 +52,6 @@ APIUtilFunc.getAPIMetrics = (
     LabelOptions: {
       Timezone: '-0400',
     },
-    //    MetricDataQueries: [],
   };
 
   const metricDataQueryAllfunc = [

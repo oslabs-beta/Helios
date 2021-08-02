@@ -163,13 +163,14 @@ const awsReducer = (state = initialState, action) => {
       render = true;
       return { ...state, render };
     }
-
+    // when logout is clicked, it clears state
     case types.HANDLE_LOGOUT: {
       return {
         ...initialState,
       };
     }
-
+    // when account is updated on User Profile, clears the log render signaler to reset state
+    // makes sure logs from previous account settings don't stick
     case types.UPDATE_LOGS_RENDER: {
       logsRender = true;
       functionLogs = [];
@@ -180,23 +181,27 @@ const awsReducer = (state = initialState, action) => {
       lastMetricFetchTime = new Date();
       return { ...state, lastMetricFetchTime };
     }
-
+    // adds list of Lambda Functions
     case types.ADD_LAMBDA: {
       functions = action.payload;
       logsRender = false;
       logsLoading = false;
       return { ...state, functions, logsRender, logsLoading };
     }
-
+    // sets the logsLoading to true and prevents additional asynchronous calls from being made while promise is waiting to be fulfilled
     case types.ADD_LAMBDA_STARTED: {
       logsLoading = true;
       return { ...state, logsLoading };
     }
+
+    // add logs after a Lambda function has been checked
     case types.ADD_FUNCTION_LOGS: {
       functionLogs = state.functionLogs.slice(0);
       functionLogs.push(action.payload);
       return { ...state, functionLogs };
     }
+
+    // remove from state if unchecked
     case types.REMOVE_FUNCTION_LOGS: {
       functionLogs = state.functionLogs.slice(0);
       for (let i = 0; i < functionLogs.length; i += 1) {
@@ -206,11 +211,14 @@ const awsReducer = (state = initialState, action) => {
       }
       return { ...state, functionLogs };
     }
+
+    // if time period is updated while logs are clicked, updates with the correct data
     case types.UPDATE_FUNCTION_LOGS: {
       functionLogs = action.payload;
       return { ...state, functionLogs };
     }
 
+    // if time period on Log page is changed, saves the new one in state
     case types.UPDATE_LOGS_TIME_PERIOD: {
       logPageTimePeriod = action.payload;
       return {
@@ -219,6 +227,7 @@ const awsReducer = (state = initialState, action) => {
       };
     }
 
+    // if time period on Dashboard page is changed, saves the new one in state
     case types.UPDATE_DASHBOARD_TIME_PERIOD: {
       dashboardTimePeriod = action.payload;
       return {
@@ -237,8 +246,6 @@ const awsReducer = (state = initialState, action) => {
       let labelFormat;
       let getInvocations;
       let total = 0;
-
-      console.log('Inside Add Invocations All Data');
 
       getInvocations = !state.getInvocations;
       series_data = action.payload.data.map((xydata) => {
@@ -387,8 +394,6 @@ const awsReducer = (state = initialState, action) => {
       let getThrottles;
       let total = 0;
 
-      console.log('Inside Add Throttles All Data');
-
       // let getThrottles;
       // let throttlesAllData;
 
@@ -413,7 +418,6 @@ const awsReducer = (state = initialState, action) => {
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
 
       graphOptions.axisX.ticks = ticks;
-      console.log(ticks);
 
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
@@ -452,6 +456,8 @@ const awsReducer = (state = initialState, action) => {
 
       return { ...state, throttlesAllData, getThrottles, render };
     }
+
+    // if logout is clicked, resets state
     case types.HANDLE_LOGOUT: {
       return {
         ...initialState,

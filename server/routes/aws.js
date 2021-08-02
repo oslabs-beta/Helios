@@ -55,22 +55,24 @@ router.route('/updateLogs').post(updateLogs, (req, res) => {
   res.status(200).json(res.locals.updatedLogs);
 });
 
-
 router
   .route('/getMetricsByFunc/:metricName')
   .post(getMetricsByFunc, (req, res) => {
     console.log('Returning Lambda Functions Invocations By Function:');
     res.status(200).json(res.locals.metricByFuncData);
   });
-//API Gateway data
+
+// API Gateway data - list of APIs existing on user account
 router.route('/apiGateway').post(getAPIData, (req, res) => {
   res.status(200).json(res.locals.apiData);
 });
 
+// handle getting an APIs metrics when requested
 router.route('/getApiMetrics').post(getApiMetrics, (req, res) => {
   res.status(200).json(res.locals.apiMetrics);
 });
 
+// if time period is updated, fetches updated API metric data
 router.route('/updateApiMetrics').post(updateApiMetrics, (req, res) => {
   res.status(200).json(res.locals.apiMetrics);
 });

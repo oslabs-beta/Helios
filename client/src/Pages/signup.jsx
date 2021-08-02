@@ -67,26 +67,27 @@ function SignUp(props) {
   let email = '';
   let password = '';
 
+  // handles when signup button is clicked
   function handleSubmit() {
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firstName, lastName, password, email }),
     };
+    // verifies email doesn't already exist and if account is successfully created, signs them up and pushes them to register page
     fetch('/user/signup', reqParams)
       .then((res) => res.json())
       .then((response) => {
         if (response.confirmation && response.emailStatus) {
           props.addUserInfo(response.userInfo);
           history.push('/user/register');
-
+          // add into to IndexedDB
           updateUserInfoIDB({ firstName, email })
-            .then((user) => {
-              console.log('successfully stored data');
-            })
+            .then((user) => {})
             .catch((error) => {
               console.log('error while updating user info', error);
             });
+          // if unsuccessful, alert pops up saying try again
         } else if (!response.emailStatus) {
           setValidEmail(true);
         }

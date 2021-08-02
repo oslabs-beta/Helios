@@ -88,13 +88,13 @@ const apiReducer = (state = initialState, action) => {
         loading,
       };
     }
-
+    // clear and reset state if logout is clicked
     case types.HANDLE_LOGOUT: {
       return {
         ...initialState,
       };
     }
-
+    // set loading to true to prevent additional calls while promise waits to be fulfilled
     case types.ADD_API_GATEWAYS_STARTED: {
       loading = true;
       return {
@@ -102,7 +102,8 @@ const apiReducer = (state = initialState, action) => {
         loading,
       };
     }
-
+    // when account is updated on User Profile, clears the API render signaler to reset state
+    // makes sure APIs and metrics from previous account settings don't stick
     case types.UPDATE_API_RENDER: {
       render = true;
       let apiMetrics = [];
@@ -354,7 +355,7 @@ const apiReducer = (state = initialState, action) => {
         apiMetrics,
       };
     }
-
+    // when the time period is changed on APIGateway page, it's also updated in state
     case types.UPDATE_API_TIME_PERIOD: {
       timePeriod = action.payload;
       return {
