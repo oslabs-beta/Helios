@@ -1,3 +1,4 @@
+// allow the region's actual name to be displayed
 const regions = {
   'us-east-2': 'US East (Ohio)',
   'us-east-1': 'US East (N. Virginia)',

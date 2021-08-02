@@ -2,7 +2,7 @@ export const ADD_USER_INFO = 'ADD_USER_INFO';
 export const ADD_AWS_ACCOUNT = 'ADD_AWS_ACCOUNT';
 export const ADD_LOGIN_INFO = 'ADD_LOGIN_INFO';
 export const ADD_CREDENTIALS = 'ADD_CREDENTIALS';
-
+export const ADD_CREDENTIALS_STARTED = 'ADD_CREDENTIALS_STARTED';
 //###############################################
 //AWS Reducer All Functions
 //###############################################
@@ -42,3 +42,6 @@ export const UPDATE_LOGS_RENDER = 'UPDATE_LOGS_RENDER';
 export const UPDATE_API_RENDER = 'UPDATE_API_RENDER';
 export const ADD_API_GATEWAYS_STARTED = 'ADD_API_GATEWAYS_STARTED';
 export const ADD_API_GATEWAYS_SUCCESS = 'ADD_API_GATEWAYS_SUCCESS';
+export const UPDATE_DASHBOARD_TIME_PERIOD = 'UPDATE_DASHBOARD_TIME_PERIOD';
+export const UPDATE_LOGS_TIME_PERIOD = 'UPDATE_LOGS_TIME_PERIOD';
+export const UPDATE_API_TIME_PERIOD = 'UPDATE_API_TIME_PERIOD';

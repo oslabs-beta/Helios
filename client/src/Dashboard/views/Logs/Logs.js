@@ -41,7 +41,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from 'react-promise-tracker';
-import { useLiveQuery } from 'dexie-react-hooks';
 import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
 import getRegionIDB from '../../../indexedDB/getRegionIDB.js';
 
@@ -49,6 +48,7 @@ const useStyles = makeStyles(styles);
 
 const mapStateToProps = (state) => ({
   arn: state.main.arn,
+  credentialsLoading: state.main.credentialsLoading,
   credentials: state.main.credentials,
   region: state.main.region,
   aws: state.aws,
@@ -64,70 +64,72 @@ const mapDispatchToProps = (dispatch) => ({
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
   updateFunctionLogs: (updatedLogs) =>
     dispatch(actions.updateFunctionLogs(updatedLogs)),
+  addCredentialsSuccess: (credentials) =>
+    dispatch(actions.addCredentialsSuccess(credentials)),
+  updateLogsTimePeriod: (timePeriod) =>
+    dispatch(actions.updateLogsTimePeriod(timePeriod)),
 });
 
 function Logs(props) {
   const classes = useStyles();
 
-  const arnArray = useLiveQuery(getArnArrayIDB);
-  const regionArray = useLiveQuery(getRegionIDB);
-
-  // after refresh, fetches user region from IndexedDB and updates state
-  useEffect(() => {
-    if (regionArray && regionArray[0]) {
+  useEffect(async () => {
+    // if no arn or region in state, grab from IndexedDB
+    if (!props.arn || !props.region) {
+      const arnArray = await getArnArrayIDB();
+      const regionArray = await getRegionIDB();
       props.addRegion(regionArray[0].region);
+      props.updateArn(arnArray[0].arn);
     }
-  }, [regionArray]);
+  }, [props.arn]);
 
-  // after refresh, credentials disappear and have to be refetched based off the arn
-  // grabs user arn from IndexedDB and then gets new credentials and updates state
-  // with both arn and new credentials
   useEffect(() => {
-    if (!props.credentials) {
-      if (arnArray && arnArray[0]) {
-        props.updateArn(arnArray[0].arn);
-        const reqParams = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            arn: arnArray[0].arn,
-          }),
-        };
-
-        fetch('/aws/getCreds', reqParams)
-          .then((res) => res.json())
-          .then((credentialsData) => {
-            console.log('logging from useEffect fetch: ', credentialsData);
-            if (!credentialsData.err) {
-              props.addCredentials(credentialsData);
-            }
-          })
-          .catch((err) =>
-            console.log('Error inside initial get credentials fetch: ', err)
-          );
-      }
+    // if no credentials, refetch them - this is dependent on arn being populated too
+    if (!props.credentials && !props.credentialsLoading && props.arn) {
+      const reqParams = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          arn: props.arn,
+        }),
+      };
+      props.addCredentials(reqParams);
+      // fetch('/aws/getCreds', reqParams)
+      //   .then((res) => res.json())
+      //   .then((credentialsData) => {
+      //     console.log('logging from useEffect fetch: ', credentialsData);
+      //     if (!credentialsData.err) {
+      //       props.addCredentialsSuccess(credentialsData);
+      //     }
+      //   })
+      //   .catch((err) =>
+      //     console.log('Error inside initial get credentials fetch: ', err)
+      //   );
     }
-  }, [arnArray]);
+  }, [props.arn]);
 
-  // if credential and region exist and refetch
-  if (
-    props.credentials &&
-    props.region &&
-    props.aws.logsRender &&
-    !props.aws.logsLoading
-  ) {
-    const reqParams = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        credentials: props.credentials,
-        // timePeriod: timePeriod,
-        region: props.region,
-      }),
-    };
-    props.addLambda(reqParams);
-  }
+  // if credential and region exist then refetch Lambda functions after a refresh
+  useEffect(() => {
+    if (
+      props.credentials &&
+      props.region &&
+      props.aws.logsRender &&
+      !props.aws.logsLoading
+    ) {
+      const reqParams = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          credentials: props.credentials,
+          region: props.region,
+        }),
+      };
+      props.addLambda(reqParams);
+    }
+  }, [props.credentials]);
 
+  // creates an array of the names of the Lambda's with logs currently displayed so they're maintained if a user leaves
+  // the page and then comes back
   const logsShown = props.aws.functionLogs.map((logObj) => {
     return logObj.name;
   });
@@ -179,8 +181,10 @@ function Logs(props) {
   const [dateSelect, setDateRange] = useState('1hr');
   const { promiseInProgress } = usePromiseTracker();
 
+  // if the Time Period is updated, we need to refetch new logs within that time frame
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
+    props.updateLogsTimePeriod(e.target.value);
     if (props.aws.functionLogs) {
       const reqParams = {
         method: 'POST',
@@ -212,7 +216,7 @@ function Logs(props) {
           <br />
           <Select
             id='date-change-select'
-            value={dateSelect}
+            value={props.aws.logPageTimePeriod}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >
@@ -240,6 +244,7 @@ function Logs(props) {
       <br />
       <GridContainer>
         <GridItem xs={4} sm={4} md={4}>
+          {/* Holds our list of Lambda functions and makes them checkable */}
           <CustomTabs
             // title='Lambda Functions:'
             headerColor='info'
@@ -265,6 +270,7 @@ function Logs(props) {
         </GridItem>
 
         <GridItem xs={8} sm={8} md={8}>
+          {/* Our array of log objects that are then displayed within a table */}
           {mappedMsgs}
         </GridItem>
       </GridContainer>

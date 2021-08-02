@@ -65,6 +65,7 @@ const initialState = {
   apiMetrics: [],
   render: true,
   loading: false,
+  timePeriod: '1hr',
 };
 
 /////////////////////////////////////////////////////////////////
@@ -73,6 +74,7 @@ const apiReducer = (state = initialState, action) => {
   let apiKeys;
   let render;
   let loading;
+  let timePeriod;
   switch (action.type) {
     // add list of APIs to state
     case types.ADD_API_GATEWAYS: {
@@ -350,6 +352,14 @@ const apiReducer = (state = initialState, action) => {
       return {
         ...state,
         apiMetrics,
+      };
+    }
+
+    case types.UPDATE_API_TIME_PERIOD: {
+      timePeriod = action.payload;
+      return {
+        ...state,
+        timePeriod,
       };
     }
 

@@ -12,6 +12,7 @@ import styles from '../../assets/jss/material-dashboard-react/components/logTabl
 
 const useStyles = makeStyles(styles);
 
+// table to show the logs for Lambda Functions
 export default function LogTable(props) {
   const classes = useStyles();
   const { tableHead, tableData, tableHeaderColor, status } = props;
@@ -29,6 +30,7 @@ export default function LogTable(props) {
         ) : null}
         <TableBody>
           {tableData.map((prop, key) => {
+            // If the log is an error, update the color to be red
             if (
               prop[2].slice(0, 13).toLowerCase().trim() === 'invoke error' &&
               status !== 'errors'
@@ -44,6 +46,7 @@ export default function LogTable(props) {
                   })}
                 </TableRow>
               );
+              // if not an error, map through normally
             } else {
               return (
                 <TableRow key={key} className={classes.tableBodyRow}>

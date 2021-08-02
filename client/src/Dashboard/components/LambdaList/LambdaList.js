@@ -75,6 +75,7 @@ export default function LambdaList(props) {
   });
   return (
     <div>
+      {/* Loading icon that shows when a promise is in progress */}
       {promiseInProgress || props.updatePromise ? (
         <center>
           <Loader
@@ -86,6 +87,8 @@ export default function LambdaList(props) {
           />
         </center>
       ) : null}
+
+      {/* Table of the list of Lambda Functions associated with user's account */}
       <Table className={classes.table}>
         <TableBody>
           {props.functions.map((funcName, i) => (

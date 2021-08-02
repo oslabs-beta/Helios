@@ -207,24 +207,15 @@ function UserProfile(props) {
         arn: arn,
       }),
     };
-    fetch('/aws/getCreds', reqParams)
-      .then((res) => res.json())
-      .then((credentialsData) => {
-        if (!credentialsData.err) {
-          props.addCredentials(credentialsData);
-          props.updateUserDetailsAfterProfileUpdate({
-            email: dbEmail,
-            firstName: dbName,
-            arn,
-          });
-          props.updateRender();
-          props.updateLogsRender();
-          props.updateApiRender();
-        }
-      })
-      .catch((err) =>
-        console.log('Error inside initial get credentials fetch: ', err)
-      );
+    props.addCredentials(reqParams);
+    props.updateUserDetailsAfterProfileUpdate({
+      email: dbEmail,
+      firstName: dbName,
+      arn,
+    });
+    props.updateRender();
+    props.updateLogsRender();
+    props.updateApiRender();
   };
 
   // when user's region is updated

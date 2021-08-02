@@ -6,10 +6,17 @@
   "homepage": "./",
   "jest": {
     "testEnvironment": "jsdom",
+    "setupFiles": [
+      "fake-indexeddb/auto"
+    ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__tests__/__mocks__/fileMock.js",
       "\\.(css|less)$": "<rootDir>/__tests__/__mocks__/styleMock.js"
     },
+    "testPathIgnorePatterns": [
+      "<rootDir>/__tests__/__mocks__/styleMock.js",
+      "<rootDir>/__tests__/__mocks__/fileMock.js"
+    ],
     "verbose": true,
     "transformIgnorePatterns": [
       "/node_modules/(?!test-component).+\\.js$"
@@ -105,6 +112,7 @@
     "redux-mock-store": "^1.5.4",
     "redux-thunk": "^2.3.0",
     "sass-loader": "^12.1.0",
+    "sinon": "^11.1.2",
     "stream-to-blob": "^2.0.1",
     "style-loader": "^3.1.0",
     "supertest": "^6.1.4",

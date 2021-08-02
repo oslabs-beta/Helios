@@ -5,49 +5,29 @@ import ChartistGraph from 'react-chartist';
 import { connect } from 'react-redux';
 // @material-ui/core
 import { makeStyles } from '@material-ui/core/styles';
-
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
 // @material-ui/icons
-
 import DateRange from '@material-ui/icons/DateRange';
-
 // core components
 import GridItem from '../../components/Grid/GridItem.js';
 import GridContainer from '../../components/Grid/GridContainer.js';
-import LogTable from '../../components/Table/LogTable.js';
 import APIList from '../../components/APIList/APIList.js';
 import CustomTabs from '../../components/CustomTabs/CustomTabs.js';
-import Danger from '../../components/Typography/Danger.js';
-import LogCard from '../../components/Card/LogCard.js';
 import CardHeader from '../../components/Card/CardHeader.js';
-import CardIcon from '../../components/Card/CardIcon.js';
 import CardBody from '../../components/Card/CardBody.js';
 import CardFooter from '../../components/Card/CardFooter.js';
 import Card from '../../components/Card/Card.js';
-import Select from '@material-ui/core/Select';
-import IconButton from '@material-ui/core/IconButton';
 import * as actions from '../../../Actions/actions';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import styles from '../../assets/jss/material-dashboard-react/views/apiStyle.js';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
-import { latencyChart } from '../../variables/apiCharts';
 import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
 import getUserInfoArrayIDB from '../../../indexedDB/getUserInfo.js';
 import getRegionIDB from '../../../indexedDB/getRegionIDB';
+// IndexedDB
 import { useLiveQuery } from 'dexie-react-hooks';
+
 const useStyles = makeStyles(styles);
 
 const mapStateToProps = (state) => ({
@@ -72,51 +52,41 @@ const mapDispatchToProps = (dispatch) => ({
   addCredentials: (credentials) =>
     dispatch(actions.addCredentials(credentials)),
   updateEmail: (newEmail) => dispatch(actions.updateEmail(newEmail)),
+  updateApiTimePeriod: (timePeriod) =>
+    dispatch(actions.updateApiTimePeriod(timePeriod)),
 });
 
 function APIGateway(props) {
   const classes = useStyles();
   const [dateSelect, setDateRange] = useState('1hr');
-  const arnArray = useLiveQuery(getArnArrayIDB);
+  // const arnArray = useLiveQuery(getArnArrayIDB);
   const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
-  const regionArray = useLiveQuery(getRegionIDB);
+  // const regionArray = useLiveQuery(getRegionIDB);
 
   // after refresh, fetches user region from IndexedDB and updates state
-  useEffect(() => {
-    if (regionArray && regionArray[0]) {
-      props.addRegion(regionArray[0].region);
-    }
-  }, [regionArray]);
+  useEffect(async () => {
+    const arnArray = await getArnArrayIDB();
+    const regionArray = await getRegionIDB();
+
+    props.addRegion(regionArray[0].region);
+    props.updateArn(arnArray[0].arn);
+  }, [props.arn]);
 
   // after refresh, credentials disappear and have to be refetched based off the arn
   // grabs user arn from IndexedDB and then gets new credentials and updates state
   // with both arn and new credentials
   useEffect(() => {
-    if (!props.credentials) {
-      if (arnArray && arnArray[0]) {
-        props.updateArn(arnArray[0].arn);
-        const reqParams = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            arn: arnArray[0].arn,
-          }),
-        };
-
-        fetch('/aws/getCreds', reqParams)
-          .then((res) => res.json())
-          .then((credentialsData) => {
-            console.log('logging from useEffect fetch: ', credentialsData);
-            if (!credentialsData.err) {
-              props.addCredentials(credentialsData);
-            }
-          })
-          .catch((err) =>
-            console.log('Error inside initial get credentials fetch: ', err)
-          );
-      }
+    if (!props.credentials && props.arn) {
+      const reqParams = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          arn: props.arn,
+        }),
+      };
+      props.addCredentials(reqParams);
     }
-  }, [arnArray]);
+  }, [props.arn]);
 
   // after a refresh this fetches the user info from IndexedDB and then updates state again
   useEffect(() => {
@@ -129,6 +99,7 @@ function APIGateway(props) {
   // if time period is adjusted, this updates the metrics for the currently displayed apis
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
+    props.updateApiTimePeriod(e.target.value);
     if (props.api.apiMetrics) {
       const reqParams = {
         method: 'POST',
@@ -143,7 +114,6 @@ function APIGateway(props) {
       fetch('/aws/updateApiMetrics', reqParams)
         .then((res) => res.json())
         .then((updatedApiMetrics) => {
-          console.log(updatedApiMetrics);
           props.updateApiMetrics(updatedApiMetrics);
         })
         .catch((err) =>
@@ -155,22 +125,24 @@ function APIGateway(props) {
   // if props has been updated, this refetches the APIs that exists on the account to be displayed
   // props.addApiGateways sets props.api.render to false so it doesn't run continously
   // only runs again after a refresh
-  if (
-    props.region &&
-    props.credentials &&
-    !props.api.loading &&
-    props.api.render
-  ) {
-    const apiGatewayReqParams = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        credentials: props.credentials,
-        region: props.region,
-      }),
-    };
-    props.addApiGateways(apiGatewayReqParams);
-  }
+  useEffect(() => {
+    if (
+      props.region &&
+      props.credentials &&
+      !props.api.loading &&
+      props.api.render
+    ) {
+      const apiGatewayReqParams = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          credentials: props.credentials,
+          region: props.region,
+        }),
+      };
+      props.addApiGateways(apiGatewayReqParams);
+    }
+  }, [props.credentials]);
 
   // creates an array of which apis are currently checked
   // when a user navigates away from this page and then back, this ensures the original
@@ -312,7 +284,7 @@ function APIGateway(props) {
           <br />
           <Select
             id='date-change-select'
-            value={dateSelect}
+            value={props.api.timePeriod}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >

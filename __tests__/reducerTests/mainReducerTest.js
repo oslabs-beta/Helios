@@ -12,6 +12,7 @@ describe('Main Reducer - Holds User Details', () => {
       arn: '',
       region: '',
       credentials: null,
+      credentialsLoading: false,
     };
   });
 

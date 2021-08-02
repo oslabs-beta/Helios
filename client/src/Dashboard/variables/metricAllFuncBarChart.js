@@ -43,6 +43,7 @@ const metricAllFuncBarChart = (props, timePeriod, region) => {
   };
   console.log('REQUEST PARAMS: ', reqParams);
   console.log('Props Render before Fetch:', props.aws.render);
+  // props.addLambda(reqParams);
   fetch('/aws/getLambdaFunctions', reqParams)
     .then((res) => res.json())
     .then((functions) => {

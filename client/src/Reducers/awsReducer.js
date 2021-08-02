@@ -14,6 +14,8 @@ const initialState = {
   functions: [],
   logsRender: true,
   logsLoading: false,
+  logPageTimePeriod: '1hr',
+  dashboardTimePeriod: '7d',
   render: true,
   lastMetricFetchTime: new Date(),
   getInvocations: true,
@@ -153,6 +155,8 @@ const awsReducer = (state = initialState, action) => {
   let lastMetricFetchTime;
   let logsRender;
   let logsLoading;
+  let logPageTimePeriod;
+  let dashboardTimePeriod;
 
   switch (action.type) {
     case types.UPDATE_RENDER: {
@@ -206,6 +210,23 @@ const awsReducer = (state = initialState, action) => {
       functionLogs = action.payload;
       return { ...state, functionLogs };
     }
+
+    case types.UPDATE_LOGS_TIME_PERIOD: {
+      logPageTimePeriod = action.payload;
+      return {
+        ...state,
+        logPageTimePeriod,
+      };
+    }
+
+    case types.UPDATE_DASHBOARD_TIME_PERIOD: {
+      dashboardTimePeriod = action.payload;
+      return {
+        ...state,
+        dashboardTimePeriod,
+      };
+    }
+
     case types.ADD_INVOCATIONS_ALLDATA: {
       let series_data;
       let invocationsAllData;

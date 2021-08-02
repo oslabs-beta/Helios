@@ -11,7 +11,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 // import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -68,6 +67,8 @@ function SignIn(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // handles login request
+  // makes sure password matches provided email and then adds details to state + IndexedDB and pushes them to the dashboard
   function handleSubmit() {
     const reqParams = {
       method: 'POST',
@@ -79,7 +80,6 @@ function SignIn(props) {
       .then((res) => res.json())
       .then((confirmation) => {
         if (confirmation.confirmed) {
-          console.log('after login: ', confirmation);
           props.addLoginInfo(confirmation.userInfo);
 
           const { firstName, email, arn, region } = confirmation.userInfo;
@@ -96,7 +96,6 @@ function SignIn(props) {
             console.error('error while updating region info', error);
           });
           history.push('/admin');
-          console.log(confirmation.userInfo, confirmation.confirmed);
         } else {
           setConfirmed(true);
           password.value = '';
@@ -109,14 +108,12 @@ function SignIn(props) {
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        {/* <Avatar className={classes.avatar}> */}
-        {/* <LockOutlinedIcon /> */}
         <img
           alt='Helios Logo'
           src='../Dashboard/assets/img/helios-black-logo-t.png'
           className={classes.logoImg}
         />
-        {/* </Avatar> */}
+
         <Typography component='h1' variant='h5'>
           Sign in
         </Typography>

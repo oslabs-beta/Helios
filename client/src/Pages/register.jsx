@@ -1,18 +1,15 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import updateArnIDB from '../indexedDB/updateArnIDB';
 import updateRegionIDB from '../indexedDB/updateRegionIDB';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import EditLocation from '@material-ui/icons/EditLocation';
-import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,6 +19,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import getUserInfoArrayIDB from '../indexedDB/getUserInfo';
 import { grayColor } from '../Dashboard/assets/jss/material-dashboard-react';
 
 function Copyright() {
@@ -104,6 +102,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   addAwsAccount: (userInfo) => dispatch(actions.addAwsAccount(userInfo)),
+  updateEmail: (email) => dispatch(actions.updateEmail(email)),
 });
 
 function Register(props) {
@@ -114,6 +113,16 @@ function Register(props) {
 
   let email = props.userEmail;
 
+  // if user accidentally refreshes while on this page, grab email from indexedDB so they can still proceed
+  useEffect(async () => {
+    if (!props.arn) {
+      const userInfoArray = await getUserInfoArrayIDB();
+      props.updateEmail(userInfoArray[0].email);
+      email = userInfoArray[0].email;
+    }
+  }, [props.userEmail]);
+
+  // after register has been clicked update database
   const handleRegisterBtn = () => {
     const reqParams = {
       method: 'POST',
@@ -121,10 +130,9 @@ function Register(props) {
       body: JSON.stringify({ email, arn, regionSelect }),
     };
 
+    // after updating backend, also update IndexedDB
     fetch('/user/register', reqParams)
       .then((data) => {
-        console.log('Registered');
-        console.log(regionSelect);
         props.addAwsAccount({ arn, region: regionSelect });
         updateArnIDB({ arn }).catch((error) => {
           console.error('error while updating arn', error);

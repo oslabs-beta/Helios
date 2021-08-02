@@ -91,6 +91,8 @@ const mapDispatchToProps = (dispatch) => ({
   updateEmail: (email) => dispatch(actions.updateEmail(email)),
   updateFirstName: (name) => dispatch(actions.updateFirstName(name)),
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
+  updateDashboardTimePeriod: (timePeriod) =>
+    dispatch(actions.updateDashboardTimePeriod(timePeriod)),
 });
 
 function Dashboard(props) {
@@ -130,18 +132,18 @@ function Dashboard(props) {
             arn: arnArray[0].arn,
           }),
         };
-
-        fetch('/aws/getCreds', reqParams)
-          .then((res) => res.json())
-          .then((credentialsData) => {
-            console.log('logging from useEffect fetch: ', credentialsData);
-            if (!credentialsData.err) {
-              props.addCredentials(credentialsData);
-            }
-          })
-          .catch((err) =>
-            console.log('Error inside initial get credentials fetch: ', err)
-          );
+        props.addCredentials(reqParams);
+        // fetch('/aws/getCreds', reqParams)
+        //   .then((res) => res.json())
+        //   .then((credentialsData) => {
+        //     console.log('logging from useEffect fetch: ', credentialsData);
+        //     if (!credentialsData.err) {
+        //       props.addCredentials(credentialsData);
+        //     }
+        //   })
+        //   .catch((err) =>
+        //     console.log('Error inside initial get credentials fetch: ', err)
+        //   );
       }
     }
   }, [arnArray]);
@@ -163,6 +165,7 @@ function Dashboard(props) {
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
+    props.updateDashboardTimePeriod(e.target.value);
     props.updateRender();
     props.updateRenderByFunc();
   };
@@ -196,7 +199,7 @@ function Dashboard(props) {
           <br />
           <Select
             id='date-change-select'
-            value={dateSelect}
+            value={props.aws.dashboardTimePeriod}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >

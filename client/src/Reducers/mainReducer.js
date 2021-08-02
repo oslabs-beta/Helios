@@ -6,6 +6,7 @@ const initialState = {
   arn: '',
   region: '',
   credentials: null,
+  credentialsLoading: false,
 };
 
 const mainReducer = (state = initialState, action) => {
@@ -14,6 +15,7 @@ const mainReducer = (state = initialState, action) => {
   let arn;
   let credentials;
   let region;
+  let credentialsLoading;
 
   switch (action.type) {
     case types.ADD_USER_INFO: {
@@ -59,9 +61,19 @@ const mainReducer = (state = initialState, action) => {
 
     case types.ADD_CREDENTIALS: {
       credentials = action.payload;
+      credentialsLoading = false;
       return {
         ...state,
         credentials,
+        credentialsLoading,
+      };
+    }
+
+    case types.ADD_CREDENTIALS_STARTED: {
+      credentialsLoading = true;
+      return {
+        ...state,
+        credentialsLoading,
       };
     }
 
