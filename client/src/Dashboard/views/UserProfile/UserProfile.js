@@ -134,6 +134,7 @@ const mapDispatchToProps = (dispatch) => ({
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
   updateLogsRender: () => dispatch(actions.updateLogsRender()),
   updateApiRender: () => dispatch(actions.updateApiRender()),
+  updateRenderByFunc: () => dispatch(actions.updateRenderByFunc()),
 });
 
 function UserProfile(props) {
@@ -200,6 +201,7 @@ function UserProfile(props) {
   // after an ARN or region is updated, fetch new credentials so user data can be updated
   // on all pages
   const handleUpdateCreds = (arn) => {
+    console.log('updating creds: ', arn);
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -207,24 +209,16 @@ function UserProfile(props) {
         arn: arn,
       }),
     };
-    fetch('/aws/getCreds', reqParams)
-      .then((res) => res.json())
-      .then((credentialsData) => {
-        if (!credentialsData.err) {
-          props.addCredentials(credentialsData);
-          props.updateUserDetailsAfterProfileUpdate({
-            email: dbEmail,
-            firstName: dbName,
-            arn,
-          });
-          props.updateRender();
-          props.updateLogsRender();
-          props.updateApiRender();
-        }
-      })
-      .catch((err) =>
-        console.log('Error inside initial get credentials fetch: ', err)
-      );
+    props.addCredentials(reqParams);
+    props.updateUserDetailsAfterProfileUpdate({
+      email: dbEmail,
+      firstName: dbName,
+      arn,
+    });
+    props.updateRender();
+    props.updateRenderByFunc();
+    props.updateLogsRender();
+    props.updateApiRender();
   };
 
   // when user's region is updated

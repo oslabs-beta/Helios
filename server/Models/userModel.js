@@ -54,6 +54,7 @@ const resetPasswordSchema = new Schema(
   { timestamps: true }
 );
 
+// it expires after ten minutes if they haven't continued with process
 resetPasswordSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 600 });
 
 const PasswordReset = mongoose.model('PasswordReset', resetPasswordSchema);

@@ -96,6 +96,12 @@ function ForgotPassword(props) {
           setConfirmed(true);
           email.value = '';
         }
+      })
+      .catch((err) => {
+        console.log(
+          'Error in sending email address to request a password reset',
+          err
+        );
       });
   }
 
@@ -123,7 +129,8 @@ function ForgotPassword(props) {
         } else {
           setIncorrectVerificationCode(true);
         }
-      });
+      })
+      .catch((err) => console.log('Error in verifying account fetch', err));
   };
 
   // handles submission of new password to update the user's account in database
@@ -151,9 +158,11 @@ function ForgotPassword(props) {
           password.value = '';
           email.value = '';
         }
-      });
+      })
+      .catch((err) => console.log('Error in resetting password request', err));
   };
 
+  // after change password is successful, a success notification pops up and then redirects user to login page after 6 seconds
   const showNotification = (status) => {
     switch (status) {
       case 'success':
@@ -180,15 +189,17 @@ function ForgotPassword(props) {
           src='../Dashboard/assets/img/helios-black-logo-t.png'
           className={classes.logoImg}
         />
+
+        {/* Success notification */}
         <Snackbar
           place='tc'
           color='success'
           icon={AddAlert}
           message='You have successfully reset your password and will be redirected to the login page in a few seconds.'
           open={successNotification}
-          //   closeNotification={() => setSuccessNotification(false)}
-          //   close
         />
+
+        {/* Pop up modal that's triggered after user enters their email and is the spot they can enter the verification code emailed to them */}
         <Dialog
           open={verifOpen}
           onClose={handleVerifClose}
@@ -226,6 +237,8 @@ function ForgotPassword(props) {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Pop up modal that's triggered after the correct verification code has been entered so user can choose a new password */}
         <Dialog
           open={reset}
           onClose={() => {
@@ -236,6 +249,8 @@ function ForgotPassword(props) {
           <DialogTitle id='form-dialog-title'>Reset Your Password</DialogTitle>
           <DialogContent>
             <DialogContentText>Reset your password below.</DialogContentText>
+
+            {/* If passwords don't match an error pops up */}
             {!passwordsMatch && (
               <Typography style={{ color: 'red' }}>
                 Your passwords must match.
@@ -278,6 +293,7 @@ function ForgotPassword(props) {
             </Button>
           </DialogActions>
         </Dialog>
+
         <Typography component='h1' variant='h5'>
           Reset Your Password
         </Typography>
@@ -302,37 +318,6 @@ function ForgotPassword(props) {
             setEmail(e.target.value);
           }}
         />
-        {/* <TextField
-          variant='outlined'
-          margin='normal'
-          required
-          fullWidth
-          name='newPassword'
-          label='New Password'
-          type='password'
-          id='newPassword'
-          autoComplete='current-password'
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        />
-        <TextField
-          variant='outlined'
-          margin='normal'
-          required
-          fullWidth
-          name='confirmNewPassword'
-          label='Confirm New Password'
-          type='password'
-          id='confirmNewPassword'
-          autoComplete='current-password'
-          value={confirmPassword}
-          onChange={(e) => {
-            setConfirmPassword(e.target.value);
-          }}
-        /> */}
-
         <Button
           type='submit'
           fullWidth

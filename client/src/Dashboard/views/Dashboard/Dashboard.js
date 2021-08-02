@@ -60,7 +60,7 @@ const mapStateToProps = (state) => ({
   invocationsAllData: state.aws.invocationsAllData,
   errorsAllData: state.aws.errorsAllData,
   throttlesAllData: state.aws.throttlesAllData,
-
+  dashboardLoading: state.aws.dashboardLoading,
   awsByFunc: state.awsByFunc,
   invocationsByFuncData: state.awsByFunc.invocationsByFuncData,
   errorsByFuncData: state.awsByFunc.errorsByFuncData,
@@ -91,11 +91,19 @@ const mapDispatchToProps = (dispatch) => ({
   updateEmail: (email) => dispatch(actions.updateEmail(email)),
   updateFirstName: (name) => dispatch(actions.updateFirstName(name)),
   updateArn: (arn) => dispatch(actions.updateArn(arn)),
+  updateDashboardTimePeriod: (timePeriod) =>
+    dispatch(actions.updateDashboardTimePeriod(timePeriod)),
+  updateDashboardLoading: () => {
+    dispatch(actions.updateDashboardLoading());
+  },
+  updateByFunctionLoading: () => {
+    dispatch(actions.updateByFunctionLoading());
+  },
 });
 
 function Dashboard(props) {
   const classes = useStyles();
-  console.log('logging from dashboard component (parent): ', props.credentials);
+  // console.log('logging from dashboard component (parent): ', props.credentials);
 
   const arnArray = useLiveQuery(getArnArrayIDB);
   const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
@@ -130,39 +138,52 @@ function Dashboard(props) {
             arn: arnArray[0].arn,
           }),
         };
-
-        fetch('/aws/getCreds', reqParams)
-          .then((res) => res.json())
-          .then((credentialsData) => {
-            console.log('logging from useEffect fetch: ', credentialsData);
-            if (!credentialsData.err) {
-              props.addCredentials(credentialsData);
-            }
-          })
-          .catch((err) =>
-            console.log('Error inside initial get credentials fetch: ', err)
-          );
+        props.addCredentials(reqParams);
+        // fetch('/aws/getCreds', reqParams)
+        //   .then((res) => res.json())
+        //   .then((credentialsData) => {
+        //     console.log('logging from useEffect fetch: ', credentialsData);
+        //     if (!credentialsData.err) {
+        //       props.addCredentials(credentialsData);
+        //     }
+        //   })
+        //   .catch((err) =>
+        //     console.log('Error inside initial get credentials fetch: ', err)
+        //   );
       }
     }
   }, [arnArray]);
 
-  if (props.aws.render && props.credentials && props.region) {
-    console.log('PROPS.REGION: ', props.region);
-    metricAllFuncBarChart(props, dateSelect, props.region);
-  }
+  useEffect(() => {
+    if (
+      props.aws.render &&
+      props.credentials &&
+      props.region &&
+      !props.dashboardLoading
+    ) {
+      console.log('PROPS.REGION: ', props.region);
+      props.updateDashboardLoading();
+      metricAllFuncBarChart(props, dateSelect, props.region);
+    }
+  }, [props.credentials, props.aws.render]);
 
   //fetch by Func metrics
-  if (
-    props.awsByFunc.renderByFunc &&
-    props.credentials &&
-    props.aws.functions.length &&
-    props.region
-  ) {
-    metricByFuncBarChart(props, dateSelect, props.region);
-  }
+  useEffect(() => {
+    if (
+      props.awsByFunc.renderByFunc &&
+      props.credentials &&
+      props.aws.functions.length &&
+      props.region &&
+      !props.awsByFunc.byFuncLoading
+    ) {
+      props.updateByFunctionLoading();
+      metricByFuncBarChart(props, dateSelect, props.region);
+    }
+  }, [props.aws.functions]);
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);
+    props.updateDashboardTimePeriod(e.target.value);
     props.updateRender();
     props.updateRenderByFunc();
   };
@@ -196,7 +217,7 @@ function Dashboard(props) {
           <br />
           <Select
             id='date-change-select'
-            value={dateSelect}
+            value={props.aws.dashboardTimePeriod}
             className={classes.dateSpec}
             onChange={handleDateChange}
           >

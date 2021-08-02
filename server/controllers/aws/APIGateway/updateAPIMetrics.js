@@ -7,6 +7,7 @@ const {
 } = require('@aws-sdk/client-cloudwatch');
 
 const updateApiMetrics = async (req, res, next) => {
+  // depending on selected timePeriod, organize the graphPeriod and graphUnits that will be used
   let graphPeriod, graphUnits;
   if (req.body.newTimePeriod === '30min') {
     [graphPeriod, graphUnits] = [30, 'minutes'];
@@ -22,9 +23,14 @@ const updateApiMetrics = async (req, res, next) => {
     [graphPeriod, graphUnits] = [30, 'days'];
   }
 
+  // array to store the updated metrics on
   const updatedApiMetrics = [];
+
+  // loop through the existing API List as there could be more than one API to refetch for
   for (let i = 0; i < req.body.apiList.length; i += 1) {
     const currApi = req.body.apiList[i].name;
+
+    // each API goes through loopFunc to fetch new metrics and then it's pushed onto updatedApiMetrics
     const newMetricObj = await loopFunc(
       currApi,
       graphPeriod,
@@ -47,11 +53,15 @@ const loopFunc = async (
   credentials,
   region
 ) => {
+  // start a new CloudWatch client with provided credentials and region
   const cwClient = new CloudWatchClient({
     region,
     credentials: credentials,
   });
 
+  // getAPIMetrics helps form all params
+
+  // parameters for requesting Latency data for API
   const latencyParams = APIUtilFunc.getAPIMetrics(
     graphPeriod,
     graphUnits,
@@ -59,6 +69,7 @@ const loopFunc = async (
     'Latency'
   );
 
+  // parameters for requesting Count data for API
   const countParams = APIUtilFunc.getAPIMetrics(
     graphPeriod,
     graphUnits,
@@ -67,6 +78,7 @@ const loopFunc = async (
     'SampleCount'
   );
 
+  // parameters for requesting 5XX data for API
   const fiveXXParams = APIUtilFunc.getAPIMetrics(
     graphPeriod,
     graphUnits,
@@ -74,18 +86,22 @@ const loopFunc = async (
     '5XXError'
   );
 
+  // parameters for requesting 4XX data for API
   const fourXXParams = APIUtilFunc.getAPIMetrics(
     graphPeriod,
     graphUnits,
     currApi,
     '4XXError'
   );
+
   const allApiMetrics = [];
   try {
+    // await Latency Metrics from AWS
     const latencyMetrics = await cwClient.send(
       new GetMetricDataCommand(latencyParams)
     );
 
+    // create the X,Y points for the chart
     const latencyData = latencyMetrics.MetricDataResults[0].Timestamps.map(
       (timeStamp, index) => {
         return {
@@ -95,11 +111,13 @@ const loopFunc = async (
       }
     );
 
+    // find what the max value is to set the high for the chart
     const latencyMaxValue = Math.max(
       ...latencyMetrics.MetricDataResults[0].Values,
       0
     );
 
+    // populate the data into one object to be pushed on the allApiMetrics array
     const latencyDataPoints = {
       title: latencyMetrics.MetricDataResults[0].Label,
       metricType: 'Latency',
@@ -117,10 +135,12 @@ const loopFunc = async (
 
     allApiMetrics.push(latencyDataPoints);
 
+    // await Count Metrics from AWS
     const countMetrics = await cwClient.send(
       new GetMetricDataCommand(countParams)
     );
 
+    // create the X,Y points for the chart
     const countData = countMetrics.MetricDataResults[0].Timestamps.map(
       (timeStamp, index) => {
         return {
@@ -130,11 +150,13 @@ const loopFunc = async (
       }
     );
 
+    // find what the max value is to set the high for the chart
     const countMaxValue = Math.max(
       ...countMetrics.MetricDataResults[0].Values,
       0
     );
 
+    // populate the data into one object to be pushed on the allApiMetrics array
     const countDataPoints = {
       title: countMetrics.MetricDataResults[0].Label,
       metricType: 'Count',
@@ -152,10 +174,12 @@ const loopFunc = async (
 
     allApiMetrics.push(countDataPoints);
 
+    // await 5XX Metrics from AWS
     const fiveXXMetrics = await cwClient.send(
       new GetMetricDataCommand(fiveXXParams)
     );
 
+    // create the X,Y points for the chart
     const fiveXXData = fiveXXMetrics.MetricDataResults[0].Timestamps.map(
       (timeStamp, index) => {
         return {
@@ -165,11 +189,13 @@ const loopFunc = async (
       }
     );
 
+    // find what the max value is to set the high for the chart
     const fiveXXMaxValue = Math.max(
       ...fiveXXMetrics.MetricDataResults[0].Values,
       0
     );
 
+    // populate the data into one object to be pushed on the allApiMetrics array
     const fiveXXDataPoints = {
       title: fiveXXMetrics.MetricDataResults[0].Label,
       metricType: '5XX',
@@ -187,10 +213,12 @@ const loopFunc = async (
 
     allApiMetrics.push(fiveXXDataPoints);
 
+    // await 4XX Metrics from AWS
     const fourXXMetrics = await cwClient.send(
       new GetMetricDataCommand(fourXXParams)
     );
 
+    // create the X,Y points for the chart
     const fourXXData = fourXXMetrics.MetricDataResults[0].Timestamps.map(
       (timeStamp, index) => {
         return {
@@ -200,11 +228,13 @@ const loopFunc = async (
       }
     );
 
+    // find what the max value is to set the high for the chart
     const fourXXMaxValue = Math.max(
       ...fourXXMetrics.MetricDataResults[0].Values,
       0
     );
 
+    // populate the data into one object to be pushed on the allApiMetrics array
     const fourXXDataPoints = {
       title: fourXXMetrics.MetricDataResults[0].Label,
       metricType: '4XX',
@@ -221,7 +251,7 @@ const loopFunc = async (
     };
 
     allApiMetrics.push(fourXXDataPoints);
-
+    // create the new API object to send back and push on the larger updated API metrics array
     const wholeApiObject = { name: currApi, metrics: allApiMetrics };
     return wholeApiObject;
   } catch (err) {

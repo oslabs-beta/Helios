@@ -1,7 +1,6 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import {
   primaryColor,
   blackColor,
@@ -11,26 +10,20 @@ import {
 // @material-ui/core components
 import { makeStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
-// @material-ui/icons
-import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt';
-import CallSplit from '@material-ui/icons/CallSplit';
-import Edit from '@material-ui/icons/Edit';
-import Close from '@material-ui/icons/Close';
-import Check from '@material-ui/icons/Check';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
+// @material-ui/icons
+import CallSplit from '@material-ui/icons/CallSplit';
+import Check from '@material-ui/icons/Check';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from 'react-promise-tracker';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
-// core components
-import styles from '../../assets/jss/material-dashboard-react/components/tasksStyle.js';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,17 +69,27 @@ const useStyles = makeStyles((theme) => ({
 
 export default function APIList(props) {
   const classes = useStyles();
+
+  // checked holds the API names checked
   const [checked, setChecked] = useState([...props.apiMetricsShown]);
+
+  // if the API is opened, it shows the paths (e.g. /signin)
   const [apiOpened, setApiOpen] = useState([]);
+
+  // if the path is opened, it shows the methods (e.g. GET or POST)
   const [resourceOpened, setResourceOpen] = useState([]);
+
+  // tracks if a fetch is in progress
   const { promiseInProgress } = usePromiseTracker();
 
+  // handles when the API is checked to update the array and fetch the metrics to be shown
   const handleCheck = (name) => {
     const currIndex = checked.indexOf(name);
     const newChecked = [...checked];
+
+    // if not already checked, fetch
     if (currIndex === -1) {
       newChecked.push(name);
-
       const reqParams = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,46 +100,56 @@ export default function APIList(props) {
           region: props.region,
         }),
       };
+      // track the promise to show a loading icon until it's resolved
       trackPromise(fetch('/aws/getApiMetrics', reqParams))
         .then((res) => res.json())
         .then((metricData) => {
-          console.log('API Gateway Metric Data for ', name, metricData);
+          // add metrics to state
           props.addApiMetrics(metricData);
         });
     } else {
+      // if it's already checked remove from array and state
       newChecked.splice(currIndex, 1);
-      console.log(props.removeApiMetrics);
-
       props.removeApiMetrics(name);
     }
+    // update the new checked array
     setChecked(newChecked);
   };
 
+  // handle when the API is expanded to then show the paths/resources that exist in it
   const handleApiClick = (name) => {
     const currIndex = apiOpened.indexOf(name);
     const newApiOpened = [...apiOpened];
+    // if it's not already expanded, add it to the array
     if (currIndex === -1) {
       newApiOpened.push(name);
     } else {
+      // if it's already expanded, remove it to collapse
       newApiOpened.splice(currIndex, 1);
     }
+    // update the array
     setApiOpen(newApiOpened);
   };
 
+  // handle when a path/resource is expanded to show the methods that exist on it (e.g. GET or POST)
   const handleResourceClick = (path) => {
     const currResourceInd = resourceOpened.indexOf(path);
     const newResourceOpened = [...resourceOpened];
+    // if it doesn't exist on the array already, add it
     if (currResourceInd === -1) {
       newResourceOpened.push(path);
     } else {
+      // if it's already expanded, remove it from the array
       newResourceOpened.splice(currResourceInd, 1);
     }
+    // update the array
     setResourceOpen(newResourceOpened);
   };
 
   return (
     <div>
-      {promiseInProgress ? (
+      {/* The loading icon that only shows when a promise is in progress */}
+      {promiseInProgress || props.updatePromise ? (
         <center>
           <Loader
             type='TailSpin'
@@ -147,13 +160,17 @@ export default function APIList(props) {
           />
         </center>
       ) : null}
+
+      {/* List of APIs */}
       <List
         component='nav'
         aria-labelledby='nested-list-subheader'
         className={classes.root}
       >
+        {/* Map user's existing APIs so they're separated out */}
         {props.apiList.map((api, key) => (
           <>
+            {/* The name of the API plus the checkbox icon to show if it's been checked or not */}
             <ListItem key={key}>
               <ListItemIcon>
                 <Checkbox
@@ -170,6 +187,8 @@ export default function APIList(props) {
                 />
               </ListItemIcon>
               <ListItemText primary={api.name} />
+
+              {/* The expand more icon to drop down more info about specific API */}
               {apiOpened.indexOf(api.name) === -1 ? (
                 <ExpandMore onClick={() => handleApiClick(api.name)} />
               ) : (
@@ -177,14 +196,17 @@ export default function APIList(props) {
               )}
             </ListItem>
 
+            {/* Below only shows if the API has been expanded aka existing on the apiOpened array */}
             <Collapse
               in={apiOpened.indexOf(api.name) !== -1}
               timeout='auto'
               unmountOnExit
             >
+              {/* Nested list to show resources/paths existing on the API */}
               <List component='div' disablePadding key={'api' + key}>
                 {api.resources.map((resource, resourceKey) => (
                   <>
+                    {/* Map through the resources and give an expand option if methods exist on the API */}
                     <ListItem
                       button
                       onClick={() => handleResourceClick(resource.path)}
@@ -217,6 +239,7 @@ export default function APIList(props) {
                         timeout='auto'
                         unmountOnExit
                       >
+                        {/* Nested list to show methods that exist on path/resource */}
                         <List
                           component='div'
                           disablePadding
@@ -227,9 +250,6 @@ export default function APIList(props) {
                               className={classes.secondNested}
                               key={methodKey}
                             >
-                              {/* <ListItemIcon>
-                              <SendIcon />
-                            </ListItemIcon> */}
                               {method.endPoint ? (
                                 <ListItemText
                                   primary={

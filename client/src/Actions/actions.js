@@ -18,7 +18,28 @@ export const addLoginInfo = (userInfo) => {
   return { type: types.ADD_LOGIN_INFO, payload: userInfo };
 };
 
-export const addCredentials = (credentials) => {
+export const addCredentials = (reqParams) => {
+  return (dispatch) => {
+    dispatch(addCredentialsStarted());
+    fetch('/aws/getCreds', reqParams)
+      .then((res) => res.json())
+      .then((credentialsData) => {
+        console.log('logging from useEffect fetch: ', credentialsData);
+        if (!credentialsData.err) {
+          dispatch(addCredentialsSuccess(credentialsData));
+        }
+      })
+      .catch((err) =>
+        console.log('Error inside initial get credentials fetch: ', err)
+      );
+  };
+};
+
+const addCredentialsStarted = () => {
+  return { type: types.ADD_CREDENTIALS_STARTED };
+};
+
+export const addCredentialsSuccess = (credentials) => {
   return { type: types.ADD_CREDENTIALS, payload: credentials };
 };
 
@@ -26,9 +47,18 @@ export const addCredentials = (credentials) => {
 //AWS Reducer All Functions
 //###############################################
 
+export const updateDashboardLoading = () => {
+  return { type: types.UPDATE_DASHBOARD_LOADING };
+};
+
+export const updateByFunctionLoading = () => {
+  return { type: types.UPDATE_BY_FUNCTION_LOADING };
+};
 export const addLambda = (reqParams) => {
   return (dispatch) => {
+    console.log('before started initiated');
     dispatch(addLambdaStarted());
+    console.log('before fetch initiated');
     fetch('/aws/getLambdaFunctions', reqParams)
       .then((res) => res.json())
       .then((functions) => {
@@ -39,10 +69,12 @@ export const addLambda = (reqParams) => {
 };
 
 const addLambdaStarted = () => {
+  console.log('started initiated');
   return { type: types.ADD_LAMBDA_STARTED };
 };
 
 const addLambdaSuccess = (functions) => {
+  console.log('about to update state', functions);
   return { type: types.ADD_LAMBDA, payload: functions };
 };
 
@@ -177,4 +209,16 @@ export const updateLogsRender = () => {
 
 export const updateApiRender = () => {
   return { type: types.UPDATE_API_RENDER };
+};
+
+export const updateDashboardTimePeriod = (timePeriod) => {
+  return { type: types.UPDATE_DASHBOARD_TIME_PERIOD, payload: timePeriod };
+};
+
+export const updateLogsTimePeriod = (timePeriod) => {
+  return { type: types.UPDATE_LOGS_TIME_PERIOD, payload: timePeriod };
+};
+
+export const updateApiTimePeriod = (timePeriod) => {
+  return { type: types.UPDATE_API_TIME_PERIOD, payload: timePeriod };
 };

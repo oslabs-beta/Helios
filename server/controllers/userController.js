@@ -3,18 +3,22 @@ const userController = {};
 const sendEmail = require('./user/nodemailer');
 const { v4 } = require('uuid');
 
+// handle when a user requests to change their ARN
 userController.updateArn = async (req, res, next) => {
-  console.log(req.body);
-
+  // find and update account in database
   try {
     const origUser = await User.findOneAndUpdate(
       { email: req.body.email },
       { arn: req.body.newArn }
     );
+    // makes sure the user document was updated with new ARN
     const doubleCheck = await User.findOne({ email: req.body.email });
     if (doubleCheck) {
-      res.locals.confirmation = { status: true, arn: doubleCheck.arn };
-      return next();
+      if (doubleCheck.arn === req.body.newArn) {
+        res.locals.confirmation = { status: true, arn: doubleCheck.arn };
+        return next();
+      }
+      // if not, sends a false status back to notify user something went wrong
     } else {
       res.locals.confirmation = { status: false };
       return next();
@@ -25,8 +29,8 @@ userController.updateArn = async (req, res, next) => {
   }
 };
 
+// create a new user in database
 userController.createUser = (req, res, next) => {
-  console.log(req.body);
   User.create(
     {
       email: req.body.email,
@@ -37,15 +41,14 @@ userController.createUser = (req, res, next) => {
     },
     (err, result) => {
       if (err) {
-        console.log('create user error ', err);
+        // if error code is 11000 it means an account already exists, so we notify user
         if (err.code === 11000) {
-          console.log('duplicate password');
           res.locals.confirmation = { confirmation: false, email: false };
           return next();
         }
         return next(err);
       }
-      console.log(result);
+      // otherwise, if it works we send them a confirmation
       res.locals.confirmation = {
         confirmation: true,
         emailStatus: true,
@@ -59,9 +62,11 @@ userController.createUser = (req, res, next) => {
   );
 };
 
+// verifies user exists and password matches in database during login
 userController.verifyUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });
+    // compare provided password with the hashed one
     if (await user.comparePassword(req.body.password)) {
       res.locals.confirmation = {
         confirmed: true,
@@ -87,6 +92,7 @@ userController.verifyUser = async (req, res, next) => {
   }
 };
 
+// adds arn and region from the registration page to the user's account details
 userController.addArn = async (req, res, next) => {
   try {
     const user = await User.findOneAndUpdate(
@@ -103,6 +109,7 @@ userController.addArn = async (req, res, next) => {
   }
 };
 
+// handles when a user requests to change their default region
 userController.updateRegion = async (req, res, next) => {
   const confirmation = {};
   try {
@@ -112,7 +119,6 @@ userController.updateRegion = async (req, res, next) => {
       { new: true }
     );
     if (updatedUser) {
-      console.log('Updated user with new region: ', updatedUser);
       confirmation.status = true;
       confirmation.region = updatedUser.region;
       res.locals.confirmation = confirmation;
@@ -185,19 +191,25 @@ userController.updatePassword = async (req, res, next) => {
   }
 };
 
+// start forgot password process
 userController.forgotPassword = async (req, res, next) => {
   const confirmation = {};
   try {
+    // make sure user exists
     const user = await User.findOne({ email: req.body.email });
     if (user) {
+      // create unique security token to email to them
       const token = v4().toString().replace(/-/g, '');
-      console.log('token: ', token);
+      // associate a new document in the PasswordReset collection with user ID and the token
+      // if it already exists, we update the token, if it doesn't already exist, we create it with upsert
       const updateDB = await PasswordReset.updateOne(
         { user: user._id },
         { user: user._id, token: token },
         { upsert: true }
       );
+      // send an email with the token to the email provided
       const emailStatus = sendEmail('passwordReset', req.body.email, token);
+      // send confirmation so frontend can display a place to enter the token
       confirmation.status = true;
       res.locals.confirmation = confirmation;
       return next();
@@ -208,12 +220,13 @@ userController.forgotPassword = async (req, res, next) => {
   }
 };
 
+// once user supplies token, verify it's correct
 userController.checkVerificationCode = async (req, res, next) => {
-  console.log(req.body);
   const confirmation = {};
   try {
     const token = req.body.verificationCode;
     const passwordReset = await PasswordReset.findOne({ token });
+    // if token works, send confirmation so they can reset their password
     if (passwordReset) {
       confirmation.status = true;
     }
@@ -225,13 +238,16 @@ userController.checkVerificationCode = async (req, res, next) => {
   }
 };
 
+// handles actually resetting password for account
 userController.resetPassword = async (req, res, next) => {
-  console.log(req.body);
   const confirmation = {};
   try {
+    // checks token again
     const token = req.body.verificationCode;
     const passwordReset = await PasswordReset.findOne({ token });
+    // find user document associated with the token's user ID
     let user = await User.findOne({ _id: passwordReset.user });
+    // update password and then delete the PasswordReset document
     user.password = req.body.password;
     user.save().then(async (savedUser) => {
       await PasswordReset.deleteOne({ _id: passwordReset._id });
