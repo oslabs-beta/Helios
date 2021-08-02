@@ -155,7 +155,12 @@ function APIGateway(props) {
   // if props has been updated, this refetches the APIs that exists on the account to be displayed
   // props.addApiGateways sets props.api.render to false so it doesn't run continously
   // only runs again after a refresh
-  if (props.region && props.credentials && props.api.render) {
+  if (
+    props.region &&
+    props.credentials &&
+    !props.api.loading &&
+    props.api.render
+  ) {
     const apiGatewayReqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -164,14 +169,7 @@ function APIGateway(props) {
         region: props.region,
       }),
     };
-    fetch('/aws/apiGateway', apiGatewayReqParams)
-      .then((res) => res.json())
-      .then((apiData) => {
-        props.addApiGateways(apiData);
-      })
-      .catch((err) =>
-        console.log('Error inside API Gateway useEffect fetch: ', err)
-      );
+    props.addApiGateways(apiGatewayReqParams);
   }
 
   // creates an array of which apis are currently checked

@@ -6,7 +6,6 @@ import thunk from 'redux-thunk';
 const composedEnhancer = composeWithDevTools(
   // Middleware
   applyMiddleware(thunk)
-  
 );
 
 const store = createStore(reducers, composedEnhancer);
