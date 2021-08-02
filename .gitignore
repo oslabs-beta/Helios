@@ -6,4 +6,5 @@ temp.js
 package-lock.json
 temp/*.*
 yarn.lock
+*.env
 
