@@ -41,6 +41,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from 'react-promise-tracker';
+import { useLiveQuery } from 'dexie-react-hooks';
+import getArnArrayIDB from '../../../indexedDB/getArnArrayIDB.js';
+import getRegionIDB from '../../../indexedDB/getRegionIDB.js';
 
 const useStyles = makeStyles(styles);
 
@@ -55,14 +58,75 @@ const mapDispatchToProps = (dispatch) => ({
   addCredentials: (userInfo) => dispatch(actions.addCredentials(userInfo)),
   addLambda: (functions) => dispatch(actions.addLambda(functions)),
   addFunctionLogs: (logObj) => dispatch(actions.addFunctionLogs(logObj)),
+  addRegion: (region) => dispatch(actions.addRegion(region)),
   removeFunctionLogs: (functionName) =>
     dispatch(actions.removeFunctionLogs(functionName)),
+  updateArn: (arn) => dispatch(actions.updateArn(arn)),
   updateFunctionLogs: (updatedLogs) =>
     dispatch(actions.updateFunctionLogs(updatedLogs)),
 });
 
 function Logs(props) {
   const classes = useStyles();
+
+  const arnArray = useLiveQuery(getArnArrayIDB);
+  const regionArray = useLiveQuery(getRegionIDB);
+
+  // after refresh, fetches user region from IndexedDB and updates state
+  useEffect(() => {
+    if (regionArray && regionArray[0]) {
+      props.addRegion(regionArray[0].region);
+    }
+  }, [regionArray]);
+
+  // after refresh, credentials disappear and have to be refetched based off the arn
+  // grabs user arn from IndexedDB and then gets new credentials and updates state
+  // with both arn and new credentials
+  useEffect(() => {
+    if (!props.credentials) {
+      if (arnArray && arnArray[0]) {
+        props.updateArn(arnArray[0].arn);
+        const reqParams = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            arn: arnArray[0].arn,
+          }),
+        };
+
+        fetch('/aws/getCreds', reqParams)
+          .then((res) => res.json())
+          .then((credentialsData) => {
+            console.log('logging from useEffect fetch: ', credentialsData);
+            if (!credentialsData.err) {
+              props.addCredentials(credentialsData);
+            }
+          })
+          .catch((err) =>
+            console.log('Error inside initial get credentials fetch: ', err)
+          );
+      }
+    }
+  }, [arnArray]);
+
+  // if credential and region exist and refetch
+  if (
+    props.credentials &&
+    props.region &&
+    props.aws.logsRender &&
+    !props.aws.logsLoading
+  ) {
+    const reqParams = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        credentials: props.credentials,
+        // timePeriod: timePeriod,
+        region: props.region,
+      }),
+    };
+    props.addLambda(reqParams);
+  }
 
   const logsShown = props.aws.functionLogs.map((logObj) => {
     return logObj.name;
