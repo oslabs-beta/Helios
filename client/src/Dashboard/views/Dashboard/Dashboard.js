@@ -103,7 +103,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 function Dashboard(props) {
   const classes = useStyles();
-  // console.log('logging from dashboard component (parent): ', props.credentials);
 
   const arnArray = useLiveQuery(getArnArrayIDB);
   const userInfoArray = useLiveQuery(getUserInfoArrayIDB);
@@ -139,17 +138,6 @@ function Dashboard(props) {
           }),
         };
         props.addCredentials(reqParams);
-        // fetch('/aws/getCreds', reqParams)
-        //   .then((res) => res.json())
-        //   .then((credentialsData) => {
-        //     console.log('logging from useEffect fetch: ', credentialsData);
-        //     if (!credentialsData.err) {
-        //       props.addCredentials(credentialsData);
-        //     }
-        //   })
-        //   .catch((err) =>
-        //     console.log('Error inside initial get credentials fetch: ', err)
-        //   );
       }
     }
   }, [arnArray]);
@@ -161,7 +149,6 @@ function Dashboard(props) {
       props.region &&
       !props.dashboardLoading
     ) {
-      console.log('PROPS.REGION: ', props.region);
       props.updateDashboardLoading();
       metricAllFuncBarChart(props, dateSelect, props.region);
     }

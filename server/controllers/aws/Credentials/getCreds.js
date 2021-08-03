@@ -17,14 +17,6 @@ const {
 //Async Function to Assume role of the Client and pull metrics
 
 const getCredentials = async (req, res, next) => {
-  console.log(
-    '----------------------------------------------------------------------------------------------------------------------------------------'
-  );
-  console.log('Credentials: ', req.body);
-  console.log(
-    '----------------------------------------------------------------------------------------------------------------------------------------'
-  );
-
   const roleParams = {
     RoleArn: req.body.arn,
     RoleSessionName: 'HeliosSession',
@@ -39,7 +31,7 @@ const getCredentials = async (req, res, next) => {
     return next();
   } catch (err) {
     if (err) {
-      console.log(err);
+      console.error(err);
       return next(err);
     }
   }

@@ -42,7 +42,6 @@ function createWindow() {
 }
 
 app.on('ready', () => {
-  console.log('ready');
   // protocol.interceptFileProtocol(
   //   'file',
   //   (request, callback) => {

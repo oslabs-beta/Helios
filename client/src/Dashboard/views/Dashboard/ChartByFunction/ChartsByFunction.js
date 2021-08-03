@@ -48,8 +48,6 @@ import LambdaListMetrics from '../../../components/LambdaListMetrics/LambdaListM
 const useStyles = makeStyles(styles);
 
 const getDataByFunc = (metricData, funcName) => {
-  console.log('Original Data: ', metricData);
-
   let data = JSON.parse(JSON.stringify({ ...metricData }));
   let series_data = [...metricData.series];
 
@@ -57,8 +55,6 @@ const getDataByFunc = (metricData, funcName) => {
     (plotData) =>
       (plotData.name.search(funcName) > 0) | (plotData.name === 'dummy')
   );
-
-  console.log('Function Data: ', data);
 
   // return data;
   return { series: series_data };
@@ -68,9 +64,9 @@ const getTotalByFunc = (metricData, funcName) => {
   let series_data = metricData.series.filter(
     (funcData) => funcData.name.search(funcName) > 0
   );
-  console.log('Series Data for Total: ', series_data);
+
   let total = series_data[0].total;
-  console.log(total);
+
   if (total >= 0) return total;
 };
 

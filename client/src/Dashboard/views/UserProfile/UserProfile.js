@@ -301,7 +301,7 @@ function UserProfile(props) {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
     // reset value of input boxes to be empty
     updateEmail('');
@@ -337,7 +337,7 @@ function UserProfile(props) {
         }
       })
       .catch((err) =>
-        console.log('Error in updating ARN on User Profile: ', err)
+        console.error('Error in updating ARN on User Profile: ', err)
       );
     // update credentials so if they switch to a different page they can immediately
     // see the updated data for the new AWS account
@@ -376,7 +376,7 @@ function UserProfile(props) {
         }
       })
       .catch((err) => {
-        console.log('Error in updating password on User Profile: ', err);
+        console.error('Error in updating password on User Profile: ', err);
         showNotification('passwordFail');
       });
     // reset password input fields to be empty

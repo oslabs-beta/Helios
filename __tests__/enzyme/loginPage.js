@@ -31,7 +31,6 @@ describe('SignIn page tests', () => {
     });
 
     it('Renders a <Container>', () => {
-      console.log(wrapper.debug());
       expect(wrapper.find('WithStyles(ForwardRef(Container))')).toHaveLength(1);
       expect(wrapper.find('div')).toHaveLength(1);
     });

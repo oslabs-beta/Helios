@@ -10,7 +10,6 @@ const PORT = 4242;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-console.log(__dirname);
 
 app.use(express.static(path.resolve(__dirname, '../client/src/Dashboard')));
 app.use(express.static(path.resolve(__dirname, '../client/src')));
@@ -42,7 +41,7 @@ app.use((err, req, res, next) => {
     message: { err: 'An error occurred' },
   };
   const errObj = Object.assign(defaultErr, err);
-  console.log('Error: ', errObj.log);
+  console.error('Error: ', errObj.log);
   res.status(errObj.status).send(errObj.message);
 });
 

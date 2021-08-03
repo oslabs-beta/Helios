@@ -120,7 +120,7 @@ function APIGateway(props) {
           props.updateApiMetrics(updatedApiMetrics);
         })
         .catch((err) =>
-          console.log('Error in refreshing update API Metrics: ', err)
+          console.error('Error in refreshing update API Metrics: ', err)
         );
     }
   };

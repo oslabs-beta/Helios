@@ -89,7 +89,7 @@ const getAPIData = async (req, res, next) => {
                 // push it onto the current method object (which exists within apiData)
                 currResource.methods.push(currMethodObj);
               } catch (err) {
-                console.log('Error after integration attempt: ', err.stack);
+                console.error('Error after integration attempt: ', err.stack);
               }
             }
           }
@@ -101,7 +101,7 @@ const getAPIData = async (req, res, next) => {
       }
     }
   } catch (err) {
-    console.log('Error after try/catch in getAPI.js: ', err);
+    console.error('Error after try/catch in getAPI.js: ', err);
   }
   // send to frontend
   res.locals.apiData = apiData;

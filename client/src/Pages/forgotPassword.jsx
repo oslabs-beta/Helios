@@ -136,7 +136,7 @@ function ForgotPassword(props) {
           setIncorrectVerificationCode(true);
         }
       })
-      .catch((err) => console.log('Error in verifying account fetch', err));
+      .catch((err) => console.error('Error in verifying account:', err));
   };
 
   // handles submission of new password to update the user's account in database
@@ -165,7 +165,9 @@ function ForgotPassword(props) {
           email.value = '';
         }
       })
-      .catch((err) => console.log('Error in resetting password request', err));
+      .catch((err) =>
+        console.error('Error in resetting password request', err)
+      );
   };
 
   // after change password is successful, a success notification pops up and then redirects user to login page after 6 seconds

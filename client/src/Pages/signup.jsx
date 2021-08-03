@@ -91,7 +91,7 @@ function SignUp(props) {
           updateUserInfoIDB({ firstName, email })
             .then((user) => {})
             .catch((error) => {
-              console.log('error while updating user info', error);
+              console.error('error while updating user info', error);
             });
           // if unsuccessful, alert pops up saying try again
         } else if (!response.emailStatus) {
