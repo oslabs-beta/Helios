@@ -201,8 +201,6 @@ const awsReducerByFunc = (state = initialState, action) => {
       let labelFormat;
       let getInvocations;
 
-      console.log('Inside Add Invocations All Data');
-
       getInvocations = false;
 
       series_data = action.payload.series.map((metricData) => {
@@ -236,7 +234,6 @@ const awsReducerByFunc = (state = initialState, action) => {
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
 
       graphOptions.axisX.ticks = ticks;
-      console.log(ticks);
 
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
@@ -272,10 +269,7 @@ const awsReducerByFunc = (state = initialState, action) => {
         options: graphOptions,
         responsiveOptions: graphResponsiveOptions,
         animation: graphtAnimation,
-        // plugins:plugins
       };
-
-      //console.log("Invocation Data from Reducer: ",errorsAllData )
 
       return { ...state, invocationsByFuncData, getInvocations };
     }
@@ -289,8 +283,6 @@ const awsReducerByFunc = (state = initialState, action) => {
       let ticks = [];
       let labelFormat;
       let getErrors;
-
-      console.log('Inside Add Errors All Data');
 
       getErrors = false;
 
@@ -325,7 +317,6 @@ const awsReducerByFunc = (state = initialState, action) => {
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
 
       graphOptions.axisX.ticks = ticks;
-      console.log(ticks);
 
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
@@ -364,8 +355,6 @@ const awsReducerByFunc = (state = initialState, action) => {
         // plugins:plugins
       };
 
-      //console.log("Error Data from Reducer: ",errorsAllData )
-
       return { ...state, errorsByFuncData, getErrors };
     }
 
@@ -378,8 +367,6 @@ const awsReducerByFunc = (state = initialState, action) => {
       let ticks = [];
       let labelFormat;
       let getThrottles;
-
-      console.log('Inside Add Throttles All Data');
 
       getThrottles = false;
 
@@ -414,7 +401,6 @@ const awsReducerByFunc = (state = initialState, action) => {
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
 
       graphOptions.axisX.ticks = ticks;
-      console.log(ticks);
 
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
@@ -453,7 +439,6 @@ const awsReducerByFunc = (state = initialState, action) => {
         // plugins:plugins
       };
 
-      //console.log("Throttle Data from Reducer: ",throttlesAllData )
       renderByFunc = false;
       byFuncLoading = false;
       return {

@@ -1,4 +1,3 @@
-
 const APIUtilFunc = require('./utils/APIUtilFunc');
 const {
   CloudWatchClient,
@@ -227,7 +226,7 @@ const getApiMetrics = async (req, res, next) => {
     res.locals.apiMetrics = wholeApiObject;
     return next();
   } catch (err) {
-    console.log(err.stack, err);
+    console.error(err.stack, err);
   }
 };
 

@@ -24,7 +24,7 @@ userController.updateArn = async (req, res, next) => {
       return next();
     }
   } catch (err) {
-    if (err) console.log(err);
+    if (err) console.error(err);
     return next(err);
   }
 };
@@ -86,7 +86,7 @@ userController.verifyUser = async (req, res, next) => {
     }
   } catch (err) {
     if (err) {
-      console.log(err);
+      console.error(err);
       return next(err);
     }
   }
@@ -103,7 +103,7 @@ userController.addArn = async (req, res, next) => {
     return next();
   } catch (err) {
     if (err) {
-      console.log(err);
+      console.error(err);
       return next(err);
     }
   }
@@ -129,7 +129,7 @@ userController.updateRegion = async (req, res, next) => {
       return next();
     }
   } catch (err) {
-    if (err) console.log(err);
+    if (err) console.error(err);
     return next(err);
   }
 };
@@ -161,7 +161,7 @@ userController.updateEmail = async (req, res, next) => {
     const emailStatus = sendEmail('emailChange', req.body.originalEmail);
     return next();
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return next(err);
   }
 };
@@ -186,7 +186,7 @@ userController.updatePassword = async (req, res, next) => {
     confirmation.status = false;
     return next();
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return next(err);
   }
 };
@@ -215,7 +215,7 @@ userController.forgotPassword = async (req, res, next) => {
       return next();
     }
   } catch (err) {
-    if (err) console.log(err);
+    if (err) console.error(err);
     return next(err);
   }
 };
@@ -233,7 +233,7 @@ userController.checkVerificationCode = async (req, res, next) => {
     res.locals.confirmation = confirmation;
     return next();
   } catch (err) {
-    if (err) console.log(err);
+    if (err) console.error(err);
     return next(err);
   }
 };
@@ -256,7 +256,7 @@ userController.resetPassword = async (req, res, next) => {
     res.locals.confirmation = confirmation;
     return next();
   } catch (err) {
-    if (err) console.log(err);
+    if (err) console.error(err);
     return next(err);
   }
 };

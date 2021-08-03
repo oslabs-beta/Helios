@@ -43,13 +43,11 @@ import FormControl from '@material-ui/core/FormControl';
 import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from 'react-promise-tracker';
 
-import LambdaListMetrics from '../../../components/LambdaListMetrics/LambdaListMetrics'
+import LambdaListMetrics from '../../../components/LambdaListMetrics/LambdaListMetrics';
 
 const useStyles = makeStyles(styles);
 
 const getDataByFunc = (metricData, funcName) => {
-  console.log('Original Data: ', metricData);
-
   let data = JSON.parse(JSON.stringify({ ...metricData }));
   let series_data = [...metricData.series];
 
@@ -58,51 +56,45 @@ const getDataByFunc = (metricData, funcName) => {
       (plotData.name.search(funcName) > 0) | (plotData.name === 'dummy')
   );
 
-
-  console.log('Function Data: ', data);
-
   // return data;
   return { series: series_data };
 };
 
 const getTotalByFunc = (metricData, funcName) => {
+  let series_data = metricData.series.filter(
+    (funcData) => funcData.name.search(funcName) > 0
+  );
 
-  let series_data  = metricData.series.filter((funcData) => funcData.name.search(funcName) > 0)
-  console.log("Series Data for Total: ", series_data)
   let total = series_data[0].total;
-  console.log(total)
-  if (total>=0) return total
 
+  if (total >= 0) return total;
 };
 
-
 function LambdaChartByFunc(props) {
-
-  const {invocationsByFuncData,
+  const {
+    invocationsByFuncData,
     errorsByFuncData,
     throttlesByFuncData,
     funcList,
-    dateSelect} = props
+    dateSelect,
+  } = props;
 
   const [lambdaFuncSelected, setLambdaFuncSelected] = useState([]);
 
-  const handleAddFunctionMetrics = funcName => {
-    const lambdaFuncList = [...lambdaFuncSelected]
-    if (!lambdaFuncList.includes(funcName)) lambdaFuncList.push(funcName)
-    setLambdaFuncSelected(lambdaFuncList)
-  }
+  const handleAddFunctionMetrics = (funcName) => {
+    const lambdaFuncList = [...lambdaFuncSelected];
+    if (!lambdaFuncList.includes(funcName)) lambdaFuncList.push(funcName);
+    setLambdaFuncSelected(lambdaFuncList);
+  };
 
-  const handleRemoveFunctionMetrics = funcName => {
-    const lambdaFuncList = [...lambdaFuncSelected]
-    if (lambdaFuncList.includes(funcName))  {
-      const index = lambdaFuncList.indexOf(funcName)
-      lambdaFuncList.splice(index,1)
-
+  const handleRemoveFunctionMetrics = (funcName) => {
+    const lambdaFuncList = [...lambdaFuncSelected];
+    if (lambdaFuncList.includes(funcName)) {
+      const index = lambdaFuncList.indexOf(funcName);
+      lambdaFuncList.splice(index, 1);
     }
-    setLambdaFuncSelected(lambdaFuncList)
-  }  
-
-
+    setLambdaFuncSelected(lambdaFuncList);
+  };
 
   const classes = useStyles();
   const indexArr = funcList.map((el, i) => {
@@ -113,7 +105,7 @@ function LambdaChartByFunc(props) {
     return (
       <CustomTabs
         key={i}
-        headerColor='primary'
+        headerColor='info'
         tabs={[
           {
             tabName: 'Throttles',
@@ -122,10 +114,7 @@ function LambdaChartByFunc(props) {
                 <CardHeader color='success'>
                   <ChartistGraph
                     className='ct-chart'
-                    data={getDataByFunc(
-                      throttlesByFuncData.data,
-                      funcName
-                    )}
+                    data={getDataByFunc(throttlesByFuncData.data, funcName)}
                     type='Bar'
                     options={throttlesByFuncData.options}
                     responsiveOptions={throttlesByFuncData.responsiveOptions}
@@ -134,16 +123,22 @@ function LambdaChartByFunc(props) {
                 </CardHeader>
                 <CardBody>
                   <h3 className={classes.cardTitle}>
-                  Throttles: <Box component="span" fontWeight="fontWeightLight" fontStyle="italic">{funcName}</Box>
+                    {/* Throttles:{' '}
+                    <Box
+                      component='span'
+                      fontWeight='fontWeightLight'
+                      fontStyle='italic'
+                    >
+                      {funcName}
+                    </Box> */}
+                    <big>Throttles: </big>
+                    {funcName}
                   </h3>
                 </CardBody>
                 <CardFooter chart>
                   <h5 className={classes.cardTitle}>
                     <big>Total: </big>
-                    {getTotalByFunc(
-                      throttlesByFuncData.data,
-                      funcName
-                    )}
+                    {getTotalByFunc(throttlesByFuncData.data, funcName)}
                   </h5>
                 </CardFooter>
               </Card>
@@ -157,10 +152,7 @@ function LambdaChartByFunc(props) {
                 <CardHeader color='info'>
                   <ChartistGraph
                     className='ct-chart'
-                    data={getDataByFunc(
-                      invocationsByFuncData.data,
-                      funcName
-                    )}
+                    data={getDataByFunc(invocationsByFuncData.data, funcName)}
                     type='Bar'
                     options={invocationsByFuncData.options}
                     responsiveOptions={invocationsByFuncData.responsiveOptions}
@@ -169,16 +161,22 @@ function LambdaChartByFunc(props) {
                 </CardHeader>
                 <CardBody>
                   <h3 className={classes.cardTitle}>
-                  Invocations: <Box component="span" fontWeight="fontWeightLight" fontStyle="italic">{funcName}</Box>
+                    {/* Invocations:{' '}
+                    <Box
+                      component='span'
+                      fontWeight='fontWeightLight'
+                      fontStyle='italic'
+                    >
+                      {funcName}
+                    </Box> */}
+                    <big>Invocations: </big>
+                    {funcName}
                   </h3>
                 </CardBody>
                 <CardFooter chart>
                   <h5 className={classes.cardTitle}>
                     <big>Total: </big>
-                    {getTotalByFunc(
-                      invocationsByFuncData.data,
-                      funcName
-                    )}
+                    {getTotalByFunc(invocationsByFuncData.data, funcName)}
                   </h5>
                 </CardFooter>
               </Card>
@@ -191,11 +189,7 @@ function LambdaChartByFunc(props) {
                 <CardHeader color='danger'>
                   <ChartistGraph
                     className='ct-chart'
-                    data={getDataByFunc(
-                      errorsByFuncData.data,
-                      funcName
-                      
-                    )}
+                    data={getDataByFunc(errorsByFuncData.data, funcName)}
                     type='Bar'
                     options={errorsByFuncData.options}
                     responsiveOptions={errorsByFuncData.responsiveOptions}
@@ -204,32 +198,34 @@ function LambdaChartByFunc(props) {
                 </CardHeader>
                 <CardBody>
                   <h3 className={classes.cardTitle}>
-                  Errors: <Box component="span" fontWeight="fontWeightLight" fontStyle="italic">{funcName}</Box>
+                    {/* Errors:{' '}
+                    <Box
+                      component='span'
+                      fontWeight='fontWeightLight'
+                      fontStyle='italic'
+                    >
+                      {funcName}
+                    </Box> */}
+                    <big>Errors: </big>
+                    {funcName}
                   </h3>
                 </CardBody>
                 <CardFooter chart>
                   <h5 className={classes.cardTitle}>
                     <big>Total: </big>
-                    {getTotalByFunc(
-                      errorsByFuncData.data,
-                      funcName
-                    )}
+                    {getTotalByFunc(errorsByFuncData.data, funcName)}
                   </h5>
                 </CardFooter>
               </Card>
             ),
           },
-
-
         ]}
       />
     );
   });
 
-
   return (
     <div className={classes.logGrid}>
-
       <br />
       <GridContainer>
         <GridItem xs={4} sm={4} md={4}>

@@ -17,6 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import * as actions from '../Actions/actions';
 import updateUserInfoIDB from '../indexedDB/updateUserInfoIDB';
+import logo from '../Dashboard/assets/img/helios-blue-logo-t.png';
 
 function Copyright() {
   return (
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   logoImg: {
-    width: '300px',
+    width: '410px',
   },
   avatar: {
     margin: theme.spacing(1),
@@ -51,6 +52,11 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: '#2A3C4A',
+    color: '#FFFFFF',
+  },
+  pageText: {
+    color: '#2A3C4A',
   },
 }));
 
@@ -85,7 +91,7 @@ function SignUp(props) {
           updateUserInfoIDB({ firstName, email })
             .then((user) => {})
             .catch((error) => {
-              console.log('error while updating user info', error);
+              console.error('error while updating user info', error);
             });
           // if unsuccessful, alert pops up saying try again
         } else if (!response.emailStatus) {
@@ -98,12 +104,8 @@ function SignUp(props) {
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        <img
-          alt='Helios Logo'
-          src='../Dashboard/assets/img/helios-black-logo-t.png'
-          className={classes.logoImg}
-        />
-        <Typography component='h1' variant='h5'>
+        <img alt='Helios Logo' src={logo} className={classes.logoImg} />
+        <Typography component='h1' variant='h5' className={classes.pageText}>
           Sign up
         </Typography>
         <br />
@@ -176,7 +178,6 @@ function SignUp(props) {
           type='submit'
           fullWidth
           variant='contained'
-          color='primary'
           className={classes.submit}
           onClick={handleSubmit}
         >
@@ -185,7 +186,7 @@ function SignUp(props) {
 
         <Grid container justifyContent='flex-end'>
           <Grid item>
-            <Link to='/' variant='body2'>
+            <Link to='/' variant='body2' className={classes.pageText}>
               Already have an account? Sign in
             </Link>
           </Grid>

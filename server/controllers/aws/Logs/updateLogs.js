@@ -151,7 +151,7 @@ const loopFunc = async (
       dataArr.push('...' + eventObj.logStreamName.slice(-5));
       // format the date of the log timestamp to be more readable
       dataArr.push(moment(eventObj.timestamp).format('lll'));
-      // if message is just from a console.log, remove the first 67 characters as it's all just metadata/a string of timestamps and unnecessary info
+      // if message is just from a normal log, remove the first 67 characters as it's all just metadata/a string of timestamps and unnecessary info
       if (
         eventObj.message.slice(0, 4) !== 'LOGS' &&
         eventObj.message.slice(0, 9) !== 'EXTENSION'
@@ -194,10 +194,10 @@ const loopFunc = async (
       return eventLog;
     } catch (err) {
       if (err) {
-        console.log(err);
+        console.error(err);
       }
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 };

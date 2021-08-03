@@ -34,7 +34,6 @@ const columns = [
 
 export default function DataTable(props) {
   let rows = [];
-  console.log(props);
 
   let invocationsArr = props.invocations.series.map(
     (funcData) => funcData.total

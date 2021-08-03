@@ -16,6 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import * as actions from '../Actions/actions';
 import Select from '@material-ui/core/Select';
+import logo from '../Dashboard/assets/img/helios-blue-logo-t.png';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -56,6 +57,11 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: '#2A3C4A',
+    color: '#FFFFFF',
+  },
+  pageText: {
+    color: '#2A3C4A',
   },
   awsLink: {
     color: 'inherit',
@@ -142,24 +148,20 @@ function Register(props) {
         });
         history.push('/admin');
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   return (
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        <img
-          alt='Helios Logo'
-          src='../Dashboard/assets/img/helios-black-logo-t.png'
-          className={classes.logoImg}
-        />
-        <Typography component='h1' variant='h5'>
+        <img alt='Helios Logo' src={logo} className={classes.logoImg} />
+        <Typography component='h1' variant='h5' className={classes.pageText}>
           Connect your AWS account
           <br />
         </Typography>
         <br />
-        <Typography variant='body1'>
+        <Typography variant='body1' className={classes.pageText}>
           It's quick and easy to connect your AWS account to Helios! Just follow
           the below steps and we'll get you all set up!
           <ol>
@@ -295,7 +297,6 @@ function Register(props) {
           type='submit'
           fullWidth
           variant='contained'
-          color='primary'
           className={classes.submit}
           onClick={handleRegisterBtn}
         >

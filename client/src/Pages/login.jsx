@@ -6,6 +6,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
+import logo from '../Dashboard/assets/img/helios-blue-logo-t.png';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 // import Link from '@material-ui/core/Link';
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   logoImg: {
-    width: '300px',
+    width: '410px',
   },
   avatar: {
     margin: theme.spacing(1),
@@ -53,6 +54,11 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: '#2A3C4A',
+    color: '#FFFFFF',
+  },
+  pageText: {
+    color: '#2A3C4A',
   },
 }));
 
@@ -108,13 +114,9 @@ function SignIn(props) {
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        <img
-          alt='Helios Logo'
-          src='../Dashboard/assets/img/helios-black-logo-t.png'
-          className={classes.logoImg}
-        />
+        <img alt='Helios Logo' src={logo} className={classes.logoImg} />
 
-        <Typography component='h1' variant='h5'>
+        <Typography component='h1' variant='h5' className={classes.pageText}>
           Sign in
         </Typography>
         {unconfirmed && (
@@ -157,7 +159,6 @@ function SignIn(props) {
           type='submit'
           fullWidth
           variant='contained'
-          color='primary'
           className={classes.submit}
           onClick={handleSubmit}
         >
@@ -165,12 +166,20 @@ function SignIn(props) {
         </Button>
         <Grid container>
           <Grid item xs>
-            <Link to='/user/forgotPassword' variant='body2'>
+            <Link
+              to='/user/forgotPassword'
+              variant='body2'
+              className={classes.pageText}
+            >
               Forgot password?
             </Link>
           </Grid>
           <Grid item>
-            <Link to='/user/signup' variant='body2'>
+            <Link
+              to='/user/signup'
+              variant='body2'
+              className={classes.pageText}
+            >
               {"Don't have an account? Sign Up"}
             </Link>
           </Grid>

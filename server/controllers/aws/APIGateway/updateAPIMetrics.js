@@ -1,4 +1,3 @@
-
 const APIUtilFunc = require('./utils/APIUtilFunc');
 const {
   CloudWatchClient,
@@ -255,6 +254,6 @@ const loopFunc = async (
     const wholeApiObject = { name: currApi, metrics: allApiMetrics };
     return wholeApiObject;
   } catch (err) {
-    console.log(err.stack, err);
+    console.error(err.stack, err);
   }
 };

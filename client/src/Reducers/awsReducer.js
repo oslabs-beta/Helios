@@ -286,7 +286,6 @@ const awsReducer = (state = initialState, action) => {
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
 
       graphOptions.axisX.ticks = ticks;
-      console.log(ticks);
 
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
@@ -320,8 +319,6 @@ const awsReducer = (state = initialState, action) => {
         total,
       };
 
-      //console.log("Invocation Data from Reducer: ",errorsAllData )
-
       return { ...state, invocationsAllData, getInvocations };
     }
     case types.ADD_ERRORS_ALLDATA: {
@@ -335,10 +332,7 @@ const awsReducer = (state = initialState, action) => {
       let labelFormat;
       let getErrors;
       let total = 0;
-      console.log('Inside Add Erros All Data');
 
-      // let getErrors;
-      // let errorsAllData;
 
       getErrors = !state.getErrors;
       series_data = action.payload.data.map((xydata) => {
@@ -361,7 +355,7 @@ const awsReducer = (state = initialState, action) => {
       ticks = generateTicks(startTime, graphPeriod, graphUnits);
 
       graphOptions.axisX.ticks = ticks;
-      console.log(ticks);
+
 
       if (!ticks.length) graphOptions.axisX.type = Chartist.AutoScaleAxis;
       else graphOptions.axisX.type = Chartist.FixedScaleAxis;
@@ -395,7 +389,6 @@ const awsReducer = (state = initialState, action) => {
         total,
       };
 
-      console.log('Error Data from reducer: ', errorsAllData);
 
       return { ...state, errorsAllData, getErrors };
     }
@@ -411,9 +404,6 @@ const awsReducer = (state = initialState, action) => {
       let labelFormat;
       let getThrottles;
       let total = 0;
-
-      // let getThrottles;
-      // let throttlesAllData;
 
       getThrottles = !state.getThrottles;
       series_data = action.payload.data.map((xydata) => {
