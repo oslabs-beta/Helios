@@ -1,4 +1,4 @@
-const { REGION } = require('../Credentials/libs/stsClient.js');
+
 const AWSUtilFunc = require('./utils/AWSUtilFunc.js');
 const {
   CloudWatchClient,
@@ -40,7 +40,9 @@ const getMetricsByFunc = async (req, res, next) => {
   if (!req.body.metricStat) graphMetricStat = 'Sum'
   else graphMetricStat = req.body.metricStat
 
+
   //Metrics for By Lambda Function
+  //Prepare the input parameters for the AWS getMetricsData API Query
 
   const metricByFuncInputParams = AWSUtilFunc.prepCwMetricQueryLambdaByFunc(
     graphPeriod,
@@ -50,17 +52,27 @@ const getMetricsByFunc = async (req, res, next) => {
     funcNames
   );
 
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------------------'
+  );
+  console.log("MetricName: ", graphMetricName);
 
-  console.log("GraphPeriod: ", graphPeriod);
-  console.log("GraphUnits: ", graphUnits);
-  console.log("GraphMetric Name: ", graphMetricName);
-  console.log("Graph Metric Stat: ", graphMetricStat);
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------------------'
+  );
+
   console.log("FuncNames: ", funcNames);
 
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------------------'
+  );
 
   console.log('Request by Individual Lambda Function the input params: ', metricByFuncInputParams);
-  console.log(typeof metricByFuncInputParams.StartTime);
-  console.log('Request by Individual Lambda Function the input params - MetricStat: ', metricByFuncInputParams.MetricDataQueries[0].MetricStat);
+
+  console.log(
+    '----------------------------------------------------------------------------------------------------------------------------------------------------'
+  );
+
   try {
     const metricByFuncResult = await cwClient.send(
       new GetMetricDataCommand(metricByFuncInputParams)
@@ -152,6 +164,8 @@ const getMetricsByFunc = async (req, res, next) => {
       return Math.max(maxValue, dataByFunc.maxVaue)
     },0)
 
+    //Request response JSON Object send to the FrontEnd
+
     res.locals.metricByFuncData = {
       title: `Lambda ${graphMetricName}`,
       series: metricByFuncData,
@@ -164,7 +178,14 @@ const getMetricsByFunc = async (req, res, next) => {
         funcNames: funcNames
       },
     };
-    console.log(res.locals.metricByFuncData);
+
+
+    console.log("Metrics by Function Response Object: ", res.locals.metricByFuncData);
+    console.log(
+      '----------------------------------------------------------------------------------------------------------------------------------------------------'
+    );
+    
+
     return next();
   } catch (err) {
     console.log('Error in CW getMetricsData By Functions', err);

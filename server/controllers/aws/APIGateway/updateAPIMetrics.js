@@ -1,4 +1,4 @@
-const { REGION } = require('../Credentials/libs/stsClient.js');
+
 const APIUtilFunc = require('./utils/APIUtilFunc');
 const {
   CloudWatchClient,

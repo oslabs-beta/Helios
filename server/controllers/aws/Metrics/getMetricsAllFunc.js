@@ -1,4 +1,4 @@
-const { REGION } = require('../Credentials/libs/stsClient.js');
+
 const AWSUtilFunc = require('./utils/AWSUtilFunc.js');
 const {
   CloudWatchClient,
@@ -37,7 +37,7 @@ const getMetricsAllFunc = async (req, res, next) => {
   else graphMetricStat = req.body.metricStat;
 
   //Metrics for All Functions (combined)
-
+  //Prepare the input parameters for the AWS getMetricsData API Query
   const metricAllFuncInputParams = AWSUtilFunc.prepCwMetricQueryLambdaAllFunc(
     graphPeriod,
     graphUnits,
@@ -47,12 +47,12 @@ const getMetricsAllFunc = async (req, res, next) => {
   console.log(
     '----------------------------------------------------------------------------------------------------------------------------------------------------'
   );
-  console.log(graphMetricName);
+  console.log("MetricName: ", graphMetricName);
   console.log(
     '----------------------------------------------------------------------------------------------------------------------------------------------------'
   );
-  console.log('the input params: ', metricAllFuncInputParams);
-  console.log(typeof metricAllFuncInputParams.StartTime);
+  console.log('Request input params: ', metricAllFuncInputParams);
+
   try {
     const metricAllFuncResult = await cwClient.send(
       new GetMetricDataCommand(metricAllFuncInputParams)
@@ -96,6 +96,8 @@ const getMetricsAllFunc = async (req, res, next) => {
       0
     );
 
+    //Request response JSON Object send to the FrontEnd
+
     res.locals.metricAllFuncData = {
       title: metricAllFuncResult.MetricDataResults[0].Label,
       data: metricAllFuncData.reverse(),
@@ -107,7 +109,14 @@ const getMetricsAllFunc = async (req, res, next) => {
         metricMaxValue,
       },
     };
-    console.log(res.locals.metricAllFuncData);
+
+    
+    console.log("Metrics for All Functions Response Object: ", res.locals.metricAllFuncData);
+
+    console.log(
+      '----------------------------------------------------------------------------------------------------------------------------------------------------'
+    );
+
     return next();
   } catch (err) {
     console.log('Error in CW getMetricsData All Functions', err);
