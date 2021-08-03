@@ -21,6 +21,7 @@ import Container from '@material-ui/core/Container';
 import * as actions from '../Actions/actions';
 import Snackbar from '../Dashboard/components/Snackbar/Snackbar';
 import AddAlert from '@material-ui/icons/AddAlert';
+import logo from '../Dashboard/assets/img/helios-blue-logo-t.png';
 
 function Copyright() {
   return (
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   logoImg: {
-    width: '300px',
+    width: '410px',
   },
   avatar: {
     margin: theme.spacing(1),
@@ -55,6 +56,11 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: '#2A3C4A',
+    color: '#FFFFFF',
+  },
+  pageText: {
+    color: '#2A3C4A',
   },
 }));
 
@@ -98,7 +104,7 @@ function ForgotPassword(props) {
         }
       })
       .catch((err) => {
-        console.log(
+        console.error(
           'Error in sending email address to request a password reset',
           err
         );
@@ -184,11 +190,7 @@ function ForgotPassword(props) {
     <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
-        <img
-          alt='Helios Logo'
-          src='../Dashboard/assets/img/helios-black-logo-t.png'
-          className={classes.logoImg}
-        />
+        <img alt='Helios Logo' src={logo} className={classes.logoImg} />
 
         {/* Success notification */}
         <Snackbar
@@ -205,9 +207,11 @@ function ForgotPassword(props) {
           onClose={handleVerifClose}
           aria-labelledby='form-dialog-title'
         >
-          <DialogTitle id='form-dialog-title'>Verify Your Email</DialogTitle>
+          <DialogTitle id='form-dialog-title' className={classes.pageText}>
+            Verify Your Email
+          </DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            <DialogContentText className={classes.pageText}>
               Enter the verification code emailed to you. If you don't receive
               it in the next few minutes, please check your spam folder.
             </DialogContentText>
@@ -229,10 +233,10 @@ function ForgotPassword(props) {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleVerifClose} color='primary'>
+            <Button onClick={handleVerifClose} className={classes.submit}>
               Cancel
             </Button>
-            <Button onClick={handleVerify} color='primary'>
+            <Button onClick={handleVerify} className={classes.submit}>
               Verify
             </Button>
           </DialogActions>
@@ -246,9 +250,13 @@ function ForgotPassword(props) {
           }}
           aria-labelledby='form-dialog-title'
         >
-          <DialogTitle id='form-dialog-title'>Reset Your Password</DialogTitle>
+          <DialogTitle id='form-dialog-title' className={classes.pageText}>
+            Reset Your Password
+          </DialogTitle>
           <DialogContent>
-            <DialogContentText>Reset your password below.</DialogContentText>
+            <DialogContentText className={classes.pageText}>
+              Reset your password below.
+            </DialogContentText>
 
             {/* If passwords don't match an error pops up */}
             {!passwordsMatch && (
@@ -284,11 +292,11 @@ function ForgotPassword(props) {
               onClick={() => {
                 openReset(false);
               }}
-              color='primary'
+              className={classes.submit}
             >
               Cancel
             </Button>
-            <Button onClick={handleResetPassword} color='primary'>
+            <Button onClick={handleResetPassword} className={classes.submit}>
               Reset Password
             </Button>
           </DialogActions>
@@ -322,7 +330,6 @@ function ForgotPassword(props) {
           type='submit'
           fullWidth
           variant='contained'
-          color='primary'
           className={classes.submit}
           onClick={handleSubmit}
         >
@@ -330,12 +337,16 @@ function ForgotPassword(props) {
         </Button>
         <Grid container>
           <Grid item xs>
-            <Link to='/' variant='body2'>
+            <Link to='/' variant='body2' className={classes.pageText}>
               Remembered your password?
             </Link>
           </Grid>
           <Grid item>
-            <Link to='/user/signup' variant='body2'>
+            <Link
+              to='/user/signup'
+              variant='body2'
+              className={classes.pageText}
+            >
               {"Don't have an account? Sign Up"}
             </Link>
           </Grid>

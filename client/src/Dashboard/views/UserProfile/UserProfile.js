@@ -18,7 +18,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import { connect } from 'react-redux';
-import logo from '../../assets/img/helios-logo-background.jpg';
+import logo from '../../assets/img/helios-blue-logo-t.png';
 import TextField from '@material-ui/core/TextField';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import EditLocation from '@material-ui/icons/EditLocation';
@@ -89,6 +89,9 @@ const styles = {
   },
   cardTitle: {
     textAlign: 'left',
+  },
+  logoImage: {
+    maxWidth: '450px',
   },
 };
 
@@ -201,7 +204,6 @@ function UserProfile(props) {
   // after an ARN or region is updated, fetch new credentials so user data can be updated
   // on all pages
   const handleUpdateCreds = (arn) => {
-    console.log('updating creds: ', arn);
     const reqParams = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -242,7 +244,6 @@ function UserProfile(props) {
     fetch('/user/updateRegion', reqParams)
       .then((res) => res.json())
       .then((response) => {
-        console.log('Update region response: ', response);
         if (response) {
           // if update is successful, have a success notification popup
           showNotification('success');
@@ -282,7 +283,6 @@ function UserProfile(props) {
     fetch('/user/updateEmail', reqParams)
       .then((res) => res.json())
       .then((response) => {
-        console.log(response);
         if (response.status) {
           // if successful, show success notification
           showNotification('success');
@@ -337,7 +337,7 @@ function UserProfile(props) {
         }
       })
       .catch((err) =>
-        console.log('Error in updating arn on User Profile: ', err)
+        console.log('Error in updating ARN on User Profile: ', err)
       );
     // update credentials so if they switch to a different page they can immediately
     // see the updated data for the new AWS account
@@ -424,9 +424,6 @@ function UserProfile(props) {
         {/* Displays current profile details */}
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
-            <CardAvatar profile>
-              <img src={logo} alt='Helios' />
-            </CardAvatar>
             <CardBody profile>
               <h4 className={classes.cardTitle}>
                 <big>Your Name: </big>
@@ -450,6 +447,7 @@ function UserProfile(props) {
               </h5>
             </CardBody>
           </Card>
+          <img src={logo} alt='Helios' className={classes.logoImage} />
         </GridItem>
 
         {/* The notification content to be displayed when called upon */}
@@ -824,6 +822,11 @@ function UserProfile(props) {
           </Card>
         </GridItem>
       </GridContainer>
+      {/* <GridContainer>
+        <GridItem xs={12} sm={12} md={4}>
+          <img src={logo} alt='Helios' />
+        </GridItem>
+      </GridContainer> */}
     </div>
   );
 }

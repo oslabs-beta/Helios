@@ -197,7 +197,7 @@ function Logs(props) {
         .then((updatedLogs) => {
           props.updateFunctionLogs(updatedLogs);
         })
-        .catch((err) => console.log('Error in refreshing updateLogs: ', err));
+        .catch((err) => console.error('Error in refreshing updateLogs: ', err));
     }
   };
 
