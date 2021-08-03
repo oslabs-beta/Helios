@@ -1,13 +1,16 @@
 const path = require('path');
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 module.exports = {
   entry: ['babel-polyfill', './client/src/index.js'],
   devServer: {
-    contentBase: __dirname + '/client/src/',
+    // contentBase: __dirname + '/client/src/',
+    publicPath: './build',
     proxy: {
-      '/': 'http://localhost:3000',
+      '/': 'http://localhost:4242',
     },
   },
+  target: 'electron-main',
   mode: process.env.NODE_ENV,
   module: {
     rules: [
@@ -26,10 +29,7 @@ module.exports = {
         },
       },
       {
-        // test: /\.s[ac]ss$ || \.css$/i,
         test: /\.(scss|css|sass)$/i,
-        // include: [path.resolve(__dirname, 'client')],
-        // exclude: [path.resolve(__dirname, 'node_modules')],
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
@@ -50,6 +50,29 @@ module.exports = {
     publicPath: '/build/',
     filename: 'bundle.js',
   },
+  plugins: [
+    new ImageMinimizerPlugin({
+      minimizerOptions: {
+        // Lossless optimization with custom option
+        // Feel free to experiment with options for better result for you
+        plugins: [
+          ['gifsicle', { interlaced: true }],
+          ['jpegtran', { progressive: true }],
+          ['optipng', { optimizationLevel: 5 }],
+          [
+            'svgo',
+            {
+              plugins: [
+                {
+                  removeViewBox: false,
+                },
+              ],
+            },
+          ],
+        ],
+      },
+    }),
+  ],
   resolve: {
     // Enable importing JS / JSX files without specifying their extension
     extensions: ['.js', '.jsx'],

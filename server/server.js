@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const awsRouter = require('./routes/aws.js');
 const userRouter = require('./routes/user.js');
 
-const PORT = 3000;
+const PORT = 4242;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
