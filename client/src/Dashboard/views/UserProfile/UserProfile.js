@@ -91,7 +91,7 @@ const styles = {
     textAlign: 'left',
   },
   logoImage: {
-    maxWidth: '450px',
+    maxWidth: '350px',
   },
 };
 
@@ -447,7 +447,9 @@ function UserProfile(props) {
               </h5>
             </CardBody>
           </Card>
-          <img src={logo} alt='Helios' className={classes.logoImage} />
+          <center>
+            <img src={logo} alt='Helios' className={classes.logoImage} />
+          </center>
         </GridItem>
 
         {/* The notification content to be displayed when called upon */}
@@ -479,7 +481,7 @@ function UserProfile(props) {
           close
         />
 
-        <GridItem xs={12} sm={12} md={8}>
+        <GridItem xs={12} sm={12} md={7}>
           <Card>
             <CardBody>
               <GridContainer>
