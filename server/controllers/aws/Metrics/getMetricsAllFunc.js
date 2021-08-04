@@ -1,4 +1,3 @@
-
 const AWSUtilFunc = require('./utils/AWSUtilFunc.js');
 const {
   CloudWatchClient,
@@ -44,23 +43,11 @@ const getMetricsAllFunc = async (req, res, next) => {
     graphMetricName,
     graphMetricStat
   );
-  // console.log(
-  //   '----------------------------------------------------------------------------------------------------------------------------------------------------'
-  // );
-  // console.log("MetricName: ", graphMetricName);
-  // console.log(
-  //   '----------------------------------------------------------------------------------------------------------------------------------------------------'
-  // );
-  // console.log('Request input params: ', metricAllFuncInputParams);
 
   try {
     const metricAllFuncResult = await cwClient.send(
       new GetMetricDataCommand(metricAllFuncInputParams)
     );
-    // console.log(
-    //   '${graphMetricName} All Lambda Functions:  ',
-    //   JSON.stringify(metricAllFuncResult, null, 2)
-    // );
 
     //Format of the MetricDataResults
     //******************************* */
@@ -110,16 +97,9 @@ const getMetricsAllFunc = async (req, res, next) => {
       },
     };
 
-    
-    // console.log("Metrics for All Functions Response Object: ", res.locals.metricAllFuncData);
-
-    // console.log(
-    //   '----------------------------------------------------------------------------------------------------------------------------------------------------'
-    // );
-
     return next();
   } catch (err) {
-    console.log('Error in CW getMetricsData All Functions', err);
+    console.error('Error in CW getMetricsData All Functions', err);
   }
 };
 
