@@ -44,23 +44,23 @@ const getMetricsAllFunc = async (req, res, next) => {
     graphMetricName,
     graphMetricStat
   );
-  console.log(
-    '----------------------------------------------------------------------------------------------------------------------------------------------------'
-  );
-  console.log("MetricName: ", graphMetricName);
-  console.log(
-    '----------------------------------------------------------------------------------------------------------------------------------------------------'
-  );
-  console.log('Request input params: ', metricAllFuncInputParams);
+  // console.log(
+  //   '----------------------------------------------------------------------------------------------------------------------------------------------------'
+  // );
+  // console.log("MetricName: ", graphMetricName);
+  // console.log(
+  //   '----------------------------------------------------------------------------------------------------------------------------------------------------'
+  // );
+  // console.log('Request input params: ', metricAllFuncInputParams);
 
   try {
     const metricAllFuncResult = await cwClient.send(
       new GetMetricDataCommand(metricAllFuncInputParams)
     );
-    console.log(
-      'Invocations All Lambda Functions:  ',
-      JSON.stringify(metricAllFuncResult, null, 2)
-    );
+    // console.log(
+    //   '${graphMetricName} All Lambda Functions:  ',
+    //   JSON.stringify(metricAllFuncResult, null, 2)
+    // );
 
     //Format of the MetricDataResults
     //******************************* */
@@ -111,11 +111,11 @@ const getMetricsAllFunc = async (req, res, next) => {
     };
 
     
-    console.log("Metrics for All Functions Response Object: ", res.locals.metricAllFuncData);
+    // console.log("Metrics for All Functions Response Object: ", res.locals.metricAllFuncData);
 
-    console.log(
-      '----------------------------------------------------------------------------------------------------------------------------------------------------'
-    );
+    // console.log(
+    //   '----------------------------------------------------------------------------------------------------------------------------------------------------'
+    // );
 
     return next();
   } catch (err) {

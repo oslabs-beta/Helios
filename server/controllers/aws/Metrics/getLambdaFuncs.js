@@ -23,7 +23,8 @@ const getFunctions = async (req, res, next) => {
       new ListFunctionsCommand(lamParams)
     );
     funcNames = functions.Functions.map((el) => el.FunctionName);
-    console.log('Lambda Func from Async', funcNames);
+
+    // console.log('Lambda Func from Async', funcNames);
     res.locals.functions = funcNames;
     return next();
   } catch (err) {
