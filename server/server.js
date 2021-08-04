@@ -22,7 +22,7 @@ app.use('/user', userRouter);
 app.use('/aws', awsRouter);
 
 //server index.html for the root call
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
   return res
     .status(200)
     .sendFile(path.resolve(__dirname, '../public/index.html'));

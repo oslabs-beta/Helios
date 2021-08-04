@@ -7,4 +7,5 @@ package-lock.json
 temp/*.*
 yarn.lock
 *.env
-
+build/*
+build/

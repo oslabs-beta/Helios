@@ -1,4 +1,5 @@
 // const { shell } = require('@electron/remote');
+
 const { app, BrowserWindow, protocol } = require('electron');
 const url = require('url');
 const path = require('path');
@@ -14,12 +15,11 @@ function createWindow() {
     title: 'Helios',
     webPreferences: {
       nodeIntegration: true,
-      // nodeIntegrationInWorker: true,
-      // enableRemoteModule: true,
-      // worldSafeExecuteJavaScript: true,
-      // contextIsolation: true,
-      webSecurity: false,
-      // preload: path.join(__dirname, '../server/server.js'),
+      nodeIntegrationInWorker: true,
+      enableRemoteModule: true,
+      worldSafeExecuteJavaScript: true,
+      contextIsolation: true,
+      // webSecurity: false,
     },
   });
 
@@ -60,11 +60,6 @@ app.on('window-all-closed', function () {
     app.quit();
   }
 });
-
-// app.on('new-window', function (e, url) {
-//   e.preventDefault();
-//   app.shell.openExternal(url);
-// });
 
 app.on('activate', function () {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
