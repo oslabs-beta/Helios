@@ -9,10 +9,7 @@ const password = process.env.MONGO_DB_PASSWORD;
 const mongoDBName = process.env.MONGO_DB_NAME;
 const uriDomain = process.env.MONGO_URI_DOMAIN;
 
-const mongoURI = `mongodb+srv://helios:ProjectHelios21@projecthelios.fjemz.mongodb.net/Helios?retryWrites=true&w=majority`;
-
-// const mongoURI = `mongodb+srv://${userName}:${password}@${uriDomain}/${mongoDBName}?retryWrites=true&w=majority`;
-// 'mongodb+srv://helios:ProjectHelios21@projecthelios.fjemz.mongodb.net/Helios?retryWrites=true&w=majority';
+const mongoURI = `mongodb+srv://${userName}:${password}@${uriDomain}/${mongoDBName}?retryWrites=true&w=majority`;
 
 mongoose
   .connect(mongoURI, {
@@ -22,7 +19,7 @@ mongoose
     useFindAndModify: false,
   })
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
 
 const SALT_WORK_FACTOR = 10;
 const bcrypt = require('bcryptjs');
@@ -41,7 +38,7 @@ const userSchema = new Schema({
 userSchema.pre('save', function (next) {
   const user = this;
   bcrypt.hash(user.password, SALT_WORK_FACTOR, function (err, hash) {
-    if (err) console.log(err);
+    if (err) console.error(err);
     user.password = hash;
     return next();
   });

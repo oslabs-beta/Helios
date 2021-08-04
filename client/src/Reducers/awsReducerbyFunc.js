@@ -164,15 +164,9 @@ const awsReducerByFunc = (state = initialState, action) => {
   switch (action.type) {
     case types.UPDATE_RENDER_BYFUNC: {
       renderByFunc = true;
-      let throttlesByFuncData = { ...initialState.throttlesByFuncData };
-      let errorsByFuncData = { ...initialState.errorsByFuncData };
-      let invocationsByFuncData = { ...initialState.invocationsByFuncData };
       return {
         ...state,
         renderByFunc,
-        throttlesByFuncData,
-        errorsByFuncData,
-        invocationsByFuncData,
       };
     }
     case types.UPDATE_BY_FUNCTION_LOADING: {

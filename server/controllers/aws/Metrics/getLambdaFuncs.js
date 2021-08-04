@@ -1,4 +1,3 @@
-
 const {
   Lambda,
   LambdaClient,
@@ -9,8 +8,6 @@ const {
 //***********************Begin************************ */
 
 const getFunctions = async (req, res, next) => {
-  console.log(req.body.credentials);
-
   const lambdaClient = new LambdaClient({
     region: req.body.region,
     credentials: req.body.credentials,
@@ -23,7 +20,6 @@ const getFunctions = async (req, res, next) => {
       new ListFunctionsCommand(lamParams)
     );
     funcNames = functions.Functions.map((el) => el.FunctionName);
-    console.log('Lambda Func from Async', funcNames);
     res.locals.functions = funcNames;
     return next();
   } catch (err) {

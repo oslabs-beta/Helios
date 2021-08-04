@@ -166,7 +166,7 @@ function Dashboard(props) {
       props.updateByFunctionLoading();
       metricByFuncBarChart(props, dateSelect, props.region);
     }
-  }, [props.aws.functions]);
+  }, [props.aws.functions, props.awsByFunc.renderByFunc]);
 
   const handleDateChange = (e) => {
     setDateRange(e.target.value);

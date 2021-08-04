@@ -126,6 +126,10 @@ export const updateFetchTimeByFunc = () => {
 export const updateRenderByFunc = () => {
   return { type: types.UPDATE_RENDER_BYFUNC };
 };
+
+export const justUpdateRender = () => {
+  return { type: types.JUST_UPDATE_BY_FUNC_RENDER };
+};
 export const handleLogout = () => {
   return { type: types.HANDLE_LOGOUT };
 };

@@ -14,14 +14,11 @@ const updateApiMetrics = require('../controllers/aws/APIGateway/updateAPIMetrics
 //AWS Root User Credentials
 
 router.route('/getCreds').post(getCredentials, (req, res) => {
-  console.log('you hit get Creds');
   res.status(200).json(res.locals.credentials);
 });
 
 //Returing Lambda Functions List
 router.route('/getLambdaFunctions').post(getFunctions, (req, res) => {
-  console.log('Returning Lambda Functions:');
-  console.log(req.body);
   res.status(200).json(res.locals.functions);
 });
 
@@ -29,36 +26,22 @@ router.route('/getLambdaFunctions').post(getFunctions, (req, res) => {
 router
   .route('/getMetricsAllfunc/:metricName')
   .post(getMetricsAllFunc, (req, res) => {
-    console.log('Returning Lambda Functions Invocations:');
-    console.log(req.body);
     res.status(200).json(res.locals.metricAllFuncData);
   });
 
-// //Returing Lambda Functions Total Invocations
-// router
-//   .route('/getLambdaInvocationsAllfunc')
-//   .post(getInvocationsAllFunc, (req, res) => {
-//     console.log('Returning Lambda Functions Invocations:');
-//     res.status(200).json(res.locals.invocationsAllFunc);
-//   });
-
 //Returing Lambda Functions Logs
 router.route('/getLogs').post(getLogs, (req, res) => {
-  console.log('Returning Lambda Functions Logs');
-
   res.status(200).json(res.locals.functionLogs);
 });
 
 //Updating Lambda Function Logs
 router.route('/updateLogs').post(updateLogs, (req, res) => {
-  console.log('Returning updated Lambda Function Logs');
   res.status(200).json(res.locals.updatedLogs);
 });
 
 router
   .route('/getMetricsByFunc/:metricName')
   .post(getMetricsByFunc, (req, res) => {
-    console.log('Returning Lambda Functions Invocations By Function:');
     res.status(200).json(res.locals.metricByFuncData);
   });
 
