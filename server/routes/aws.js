@@ -11,8 +11,8 @@ const updateLogs = require('../controllers/aws/Logs/updateLogs');
 const getAPIData = require('../controllers/aws/APIGateway/getAPI');
 const getApiMetrics = require('../controllers/aws/APIGateway/getAPIMetrics');
 const updateApiMetrics = require('../controllers/aws/APIGateway/updateAPIMetrics');
-//AWS Root User Credentials
 
+//AWS Assumed Role Credentials
 router.route('/getCreds').post(getCredentials, (req, res) => {
   res.status(200).json(res.locals.credentials);
 });
@@ -22,7 +22,7 @@ router.route('/getLambdaFunctions').post(getFunctions, (req, res) => {
   res.status(200).json(res.locals.functions);
 });
 
-//Returing Lambda Functions Total Invocations
+//Returing Lambda Functions Metric Totals (All functions): by metricName
 router
   .route('/getMetricsAllfunc/:metricName')
   .post(getMetricsAllFunc, (req, res) => {
