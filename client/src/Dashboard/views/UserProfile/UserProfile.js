@@ -823,11 +823,6 @@ function UserProfile(props) {
           </Card>
         </GridItem>
       </GridContainer>
-      {/* <GridContainer>
-        <GridItem xs={12} sm={12} md={4}>
-          <img src={logo} alt='Helios' />
-        </GridItem>
-      </GridContainer> */}
     </div>
   );
 }

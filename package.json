@@ -31,7 +31,7 @@
     "electron:build": "",
     "electron:start": "wait-on tcp:8080 && electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder -mwl"
   },
   "build": {
     "appId": "helios.v.1",
@@ -40,12 +40,29 @@
       "icon": "client/src/Dashboard/assets/img/new-app-logo.png",
       "asar": false
     },
+    "win": {
+      "icon": "client/src/Dashboard/assets/img/new-app-logo.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "asar": false
+    },
+    "linux": {
+      "icon": "client/src/Dashboard/assets/img/new-app-logo.png",
+      "category": "Development",
+      "asar": false
+    },
     "files": [
       "build/**/*",
       "dist/**/*",
       "node_modules/**/*",
       "package.json",
-      "*.env",
       "public/**/*",
       "server/**/*"
     ],
