@@ -1,9 +1,12 @@
-// #######################################
-// Lambda Metrics All Function Totals
-// #######################################
+// ##############################
+// Function :
+//   Fetch AWS Lambda Metrics By Function
+//   Update the AWS Reducers by Function
+// 
+// #############################
 
 const metricByFuncBarChart = (props, timePeriod, region) => {
-  // if (props.aws.render && props.credentials) {
+
   const reqParams = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -12,7 +15,7 @@ const metricByFuncBarChart = (props, timePeriod, region) => {
       timePeriod: timePeriod,
       funcNames: props.aws.functions,
       region: region,
-      // funcNames: funcNameArray
+
     }),
   };
 

@@ -11,8 +11,9 @@ const updateLogs = require('../controllers/aws/Logs/updateLogs');
 const getAPIData = require('../controllers/aws/APIGateway/getAPI');
 const getApiMetrics = require('../controllers/aws/APIGateway/getAPIMetrics');
 const updateApiMetrics = require('../controllers/aws/APIGateway/updateAPIMetrics');
-//AWS Root User Credentials
 
+
+//AWS Assumed Role Credentials
 router.route('/getCreds').post(getCredentials, (req, res) => {
   console.log('you hit get Creds');
   res.status(200).json(res.locals.credentials);
@@ -25,7 +26,7 @@ router.route('/getLambdaFunctions').post(getFunctions, (req, res) => {
   res.status(200).json(res.locals.functions);
 });
 
-//Returing Lambda Functions Total Invocations
+//Returing Lambda Functions Metric Totals (All functions): by metricName
 router
   .route('/getMetricsAllfunc/:metricName')
   .post(getMetricsAllFunc, (req, res) => {
@@ -34,13 +35,14 @@ router
     res.status(200).json(res.locals.metricAllFuncData);
   });
 
-// //Returing Lambda Functions Total Invocations
-// router
-//   .route('/getLambdaInvocationsAllfunc')
-//   .post(getInvocationsAllFunc, (req, res) => {
-//     console.log('Returning Lambda Functions Invocations:');
-//     res.status(200).json(res.locals.invocationsAllFunc);
-//   });
+//Returing Metrics by Function : by metricName
+router
+  .route('/getMetricsByFunc/:metricName')
+  .post(getMetricsByFunc, (req, res) => {
+    console.log('Returning Lambda Functions Invocations By Function:');
+    res.status(200).json(res.locals.metricByFuncData);
+  });
+
 
 //Returing Lambda Functions Logs
 router.route('/getLogs').post(getLogs, (req, res) => {
@@ -55,12 +57,6 @@ router.route('/updateLogs').post(updateLogs, (req, res) => {
   res.status(200).json(res.locals.updatedLogs);
 });
 
-router
-  .route('/getMetricsByFunc/:metricName')
-  .post(getMetricsByFunc, (req, res) => {
-    console.log('Returning Lambda Functions Invocations By Function:');
-    res.status(200).json(res.locals.metricByFuncData);
-  });
 
 // API Gateway data - list of APIs existing on user account
 router.route('/apiGateway').post(getAPIData, (req, res) => {
