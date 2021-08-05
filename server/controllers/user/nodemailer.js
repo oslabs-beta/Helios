@@ -8,8 +8,8 @@ const sendEmail = (type, recipient, resetToken) => {
   const Transport = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: 'projecthelios2021@gmail.com',
-      pass: 'Helios_cs',
+      user: process.env.NODEMAILER_EMAIL,
+      pass: process.env.NODEMAILER_PASSWORD,
     },
   });
   let mailOptions;
