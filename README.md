@@ -53,7 +53,7 @@ Serverless Applications are becoming increasingly popular as they relieve organi
 
 AWS is a leading provider in the serverless applications space with AWS Lambda functions being its central component of the architecture. However, with AWS’ numerous services and extensive docs, it becomes challenging to navigate and can be intimidating to monitor and track the health of serverless applications.
 
-Helios is a free, open-source monitoring tool that users can connect to their AWS account and easily track key metrics and logs. Here is a [medium](https://mediumarticle.com) article describing the philosophy behind Helios. The application can be downloaded [here](https://projecthelios.io). Helios is preconfigured to track the following three main components of AWS serverless applications.
+Helios is a free, open-source monitoring tool that users can connect to their AWS account and easily track key metrics and logs. Here is a [medium](https://medium.com/@jackie.douglass/an-affordable-alternative-to-monitor-your-aws-serverless-application-6d7d8b2eccc) article describing the philosophy behind Helios. The application can be downloaded [here](https://projecthelios.io). Helios is preconfigured to track the following three main components of AWS serverless applications.
 
 - [Lambda Metrics](#lambda-metrics)
 - [Logs](#logs)
