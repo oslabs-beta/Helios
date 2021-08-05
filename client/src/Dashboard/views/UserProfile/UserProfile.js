@@ -91,7 +91,7 @@ const styles = {
     textAlign: 'left',
   },
   logoImage: {
-    maxWidth: '350px',
+    maxWidth: '30%',
   },
 };
 
@@ -149,7 +149,7 @@ function UserProfile(props) {
   const [dbRegion, addDbRegion] = useState('');
 
   // hook for updating region
-  const [newRegion, setNewRegion] = useState('');
+  const [newRegion, setNewRegion] = useState('us-east-2');
 
   // hooks for when email is being updated
   const [updatedEmail, updateEmail] = useState('');
@@ -425,31 +425,30 @@ function UserProfile(props) {
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
             <CardBody profile>
+              <img src={logo} alt='Helios' className={classes.logoImage} />
               <h4 className={classes.cardTitle}>
                 <big>Your Name: </big>
                 <br />
-                {dbName}
+                <em>{dbName}</em>
               </h4>
               <h5 className={classes.cardTitle}>
                 <big>Your Email: </big>
                 <br />
-                {dbEmail}
+                <em>{dbEmail}</em>
               </h5>
               <h5 className={classes.cardTitle}>
                 <big>AWS Helios Delegation Role: </big>
                 <br />
-                {origArn}
+                <em>{origArn}</em>
               </h5>
               <h5 className={classes.cardTitle}>
                 <big>AWS Region: </big>
                 <br />
-                {regions[dbRegion]}
+                <em>{regions[dbRegion]}</em>
               </h5>
             </CardBody>
           </Card>
-          <center>
-            <img src={logo} alt='Helios' className={classes.logoImage} />
-          </center>
+          <center></center>
         </GridItem>
 
         {/* The notification content to be displayed when called upon */}
