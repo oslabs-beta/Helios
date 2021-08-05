@@ -40,19 +40,6 @@
       "icon": "client/src/Dashboard/assets/img/new-app-logo.png",
       "asar": false
     },
-    "win": {
-      "icon": "client/src/Dashboard/assets/img/new-app-logo.png",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        }
-      ],
-      "asar": false
-    },
     "linux": {
       "icon": "client/src/Dashboard/assets/img/new-app-logo.png",
       "category": "Development",
