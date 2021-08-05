@@ -61,7 +61,7 @@
     ]
   },
   "author": "Jackie Douglass, Prasad Pulaguntla, and Thein Gi Deva",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-api-gateway": "^3.23.0",
     "@aws-sdk/client-cloudwatch": "^3.22.0",

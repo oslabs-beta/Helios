@@ -1,14 +1,10 @@
 <!--
 *** This ReadMe document was insipred by the ReadMe template from
-*** https://github.com/oslabs-beta/Helios/blob/master/README.md
+*** https://github.com/othneildrew/Best-README-Template
 -->
 
 
 <!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
@@ -58,7 +54,7 @@ Serverless Applications are increasing becoming popular as it relieves the organ
 
 AWS is a leading provider in the serverless applications space with AWS Lambda functions being it's central component of the architecture.However, with AWS’ numerous services and extensive docs, it becomes challenging to navigate and can be intimidating to monitor and track the health of serverless applications.
 
-Helios is a free, open-source monitoring tool that users can connect to their AWS account and easily track key metrics and logs. Here is a [medium article](https://mediumarticle.com) describing the philosophy behind Helios. Download the Helios application [here](https://projecthelios.io) Helios is preconfigured to track the following three main components of AWS serverless applications.
+Helios is a free, open-source monitoring tool that users can connect to their AWS account and easily track key metrics and logs. Here is a [medium](https://mediumarticle.com) article describing the philosophy behind Helios. The application can be downloaded [here](https://projecthelios.io). Helios is preconfigured to track the following three main components of AWS serverless applications.
 
 * [Lambda Metrics](#lambda-metrics)
 * [Logs](#logs)
@@ -153,7 +149,7 @@ Helios application was built using the following key frameworks / libraries for 
 
 ### Project Setup
 
-The pre-requisites for this application setup are:
+The pre-requisite software for setting up this application are:
 
 - [NodeJS](https://nodejs.org/en/)
 - [NPM ](https://www.npmjs.com/)
@@ -195,21 +191,19 @@ Project Links: [Website](https://projecthelios.io) | [Github](https://github.com
 
 ## License
 
-Distributed under the ISC License. See `LICENSE` for more information.
+Distributed under the MIT License.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/oslabs-beta/Helios.svg?style=for-the-badge
 [contributors-url]: https://github.com/oslabs-beta/Helios/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/oslabs-beta/Helios/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/oslabs-beta/Helios.svg?style=for-the-badge
 [stars-url]: https://github.com/oslabs-beta/Helios/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/oslabs-beta/Helios.svg?style=for-the-badge
 [issues-url]: https://github.com/oslabs-beta/Helios/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/oslabs-beta/Helios.svg?style=for-the-badge
 [license-url]: https://github.com/oslabs-beta/Helios/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
+[linkedin-url]: https://linkedin.com/in/projectHelios
 [product-screenshot]: client/src/Dashboard/assets/img/helios-blue-logo-t.png
