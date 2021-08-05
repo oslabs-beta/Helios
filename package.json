@@ -40,6 +40,9 @@
       "icon": "client/src/Dashboard/assets/img/new-app-logo.png",
       "asar": false
     },
+    "win":{},
+    "linux":{},
+    
     "files": [
       "build/**/*",
       "dist/**/*",
