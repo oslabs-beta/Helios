@@ -94,7 +94,10 @@ The Helios application is preconfigured to track three main components of AWS se
 
 Displays the aggregated metrics for their Lambda functions including: Throttles, Invocations, and Errors. The metric totals by Lambda function are also shown in tabular format. Users have an option to further visualize metrics for specific functions. Users can adjust the time period shown.
 
-<!-- UPDATE GIF FOR DASHBOARD -->
+<p  align="center">
+<img src="client/src/Dashboard/assets/img/gifs/Clip-3-Dashboard.gif" width="800px" align="center"/>
+</p>
+
 
 ### Logs
 
