@@ -13,7 +13,7 @@ const mongoURI = `mongodb+srv://${userName}:${password}@${uriDomain}/${mongoDBNa
 
 mongoose
   .connect(mongoURI, {
-    dbName: mongoDBName,
+    dbName: 'Helios',
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
