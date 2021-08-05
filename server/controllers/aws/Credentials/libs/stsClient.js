@@ -4,6 +4,8 @@ const { STSClient } = require('@aws-sdk/client-sts');
 
 dotenv.config();
 
+
+
 // root user credentials
 const credentials = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
