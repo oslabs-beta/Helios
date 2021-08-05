@@ -1,7 +1,7 @@
 {
-  "name": "helios",
+  "name": "Helios",
   "version": "1.0.0",
-  "description": "",
+  "description": "An affordable and easy-to-use monitoring tool for your AWS serverless applications.",
   "main": "public/electron.js",
   "homepage": "./",
   "jest": {
@@ -109,7 +109,6 @@
     "moment": "^2.29.1",
     "mongodb": "^4.0.0",
     "mongoose": "^5.13.3",
-    "node-fetch": "^2.6.1",
     "node-sass": "^6.0.1",
     "nodemailer": "^6.6.3",
     "nodemon": "^2.0.11",
@@ -133,7 +132,6 @@
     "sass-loader": "^12.1.0",
     "stream-to-blob": "^2.0.1",
     "style-loader": "^3.1.0",
-    "supertest": "^6.1.4",
     "url-loader": "^4.1.1",
     "wait-on": "^6.0.0",
     "webpack": "^5.44.0",
@@ -143,7 +141,6 @@
     "babel-loader": "^8.2.2",
     "electron": "^13.1.7",
     "electron-builder": "^22.11.7",
-    "electron-is-dev": "^2.0.0",
     "fake-indexeddb": "^3.1.3",
     "file-loader": "^6.2.0",
     "imagemin-gifsicle": "^7.0.0",

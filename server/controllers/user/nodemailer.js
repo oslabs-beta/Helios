@@ -1,10 +1,16 @@
 const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const sendEmail = (type, recipient, resetToken) => {
   // link to your email to be the "sender"
   const Transport = nodemailer.createTransport({
     service: 'Gmail',
-    auth: { user: 'projecthelios2021@gmail.com', pass: 'Helios_cs' },
+    auth: {
+      user: process.env.NODEMAILER_EMAIL,
+      pass: process.env.NODEMAILER_PASSWORD,
+    },
   });
   let mailOptions;
   let sender = 'Helios';
@@ -39,7 +45,7 @@ const sendEmail = (type, recipient, resetToken) => {
   // send the email
   Transport.sendMail(mailOptions, function (error, response) {
     if (error) {
-      console.log(error);
+      console.error(error);
       return { status: false, error: error };
     } else {
       console.log('Message Sent');

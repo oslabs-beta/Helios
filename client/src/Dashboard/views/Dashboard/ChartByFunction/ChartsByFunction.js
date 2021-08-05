@@ -1,47 +1,22 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 // react plugin for creating charts
 import ChartistGraph from 'react-chartist';
 import { connect } from 'react-redux';
 // @material-ui/core
 import { makeStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
 // @material-ui/icons
-import Store from '@material-ui/icons/Store';
-import Warning from '@material-ui/icons/Warning';
-import DateRange from '@material-ui/icons/DateRange';
-import LocalOffer from '@material-ui/icons/LocalOffer';
-import Update from '@material-ui/icons/Update';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import AccessTime from '@material-ui/icons/AccessTime';
-import Accessibility from '@material-ui/icons/Accessibility';
-import BugReport from '@material-ui/icons/BugReport';
-import Code from '@material-ui/icons/Code';
 import Cloud from '@material-ui/icons/Cloud';
 // core components
 import GridItem from '../../../components/Grid/GridItem.js';
 import GridContainer from '../../../components/Grid/GridContainer.js';
-import LogTable from '../../../components/Table/LogTable.js';
-import LambdaList from '../../../components/LambdaList/LambdaList.js';
 import CustomTabs from '../../../components/CustomTabs/CustomTabs.js';
-import Danger from '../../../components/Typography/Danger.js';
-import LogCard from '../../../components/Card/LogCard.js';
 import CardHeader from '../../../components/Card/CardHeader.js';
-import CardIcon from '../../../components/Card/CardIcon.js';
 import CardBody from '../../../components/Card/CardBody.js';
 import CardFooter from '../../../components/Card/CardFooter.js';
 import Card from '../../../components/Card/Card.js';
 
-import Select from '@material-ui/core/Select';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import styles from '../../../assets/jss/material-dashboard-react/views/logsStyle.js';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import { trackPromise } from 'react-promise-tracker';
-import { usePromiseTracker } from 'react-promise-tracker';
 
 import LambdaListMetrics from '../../../components/LambdaListMetrics/LambdaListMetrics';
 

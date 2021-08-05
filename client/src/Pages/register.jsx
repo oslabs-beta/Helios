@@ -168,7 +168,7 @@ function Register(props) {
             <li>
               <a
                 target='_blank'
-                href='https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=helios-delegation&templateURL=https://project-helios-template.s3.us-east-2.amazonaws.com/cloudformationHelios.yaml'
+                href='https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=helios-delegation&templateURL=https://project-helios-template.s3.us-east-2.amazonaws.com/updatedCloudformationHelios.yaml'
                 className={classes.awsLink}
               >
                 Add Helios CloudFormation stack to AWS
@@ -177,7 +177,7 @@ function Register(props) {
             </li>
             <li>
               Make sure you check "I acknowledge that AWS CloudFormation might
-              create IAM resources.
+              create IAM resources."
             </li>
             <li>Click "Create"</li>
             <li>

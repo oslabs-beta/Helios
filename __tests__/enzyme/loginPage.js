@@ -38,9 +38,6 @@ describe('SignIn page tests', () => {
     it('Renders the logo image', () => {
       expect(wrapper.find('img')).toHaveLength(1);
       expect(wrapper.find('img').props().alt).toEqual('Helios Logo');
-      expect(wrapper.find('img').props().src).toEqual(
-        '../Dashboard/assets/img/helios-black-logo-t.png'
-      );
     });
 
     it('Renders the Sign in header', () => {
