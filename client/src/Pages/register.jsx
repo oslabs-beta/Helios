@@ -166,6 +166,8 @@ function Register(props) {
           the below steps and we'll get you all set up!
           <ol>
             <li>
+              {/* change link to: */}
+              {/*'https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=[NAME OF STACK YOU WANT CREATED]&templateURL=[S3 LINK TO THE YAML TEMPLATE FILE]'  */}
               <a
                 target='_blank'
                 href='https://console.aws.amazon.com/cloudformation/home#/stacks/create/review?stackName=helios-delegation&templateURL=https://project-helios-template.s3.us-east-2.amazonaws.com/updatedCloudformationHelios.yaml'
